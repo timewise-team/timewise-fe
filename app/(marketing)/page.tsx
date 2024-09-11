@@ -1,13 +1,17 @@
 import React from "react";
 import FeatureBenefit from "./_components/FeatureBenefit";
+import Advertise from "./_components/Advertise";
+import Banner from "./_components/Banner";
+import Faq from "./_components/Faq";
 
 const MarketingPage = () => {
   return (
     <div className="flex items-center justify-center flex-col">
+      <Banner />
       <div className="flex items-center justify-center flex-col">
         <div
           className="mt-20 md:mt-100 mb-4 flex items-center border shadow-sm p-4
-        bg-blue-300 text-amber-700 rounded-full uppercase 
+        bg-blue-300 text-white rounded-full uppercase 
         "
         >
           No 1 Schedule Management
@@ -23,6 +27,8 @@ const MarketingPage = () => {
         </div>
       </div>
       <FeatureBenefit />
+      <Advertise />
+      <Faq />
     </div>
   );
 };
