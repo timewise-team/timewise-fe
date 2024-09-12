@@ -1,43 +1,87 @@
-import React from "react";
-
-export const LIST_FAQ = [
-  {
-    question: "How do I get started with Timewise?",
-    answer: `You can get
-        started with Timewise by signing up for a free account.`,
-  },
-  {
-    question: "What is the difference between the free and paid plans?",
-    answer: `The free plan
-        allows you to create up to 5 schedules and 5 events per schedule. The paid plan allows you to create unlimited schedules and events.`,
-  },
-  {
-    question: "How do I upgrade to a paid plan?",
-    answer: `You can upgrade to a paid plan by going to your account settings and selecting the plan you want.`,
-  },
-];
+"use client";
+import { dataFaqs } from "@/constants/faq";
+import React, { useState } from "react";
+import Image from "next/image";
+import Collapse from "@/components/Collapse";
+import { motion } from "framer-motion";
+import { fadeIn } from "@/utils/motion";
 
 const Faq = () => {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
   return (
-    <div className="container px-5  mx-auto">
-      <div className="flex flex-col text-center w-full mb-20">
-        <h1 className="sm:text-3xl text-2xl font-medium title-font text-blue-600">
+    <motion.div
+      initial={"hidden"}
+      whileInView={"show"}
+      viewport={{ once: false, amount: 0.25 }}
+    >
+      <section className="dark:bg-sky-200 dark:text-gray-800">
+        <motion.h2
+          variants={fadeIn({
+            direction: "top",
+            type: "spring",
+            delay: 0.1,
+            duration: 0.5,
+          })}
+          className="mb-12 text-xl font-bold leading-none text-center sm:text-3xl text-sky-500"
+        >
           Frequently Asked Questions
-        </h1>
-      </div>
-      <div className="flex flex-wrap -m-4">
-        {LIST_FAQ.map((faq, index) => (
-          <div key={index} className="p-4 md:w-1/3 sm:w-1/2 w-full">
-            <div className="border border-gray-200 p-6 rounded-lg bg-sky-100 cursor-pointer">
-              <h2 className="text-lg text-gray-900 font-medium title-font mb-2">
-                {faq.question}
-              </h2>
-              <p className="leading-relaxed text-base">{faq.answer}</p>
-            </div>
+        </motion.h2>
+
+        <motion.div
+          variants={fadeIn({
+            direction: "right",
+            type: "tween",
+            delay: 0.5,
+            duration: 1,
+          })}
+          className="container flex lg:flex-row flex-col justify-center p-4 mx-auto md:p-8"
+        >
+          <Image
+            className="rounded-lg lg:h-fit h-auto"
+            src="/images/1.jpg"
+            alt="faq"
+            width={720}
+            height={600}
+            quality={100}
+          />
+          <div className="flex flex-col divide-y sm:px-8 lg:px-12 xl:px-32 dark:divide-gray-300">
+            {dataFaqs.map((faq, index) => (
+              <div key={index} className="py-4">
+                <button
+                  className="flex items-center justify-between w-full py-2 text-left focus:outline-none"
+                  onClick={() =>
+                    setOpenIndex(openIndex === index ? null : index)
+                  }
+                >
+                  <h3 className="text-lg font-semibold">{faq.question}</h3>
+                  <span>
+                    {openIndex === index ? (
+                      <Image
+                        src="/images/arrow-up.svg"
+                        alt="arrow-down"
+                        width={24}
+                        height={24}
+                      />
+                    ) : (
+                      <Image
+                        src="/images/arrow-down.svg"
+                        alt="arrow-down"
+                        width={24}
+                        height={24}
+                      />
+                    )}
+                  </span>
+                </button>
+                <Collapse isActive={openIndex === index}>
+                  <p className="mt-4 text-gray-600">{faq.answer}</p>
+                </Collapse>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </div>
+        </motion.div>
+      </section>
+    </motion.div>
   );
 };
 
