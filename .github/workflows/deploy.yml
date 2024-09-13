@@ -49,5 +49,9 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.GCE_USER }}@${{ secrets.GCE_HOST }} << 'EOF'
             docker pull ${{ secrets.DOCKER_USERNAME }}/timewise-frontend:latest
             docker rm timewise-frontend --force || true
-            docker run -d --name timewise-frontend -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/timewise-frontend:latest
+            docker run \
+              --name timewise-frontend \
+              -v /home/khanhhn.hoang/env_files/.fe_env:/.env \
+              -dp 3000:3000 \
+              ${{ secrets.DOCKER_USERNAME }}/timewise-frontend:latest
           EOF
