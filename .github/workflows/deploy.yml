@@ -51,7 +51,7 @@ jobs:
             docker rm timewise-frontend --force || true
             docker run \
               --name timewise-frontend \
-              -v /home/khanhhn.hoang/env_files/.fe_env:/.env \
+              --env-file /home/khanhhn.hoang/env_files/.fe_env \
               -dp 3000:3000 \
               ${{ secrets.DOCKER_USERNAME }}/timewise-frontend:latest
           EOF
