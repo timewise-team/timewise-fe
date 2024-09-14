@@ -1,8 +1,6 @@
-import { create } from "@/actions/createBoard";
-import { Button } from "@/components/ui/Button";
 import React from "react";
-import Form from "./form";
-import Board from "./board";
+import Form from "./Form";
+import Board from "./Board";
 
 const OrganizationIdPage = async () => {
   //create fake data of boards
