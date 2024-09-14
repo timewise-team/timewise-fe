@@ -7,10 +7,11 @@ const Logo = () => {
     <Link href="/">
       <div className="hover:opacity-75 transition-none items-center gap-x-2 hidden md:flex">
         <Image
-          src=""
+          src="/images/icons/timewise-logo.svg"
           alt="logo"
-          width={30}
-          height={30}
+          width={80}
+          height={80}
+          quality={100}
         />
       </div>
     </Link>
