@@ -5,13 +5,13 @@ const OrganizationIdPage = () => {
     "use server";
     const title = formData.get("title") as string;
 
-    // await fetch(`/api/boards`, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ title }),
-    // });
+    await fetch(`/api/boards`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title }),
+    });
   }
 
   return (
