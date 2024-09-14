@@ -1,9 +1,9 @@
 "use client";
-import Button from "@/components/ui/Button";
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { fadeIn } from "@/utils/motion";
+import { Button } from "@/components/ui/Button";
 
 const Advertise = () => {
   return (

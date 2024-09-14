@@ -5,7 +5,7 @@ interface Props {
 }
 
 const PlatformLayout = ({ children }: Props) => {
-  return <ClerkProvider>{children}</ClerkProvider>;
+  return <ClerkProvider afterSignOutUrl="/">{children}</ClerkProvider>;
 };
 
 export default PlatformLayout;

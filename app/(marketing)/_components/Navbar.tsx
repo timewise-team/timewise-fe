@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Logo from "@/components/ui/Logo";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 
 const Navbar = () => {
   return (
