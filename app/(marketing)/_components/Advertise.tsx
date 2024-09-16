@@ -10,7 +10,7 @@ const Advertise = () => {
     <motion.div
       initial={"hidden"}
       whileInView={"show"}
-      viewport={{ once: false, amount: 0.25 }}
+      viewport={{ once: true, amount: 0.25 }}
     >
       <section className=" text-gray-700 body-font">
         <div className=" container mx-auto flex px-5 py-24 md:flex-row flex-col items-center">

@@ -13,7 +13,7 @@ const Faq = () => {
     <motion.div
       initial={"hidden"}
       whileInView={"show"}
-      viewport={{ once: false, amount: 0.25 }}
+      viewport={{ once: true, amount: 0.25 }}
     >
       <section className="dark:bg-sky-200 dark:text-gray-800">
         <motion.h2
