@@ -2,12 +2,14 @@ import { SignIn } from "@clerk/nextjs";
 
 export default function SignInPage() {
   return (
-    <SignIn
-      appearance={{
-        elements: {
-          footer: "hidden",
-        },
-      }}
-    />
+    <>
+      <SignIn
+        appearance={{
+          elements: {
+            footer: "hidden",
+          },
+        }}
+      />
+    </>
   );
 }

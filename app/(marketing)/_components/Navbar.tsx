@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import Logo from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 
 const Navbar = () => {
@@ -11,7 +10,7 @@ const Navbar = () => {
     "
     >
       <div className="md:max-w-screen-xl mx-auto flex items-start w-full justify-between">
-        <Logo />
+        {/* <Logo /> */}
         <div className="space-x-4 md:block md:w-auto flex items-start justify-between w-full">
           <Link href="/sign-in">
             <Button>Sign In</Button>

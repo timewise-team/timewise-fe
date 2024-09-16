@@ -9,7 +9,7 @@ const FeatureBenefit = () => {
     <motion.div
       initial={"hidden"}
       whileInView={"show"}
-      viewport={{ once: false, amount: 0.25 }}
+      viewport={{ once: true, amount: 0.25 }}
     >
       <section className="text-gray-700 body-font border-t border-gray-200 mt-2">
         <div className="container px-5 py-24 mx-auto">
