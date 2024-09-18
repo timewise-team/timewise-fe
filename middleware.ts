@@ -1,13 +1,7 @@
+import NextAuth from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-
-const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
-
-export default clerkMiddleware((auth, request) => {
-  if (!isPublicRoute(request)) {
-    auth().protect();
-  }
-});
+import authConfig from "./auth.config";
+export { auth as middleware } from "@/auth";
 
 export const config = {
   matcher: [
@@ -18,8 +12,13 @@ export const config = {
   ],
 };
 const PUBLIC_FILE = /\.(.*)$/;
+const { auth } = NextAuth(authConfig);
 
-export async function middleware(req: NextRequest) {
+export default auth((req) => {
+  console.log("req", req.nextUrl.pathname);
+});
+
+export async function myMiddleware(req: NextRequest) {
   if (
     req.nextUrl.pathname.startsWith("/_next") ||
     req.nextUrl.pathname.includes("/api/") ||

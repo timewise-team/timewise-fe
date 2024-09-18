@@ -4,7 +4,7 @@ import React from "react";
 import MobileSidebar from "./MobileSidebar";
 import Logo from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
-import FormPopOver from "@/components/form/FormPopover";
+import FormPopOver from "@/components/form/form-popover";
 
 const Navbar = () => {
   return (

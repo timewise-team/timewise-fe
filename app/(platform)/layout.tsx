@@ -1,5 +1,4 @@
 import React from "react";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
 interface Props {
   children: React.ReactNode;
@@ -7,10 +6,10 @@ interface Props {
 
 const PlatformLayout = ({ children }: Props) => {
   return (
-    <ClerkProvider>
+    <div className="w-full h-full">
       <Toaster />
       {children}
-    </ClerkProvider>
+    </div>
   );
 };
 

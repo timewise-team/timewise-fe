@@ -7,7 +7,7 @@ import { useFormStatus } from "react-dom";
 import Image from "next/image";
 import { defaultImages } from "@/constants/images";
 import Link from "next/link";
-import FormError from "./FormError";
+import FormError from "./form-error";
 
 interface Props {
   id: string;
