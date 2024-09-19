@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 import { unsplash } from "@/lib/unsplash";
 import { cn } from "@/lib/utils";
@@ -7,7 +9,7 @@ import { useFormStatus } from "react-dom";
 import Image from "next/image";
 import { defaultImages } from "@/constants/images";
 import Link from "next/link";
-import FormError from "./FormError";
+import FormError from "./form-error";
 
 interface Props {
   id: string;

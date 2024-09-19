@@ -9,9 +9,11 @@ const Logo = () => {
         <Image
           src="/images/icons/timewise-logo.svg"
           alt="logo"
-          width={80}
-          height={80}
+          width={50}
+          height={50}
           quality={100}
+          className="
+          cursor-pointer "
         />
       </div>
     </Link>

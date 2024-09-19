@@ -8,12 +8,12 @@ import {
 } from "@components/ui/popover";
 import { Button } from "../ui/Button";
 import { X } from "lucide-react";
-import FormInput from "./FormInput";
-import FormSubmit from "./FormSubmit";
+import FormInput from "./form-input";
+import FormSubmit from "./form-submit";
 import { createBoard } from "@/actions/create-board";
 import { useAction } from "@/hooks/useAction";
 import { toast } from "sonner";
-import FormPicker from "./FormPicker";
+import FormPicker from "./form-picker";
 import { useRouter } from "next/navigation";
 
 interface Props {
