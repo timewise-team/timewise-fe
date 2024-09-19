@@ -2,9 +2,9 @@
 import { dataFaqs } from "@/constants/faq";
 import React, { useState } from "react";
 import Image from "next/image";
-import Collapse from "@/components/collapse";
 import { motion } from "framer-motion";
 import { fadeIn } from "@/utils/motion";
+import Collapse from "@/components/collapse";
 
 const Faq = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
