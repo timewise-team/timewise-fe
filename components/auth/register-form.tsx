@@ -42,9 +42,6 @@ const Register = () => {
             if (data.error) {
               setError(data.error);
             }
-            if (data.success) {
-              setSuccess(data.success);
-            }
           }
         });
       });
@@ -60,6 +57,7 @@ const Register = () => {
         backButtonLabel="Back to Home"
         backButtonHref="/"
         showSocial
+        isSignUp={true}
       >
         <Form {...form}>
           <form
@@ -107,8 +105,8 @@ const Register = () => {
                 )}
               />
             </div>
-            <FormErrorLogin message={error} />
-            <FormSuccess message={success} />
+            {/* <FormErrorLogin message={error} />
+            <FormSuccess message={success} /> */}
             <div>
               <Button
                 disabled={isPending}

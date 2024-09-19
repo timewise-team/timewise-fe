@@ -1,6 +1,6 @@
 "use client";
 import updateBoard from "@/actions/update-board";
-import FormInput from "@/components/form/from-input";
+import FormInput from "@/components/form/form-input";
 import { Button } from "@/components/ui/Button";
 import { useAction } from "@/hooks/useAction";
 import { Board } from "@/types/Board";

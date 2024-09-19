@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 import { unsplash } from "@/lib/unsplash";
 import { cn } from "@/lib/utils";

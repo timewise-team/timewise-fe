@@ -12,10 +12,10 @@ const Navbar = () => {
       <div className="md:max-w-screen-xl mx-auto flex items-start w-full justify-between">
         {/* <Logo /> */}
         <div className="space-x-4 md:block md:w-auto flex items-start justify-between w-full">
-          <Link href="/sign-in">
+          <Link href="auth/sign-in">
             <Button>Sign In</Button>
           </Link>
-          <Link href="/sign-up">
+          <Link href="auth/sign-up">
             <Button>Get Timewise for free</Button>
           </Link>
         </div>

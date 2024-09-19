@@ -13,11 +13,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "../ui/Button";
-import FormSuccess from "../form/form-success";
-import { login } from "@/actions/auth/login";
-import FormErrorLogin from "../form/form-error-login";
 import Wrapper from "../wrapper";
 import { z } from "zod";
+import { login } from "@/actions/auth/login";
 
 const Login = () => {
   const [isPending, startTransition] = useTransition();
@@ -41,9 +39,6 @@ const Login = () => {
           if (data) {
             if (data.error) {
               setError(data.error);
-            }
-            if (data.success) {
-              setSuccess(data.success);
             }
           }
         });
@@ -107,8 +102,8 @@ const Login = () => {
                 )}
               />
             </div>
-            <FormErrorLogin message={error} />
-            <FormSuccess message={success} />
+            {/* <FormErrorLogin message={error} />
+            <FormSuccess message={success} /> */}
             <div>
               <Button
                 disabled={isPending}

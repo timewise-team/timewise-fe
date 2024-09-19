@@ -11,7 +11,7 @@ const Social = () => {
     });
   };
   return (
-    <div className="flex items-center gap-x-2 w-full">
+    <div className="flex items-center gap-x-2 w-full px-6 py-2">
       <Button
         size={"lg"}
         className="w-full"
