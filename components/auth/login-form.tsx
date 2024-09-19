@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 import { LoginSchema } from "@/actions/auth";
 import { Input } from "@/components/ui/input";
@@ -31,6 +33,8 @@ const Login = () => {
   });
 
   const onFinish = async (values: z.infer<typeof LoginSchema>) => {
+    console.log("error", error);
+    console.log("success", success);
     setError("");
     setSuccess("");
     try {

@@ -31,7 +31,7 @@ const Wrapper = ({ children, headerLabel, showSocial, isSignUp }: Props) => {
       {/* have an account */}
       {!isSignUp && (
         <p className="text-center text-sm text-muted-foreground py-2">
-          Don't have an account?{" "}
+          {"Don't have an account?"}
           <a href="/auth/sign-up" className="text-primary">
             Sign Up
           </a>

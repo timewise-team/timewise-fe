@@ -14,9 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "../ui/Button";
-import FormSuccess from "../form/form-success";
 import { login } from "@/actions/auth/login";
-import FormErrorLogin from "../form/form-error-login";
 import Wrapper from "../wrapper";
 
 const Register = () => {
@@ -33,6 +31,8 @@ const Register = () => {
   });
 
   const onFinish = async (values: z.infer<typeof LoginSchema>) => {
+    console.log("error", error);
+    console.log("success", success);
     setError("");
     setSuccess("");
     try {
