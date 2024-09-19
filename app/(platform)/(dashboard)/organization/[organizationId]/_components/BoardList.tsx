@@ -1,5 +1,5 @@
-import Hint from "@/components/Hint";
 import FormPopOver from "@/components/form/form-popover";
+import Hint from "@/components/hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BOARD_DATA } from "@/test/fake-board-data";
 import { HelpCircle, User2 } from "lucide-react";

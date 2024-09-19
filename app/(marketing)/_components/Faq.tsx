@@ -1,10 +1,15 @@
 "use client";
 import { dataFaqs } from "@/constants/faq";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { fadeIn } from "@/utils/motion";
-import Collapse from "@/components/collapse";
+import { useCollapse } from "react-collapsed";
+
+interface Props {
+  isActive: boolean;
+  children: React.ReactNode;
+}
 
 const Faq = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -86,3 +91,14 @@ const Faq = () => {
 };
 
 export default Faq;
+
+const Collapse = ({ isActive, children }: Props) => {
+  const [isExpanded, setIsExpanded] = useState(isActive);
+  const { getCollapseProps } = useCollapse({ isExpanded });
+
+  useEffect(() => {
+    setIsExpanded(isActive);
+  }, [isActive]);
+
+  return <div {...getCollapseProps()}>{children}</div>;
+};
