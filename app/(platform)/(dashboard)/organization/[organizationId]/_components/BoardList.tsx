@@ -1,5 +1,5 @@
 import FormPopOver from "@/components/form/form-popover";
-import Hint from "@/components/hint";
+import HintTool from "@/components/hint-tool";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BOARD_DATA } from "@/test/fake-board-data";
 import { HelpCircle, User2 } from "lucide-react";
@@ -40,9 +40,9 @@ const BoardList = () => {
             <div className="text-neutral-700 text-sm font-semibold px-2">
               Create New
             </div>
-            <Hint sideOffSet={40} description="Free organnization">
+            <HintTool sideOffSet={40} description="Free organnization">
               <HelpCircle className="absolute bottom-2 right-2 h-[14px] w-[14px]" />
-            </Hint>
+            </HintTool>
           </div>
         </FormPopOver>
       </div>

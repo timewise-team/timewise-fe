@@ -13,7 +13,7 @@ interface Props {
   sideOffSet?: number;
 }
 
-const Hint = ({
+const HintTool = ({
   children,
   description,
   side = "bottom",
@@ -35,4 +35,4 @@ const Hint = ({
   );
 };
 
-export default Hint;
+export default HintTool;
