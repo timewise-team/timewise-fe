@@ -1,4 +1,4 @@
-import Hint from "@/components/hint";
+import Hint from "@/components/Hint";
 import FormPopOver from "@/components/form/form-popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BOARD_DATA } from "@/test/fake-board-data";
