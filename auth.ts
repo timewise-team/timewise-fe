@@ -5,7 +5,7 @@ import type { NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
-const privateRoutes = ["/account", "/settings"];
+export const privateRoutes = ["/account", "/settings"];
 // @ts-ignore
 async function refreshAccessToken(token) {
   // this is our refresh token method
@@ -182,6 +182,15 @@ export const config = {
       console.log("session", newSession);
       return newSession;
     },
+
+    async signIn({ user, account, profile, email, credentials }) {
+      if (user) {
+        return `/organization`;
+      }
+      //if error return to sign in page
+      return `/sign-in?error=CredentialsSignin`;
+    },
+
     authorized({ request, auth }) {
       const { pathname } = request.nextUrl;
 
