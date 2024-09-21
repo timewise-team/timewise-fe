@@ -1,12 +1,12 @@
 "use client";
-import { signIn } from "@/auth";
+// import { signIn } from "@/auth";
 import React from "react";
 import { Button } from "../ui/Button";
 
 const LoginGoogle = () => {
-  const onClick = () => {
-    signIn("google", { callbackUrl: "/" });
-  };
+  // const onClick = () => {
+  //   signIn("google", { callbackUrl: "/" });
+  // };
   return (
     <div className="flex flex-col space-y-5">
       <span className="flex items-center justify-center space-x-2">
@@ -16,7 +16,7 @@ const LoginGoogle = () => {
       </span>
       <div className="flex flex-col space-y-4">
         <Button
-          onClick={onClick}
+          // onClick={onClick}
           className="flex items-center justify-center px-4 py-2 space-x-2 transition-colors duration-300 border border-gray-800 rounded-md group hover:bg-gray-800 focus:outline-none"
         >
           <span>

@@ -1,12 +1,13 @@
-import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import { Plus } from "lucide-react";
 import React from "react";
 import MobileSidebar from "./MobileSidebar";
 import Logo from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import FormPopOver from "@/components/form/form-popover";
+import { auth } from "@/auth";
 
-const Navbar = () => {
+const Navbar = async () => {
+  const session = await auth();
   return (
     <>
       <nav className="fixed z-50 top-0 px-4 w-full h-16 border-b shadow-sm bg-white flex items-center">
@@ -34,7 +35,7 @@ const Navbar = () => {
           </FormPopOver>
         </div>
         <div className="ml-auto flex items-center gap-x-2">
-          <OrganizationSwitcher
+          {/* <OrganizationSwitcher
             hidePersonal
             afterCreateOrganizationUrl="/organization/:id"
             afterLeaveOrganizationUrl="/select-org"
@@ -48,8 +49,8 @@ const Navbar = () => {
                 },
               },
             }}
-          />
-          <UserButton afterSwitchSessionUrl="/" />
+          /> */}
+          <Button className="rounded-full">{session?.user.email}</Button>
         </div>
       </nav>
     </>

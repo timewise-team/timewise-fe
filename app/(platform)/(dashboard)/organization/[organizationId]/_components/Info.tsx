@@ -1,33 +1,47 @@
 "use client";
 import React from "react";
-import { useOrganization } from "@clerk/nextjs";
 import Image from "next/image";
 import { CreditCard } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Organization } from "../../../_components/NavItem";
 
+export const fakeData: Organization[] = [
+  {
+    id: "1",
+    name: "Organization 1",
+    slug: "organization-1",
+    imgUrl: "/images/1.jpg",
+  },
+  {
+    id: "2",
+    name: "Organization 1",
+    slug: "organization-1",
+    imgUrl: "/images/1.jpg",
+  },
+];
 const Info = () => {
-  const { organization, isLoaded } = useOrganization();
-  if (!isLoaded) {
-    return <Info.Skeleton />;
-  }
+  const { name } = fakeData[0];
+
   return (
-    <div className="flex items-center gap-x-4 mb-4">
-      <div className="w-[60px] h-[60px] relative">
-        <Image
-          fill
-          src={"/images/1.jpg"}
-          alt={"logo"}
-          className="rounded-md object-cover"
-        />
-      </div>
-      <div className="space-y-1">
-        <p className="font-semibold text-xl">{organization?.name}</p>
-        <div className="flex items-center text-xs text-muted-foreground">
-          <CreditCard className="h-3 w-3 mr-1" />
-          Free Plan
+    <>
+      <div className="flex items-center gap-x-4 mb-4">
+        <div className="w-[60px] h-[60px] relative">
+          <Image
+            fill
+            src={fakeData[0].imgUrl || "/images/1.jpg"}
+            alt={"logo"}
+            className="rounded-md object-cover"
+          />
+        </div>
+        <div className="space-y-1">
+          <p className="font-semibold text-xl">{name}</p>
+          <div className="flex items-center text-xs text-muted-foreground">
+            <CreditCard className="h-3 w-3 mr-1" />
+            Free Plan
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

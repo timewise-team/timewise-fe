@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/Button";
 import { Popover, PopoverClose, PopoverContent } from "@/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
