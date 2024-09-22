@@ -1,63 +1,63 @@
 "use server";
 
-import * as z from "zod";
-import { AuthError } from "next-auth";
+// import * as z from "zod";
+// import { AuthError } from "next-auth";
 
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-import { LoginSchema } from ".";
+// import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+// import { LoginSchema } from ".";
 
-export const login = async (
-  values: z.infer<typeof LoginSchema>,
-  callbackUrl?: string
-) => {
-  const validatedFields = LoginSchema.safeParse(values);
+// export const login = async (
+//   values: z.infer<typeof LoginSchema>,
+//   callbackUrl?: string
+// ) => {
+//   const validatedFields = LoginSchema.safeParse(values);
 
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
+//   if (!validatedFields.success) {
+//     return { error: "Invalid fields!" };
+//   }
 
-  const { username, password } = validatedFields.data;
+//   const { username, password } = validatedFields.data;
 
-  // const existingUser = await getUserByEmail(email);
+// const existingUser = await getUserByEmail(email);
 
-  // if (!existingUser || !existingUser.email) {
-  //   return { error: "Invalid credentials!" };
-  // }
+// if (!existingUser || !existingUser.email) {
+//   return { error: "Invalid credentials!" };
+// }
 
-  // if (!existingUser.password) {
-  //   return { error: "Login With a OAuth provider." };
-  // }
+// if (!existingUser.password) {
+//   return { error: "Login With a OAuth provider." };
+// }
 
-  // if (!existingUser.emailVerified) {
-  //   const verificationToken = await generateVerificationToken(
-  //     existingUser.email
-  //   );
+// if (!existingUser.emailVerified) {
+//   const verificationToken = await generateVerificationToken(
+//     existingUser.email
+//   );
 
-  //   await sendVerificationEmail(
-  //     verificationToken.email,
-  //     verificationToken.token,
-  //     existingUser.name!
-  //   );
+//   await sendVerificationEmail(
+//     verificationToken.email,
+//     verificationToken.token,
+//     existingUser.name!
+//   );
 
-  //   return { success: "Confirmation email sent!" };
-  // }
+//   return { success: "Confirmation email sent!" };
+// }
 
-  // try {
-  //   await signIn("credentials", {
-  //     username,
-  //     password,
-  //     redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
-  //   });
-  // } catch (error) {
-  //   if (error instanceof AuthError) {
-  //     switch (error.type) {
-  //       case "CredentialsSignin":
-  //         return { error: "Invalid credentials!" };
-  //       default:
-  //         return { error: "Something went wrong!" };
-  //     }
-  //   }
+// try {
+//   await signIn("credentials", {
+//     username,
+//     password,
+//     redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+//   });
+// } catch (error) {
+//   if (error instanceof AuthError) {
+//     switch (error.type) {
+//       case "CredentialsSignin":
+//         return { error: "Invalid credentials!" };
+//       default:
+//         return { error: "Something went wrong!" };
+//     }
+//   }
 
-  //   throw error;
-  // }
-};
+//   throw error;
+// }
+// };

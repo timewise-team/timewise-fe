@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/form";
 import { Button } from "../ui/Button";
 import Wrapper from "../wrapper";
-import { register } from "@/actions/auth/register";
 
 const Register = () => {
   const [isPending, startTransition] = useTransition();
@@ -33,6 +32,43 @@ const Register = () => {
       email: "",
     },
   });
+
+  const register = async (values: z.infer<typeof RegisterSchema>) => {
+    const validatedFields = RegisterSchema.safeParse(values);
+
+    if (!validatedFields.success) {
+      return { error: "Invalid fields" };
+    }
+    const { fullName, username, password, email, passwordConfirmation } =
+      values;
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fullName,
+            username,
+            password,
+            email,
+            passwordConfirmation,
+          }),
+        }
+      );
+      const result = await response.json();
+
+      if (result.error) {
+        return { error: result.error };
+      }
+      return { success: true, data: result };
+    } catch (error) {
+      return { error: "Something went wrong!" };
+    }
+  };
 
   return (
     <>

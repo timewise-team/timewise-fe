@@ -17,6 +17,7 @@ const FeatureBenefit = () => {
             <h2 className="mb-12 text-xl font-bold leading-none text-center sm:text-3xl text-sky-500">
               All Features
             </h2>
+            <h3>Overview of Timewuse as an AI-powered schedule platform</h3>
           </div>
           <div className="flex flex-wrap -m-4">
             {FEATURE_BENEFITS.map((feature, index) => (
@@ -45,11 +46,11 @@ const FeatureBenefit = () => {
                       <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
                     </svg>
                   </div>
-                  <h2 className="text-lg text-gray-900 font-medium title-font mb-2">
+                  <h2 className="text-xl text-gray-900 font-medium title-font mb-2">
                     {feature.title}
                   </h2>
                   <p className="leading-relaxed text-base">
-                    {feature.description}
+                    {feature.description} 
                   </p>
                 </div>
               </motion.div>

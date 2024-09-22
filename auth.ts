@@ -82,13 +82,16 @@ export const config = {
           password: credentials.password,
         };
 
-        const res = await fetch(`${process.env.API_BASE_URL}/auth/login`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
+        const res = await fetch(
+          `${process.env.API_BASE_URL}/api/v1/auth/login`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          }
+        );
 
         const user = await res.json();
 

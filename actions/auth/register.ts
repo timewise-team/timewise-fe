@@ -12,13 +12,16 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
   }
 
   try {
-    const response = await fetch(`${process.env.API_BASE_URL}/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(values),
-    });
+    const response = await fetch(
+      "https://timewise.space/api/v1/auth/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      }
+    );
     const result = await response.json();
     //log password and confirm password
     console.log("pwd", values.password);
