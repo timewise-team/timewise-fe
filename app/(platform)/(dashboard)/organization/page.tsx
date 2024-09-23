@@ -1,4 +1,3 @@
-import ViewCalender from "@/components/view-calender";
 import React from "react";
 
 const OrganizationPage = () => {
