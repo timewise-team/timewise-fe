@@ -1,7 +1,7 @@
 "use client";
 import { RegisterSchema } from "@/actions/auth";
 import { Input } from "@/components/ui/input";
-import React, { useState, useTransition } from "react";
+import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,8 +19,8 @@ import Wrapper from "../wrapper";
 const Register = () => {
   const [isPending, startTransition] = useTransition();
 
-  const [error, setError] = useState<string | undefined>("");
-  const [success, setSuccess] = useState<string | undefined>("");
+  // const [error, setError] = useState<string | undefined>("");
+  // const [success, setSuccess] = useState<string | undefined>("");
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
