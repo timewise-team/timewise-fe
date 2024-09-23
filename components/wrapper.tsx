@@ -18,7 +18,7 @@ const Wrapper = ({ children, headerLabel, showSocial, isSignUp }: Props) => {
         <Header label={headerLabel} />
       </CardHeader>
       <CardContent>{children}</CardContent>
-      {showSocial && <Social />}
+      {!isSignUp && <>{showSocial && <Social />}</>}
       {/* dont have an account  */}
       {isSignUp && (
         <p className="text-center text-sm text-muted-foreground py-2">

@@ -3,7 +3,7 @@
 "use client";
 import { LoginSchema } from "@/actions/auth";
 import { Input } from "@/components/ui/input";
-import React, { useState, useTransition } from "react";
+import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -16,13 +16,47 @@ import {
 } from "@/components/ui/form";
 import { Button } from "../ui/Button";
 import Wrapper from "../wrapper";
+import { useSearchParams } from "next/navigation";
+import { SignInResponse, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { z } from "zod";
-import { login } from "@/actions/auth/login";
+
+type LoginData = z.infer<typeof LoginSchema>;
 
 const Login = () => {
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | undefined>("");
-  const [success, setSuccess] = useState<string | undefined>("");
+  // const [error, setError] = useState<string | undefined>("");
+  // const [success, setSuccess] = useState<string | undefined>("");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  async function login({ username, password }: LoginData) {
+    const callbackUrl = searchParams.get("callbackUrl");
+    console.log("callbackUrl", callbackUrl);
+    signIn("credentials", {
+      username: username,
+      password: password,
+      redirect: false,
+    }).then((res: SignInResponse | undefined) => {
+      if (!res) {
+        toast.error("No response!");
+        return;
+      }
+
+      if (!res.ok)
+        toast.error("Could not login! Please check your credentials.");
+      else if (res.error) {
+        if (res.error == "CallbackRouteError")
+          toast.error("Could not login! Please check your credentials");
+      } else {
+        if (typeof window !== "undefined") {
+          if (callbackUrl) router.push(callbackUrl as string);
+          else router.push("/organization");
+        }
+      }
+    });
+  }
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -31,26 +65,6 @@ const Login = () => {
       password: "",
     },
   });
-
-  const onFinish = async (values: z.infer<typeof LoginSchema>) => {
-    console.log("error", error);
-    console.log("success", success);
-    setError("");
-    setSuccess("");
-    try {
-      startTransition(() => {
-        login(values).then((data) => {
-          if (data) {
-            if (data.error) {
-              setError(data.error);
-            }
-          }
-        });
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <>
@@ -62,7 +76,14 @@ const Login = () => {
       >
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onFinish)}
+            onSubmit={
+              //call login pass email and password
+              form.handleSubmit((values) => {
+                startTransition(() => {
+                  login(values);
+                });
+              })
+            }
             className="flex flex-col space-y-5"
           >
             <div className="space-y-4">

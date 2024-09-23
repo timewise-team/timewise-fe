@@ -1,85 +1,207 @@
-import NextAuth from "next-auth";
+import { cookies, headers } from "next/headers";
 
-import authConfig from "./auth.config";
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
-  pages: {
-    signIn: "/auth/login",
-    error: "/auth/error",
+import NextAuth from "next-auth";
+import type { NextAuthConfig } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
+
+export const privateRoutes = ["/account", "/settings"];
+// @ts-ignore
+async function refreshAccessToken(token) {
+  // this is our refresh token method
+  console.log("Now refreshing the expired token...");
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/refresh`,
+      {
+        method: "POST",
+        headers: headers(),
+        body: JSON.stringify({ userID: token.userId }),
+      }
+    );
+
+    const { success, data } = await res.json();
+
+    if (!success) {
+      console.log("The token could not be refreshed!");
+      throw data;
+    }
+
+    console.log("The token has been refreshed successfully.");
+
+    // get some data from the new access token such as exp (expiration time)
+    const decodedAccessToken = JSON.parse(
+      Buffer.from(data.accessToken.split(".")[1], "base64").toString()
+    );
+
+    return {
+      ...token,
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken ?? token.refreshToken,
+      idToken: data.idToken,
+      accessTokenExpires: decodedAccessToken["exp"] * 1000,
+      error: "",
+    };
+  } catch (error) {
+    console.log(error);
+
+    // return an error if somethings goes wrong
+    return {
+      ...token,
+      error: "RefreshAccessTokenError", // attention!
+    };
+  }
+}
+
+export const config = {
+  trustHost: true,
+  theme: {
+    logo: "https://next-auth.js.org/img/logo/logo-sm.png",
   },
-  // events: {
-  //   async linkAccount({ user }) {
-  //     await db.user.update({
-  //       where: { id: user.id },
-  //       data: {
-  //         emailVerified: new Date(),
-  //       },
-  //     });
-  //   },
-  // },
+  providers: [
+    //login with google
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+    // we use credentials provider here
+    CredentialsProvider({
+      credentials: {
+        username: {
+          username: "username",
+          type: "text",
+        },
+        password: {
+          label: "password",
+          type: "password",
+        },
+      },
+      async authorize(credentials, req) {
+        const payload = {
+          username: credentials.username,
+          password: credentials.password,
+        };
+
+        const res = await fetch(
+          `${process.env.API_BASE_URL}/api/v1/auth/login`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          }
+        );
+
+        const user = await res.json();
+
+        if (!res.ok) {
+          throw new Error(user.message);
+        }
+
+        if (res.ok && user) {
+          const prefix = process.env.NODE_ENV === "development" ? "__Dev-" : "";
+
+          cookies().set({
+            name: `${prefix}xxx.refresh-token`,
+            value: user.refreshToken,
+            httpOnly: true,
+            sameSite: "strict",
+            secure: true,
+          } as any);
+          console.log("user => ", user);
+          console.log("cookies => ", cookies().getAll());
+          return user;
+        }
+
+        return null;
+      },
+    }),
+  ],
+  // this is required
+  secret: process.env.AUTH_SECRET,
+  // our custom login page
+  pages: {
+    signIn: "/sign-in",
+  },
   callbacks: {
-    async signIn({ user, account }) {
-      // Allow OAuth without email verification
-      if (account?.provider !== "credentials") {
-        return true;
+    async jwt({ token, user }) {
+      if (user) {
+        token.email = user.email;
+        token.id = user.id;
+        token.userId = user.id;
+        token.name = user.name;
+        token.access_token = user.access_token;
+        token.expires_in = user.expires_in;
+        token.token_type = user.token_type;
+
+        if (user.access_token) {
+          const decodedAccessToken = JSON.parse(
+            Buffer.from(user.access_token.split(".")[1], "base64").toString()
+          );
+
+          if (decodedAccessToken) {
+            token.userId = decodedAccessToken["sub"] as string;
+            token.accessTokenExpires = decodedAccessToken["exp"] * 1000;
+          }
+        } else {
+          console.error("user or user.accesstoken is undefined");
+        }
+
+        // if (user.idToken) {
+        //   const decodedIdToken = JSON.parse(
+        //     Buffer.from(user.idToken.split(".")[1], "base64").toString()
+        //   );
+
+        //   if (decodedIdToken) {
+        //     token.email = decodedIdToken["email"];
+        //     token.cognitoGroups = decodedIdToken["cognito:groups"];
+        //   }
+        // } else {
+        //   console.error("user or user.idToken is undefined");
+        // }
+        console.log("úsers => ", user);
+        console.log("jwt => ", token);
+        return token;
       }
 
-      // const existingUser = await getUserById(user.id);
+      return token;
+    },
+    async session({ session, token }) {
+      const newSession = {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id as string,
+          email: token.email as string,
+          cognitoGroups: token.cognitoGroups as string[],
+          access_token: token.accessToken as string,
+          accessTokenExpires: token.accessTokenExpires as number,
+          role: token.role as string,
+        },
+        error: token.error,
+      };
 
-      // Prevent sign in without email verification
-      // if (!existingUser?.emailVerified) {
-      //   return false;
-      // }
-
-      return true;
+      console.log("session", newSession);
+      return newSession;
     },
 
-    // async session({ token, session }) {
-    //   if (token.sub && session.user) {
-    //     session.user.id = token.sub;
-    //   }
+    async signIn({ user, account, profile, email, credentials }) {
+      if (user) {
+        return `/organization`;
+      }
+      //if error return to sign in page
+      return `/sign-in?error=CredentialsSignin`;
+    },
 
-    //   if (token.role && session.user) {
-    //     session.user.role = token.role as UserRole;
-    //   }
-
-    //   if (session.user) {
-    //     session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
-    //   }
-
-    //   if (session.user) {
-    //     session.user.name = token.name as string;
-    //     session.user.email = token.email as string;
-    //     session.user.image = token.image as string;
-    //     session.user.isOAuth = token.isOAuth as boolean;
-    //   }
-
-    //   return session;
-    // },
-    // async jwt({ token }) {
-    //   if (!token.sub) return token;
-
-    //   const existingUser = await getUserById(token.sub);
-
-    //   if (!existingUser) return token;
-
-    //   const existingAccount = await getAccountByUserId(existingUser.id);
-
-    //   // Custom token fields
-    //   token.isOAuth = !!existingAccount;
-    //   (token.name = existingUser.name),
-    //     (token.email = existingUser.email),
-    //     (token.image = existingUser.image),
-    //     (token.role = existingUser.role);
-    //   token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
-
-    //   return token;
-    // },
+    authorized({ request, auth }) {
+      if (auth) {
+        return true;
+      }
+      return false;
+    },
   },
-  session: { strategy: "jwt" },
-  ...authConfig,
-});
+  debug: process.env.NODE_ENV === "development",
+} satisfies NextAuthConfig;
+
+export const { auth, handlers } = NextAuth(config);

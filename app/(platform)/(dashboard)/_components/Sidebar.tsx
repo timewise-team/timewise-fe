@@ -1,14 +1,13 @@
 /* eslint-disable */
 "use client";
-import { useOrganization, useOrganizationList } from "@clerk/nextjs";
 import { Accordion } from "@radix-ui/react-accordion";
-import React from "react";
+import React, { useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import NavItem, { Organization } from "./NavItem";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { fakeData } from "../organization/[organizationId]/_components/Info";
 
 interface Props {
   storageKey?: string;
@@ -19,13 +18,6 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
     storageKey,
     {}
   );
-
-  const { organization: activeOrganization, isLoaded: isLoadOrg } =
-    useOrganization();
-
-  const { userMemberships, isLoaded: isLoadedOrgList } = useOrganizationList({
-    userMemberships: { infinite: true },
-  });
 
   const defaultAccordingValue: string[] = Object.keys(expanded).reduce(
     (acc: string[], key: string) => {
@@ -44,21 +36,21 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
     }));
   };
 
-  if (!isLoadOrg || !isLoadedOrgList || userMemberships.isLoading) {
-    return (
-      <>
-        <div className="flex items-center justify-between mb-2">
-          <Skeleton className="h-10 w-[50%]" />
-          <Skeleton className="h-10 w-10" />
-        </div>
-        <div className="space-y-2">
-          <NavItem.Skeleton />
-          <NavItem.Skeleton />
-          <NavItem.Skeleton />
-        </div>
-      </>
-    );
-  }
+  // if () {
+  //   return (
+  //     <>
+  //       <div className="flex items-center justify-between mb-2">
+  //         <Skeleton className="h-10 w-[50%]" />
+  //         <Skeleton className="h-10 w-10" />
+  //       </div>
+  //       <div className="space-y-2">
+  //         <NavItem.Skeleton />
+  //         <NavItem.Skeleton />
+  //         <NavItem.Skeleton />
+  //       </div>
+  //     </>
+  //   );
+  // }
 
   return (
     <>
@@ -81,12 +73,12 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
         defaultValue={defaultAccordingValue}
         className="space-y-2"
       >
-        {userMemberships.data.map(({ organization }) => (
+        {fakeData.map((organization) => (
           <NavItem
             key={organization.id}
-            isActive={activeOrganization?.id === organization.id}
+            isActive={organization?.id === organization.id}
             isExpanded={expanded[organization.id]}
-            organization={organization as Organization}
+            organization={organization}
             onExpand={onExpand}
           />
         ))}
