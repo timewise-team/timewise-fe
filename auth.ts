@@ -195,36 +195,10 @@ export const config = {
     },
 
     authorized({ request, auth }) {
-      const { pathname } = request.nextUrl;
-
-      // get the route name from the url such as "/about"
-      const searchTerm = request.nextUrl.pathname
-        .split("/")
-        .slice(0, 2)
-        .join("/");
-      console.log("searchTerm => ", searchTerm);
-      // if the private routes array includes the search term, we ask authorization here and forward any unauthorized users to the login page
-      if (privateRoutes.includes(searchTerm)) {
-        console.log(
-          `${!!auth ? "Can" : "Cannot"} access private route ${searchTerm}`
-        );
-        return !!auth;
-        // if the pathname starts with one of the routes below and the user is already logged in, forward the user to the home page
-      } else if (
-        pathname.startsWith("/sign-in") ||
-        pathname.startsWith("/forgot-password") ||
-        pathname.startsWith("/sign-up")
-      ) {
-        const isLoggedIn = !!auth;
-
-        if (isLoggedIn) {
-          return Response.redirect(new URL("/organization", request.nextUrl));
-        }
-
+      if (auth) {
         return true;
       }
-
-      return true;
+      return false;
     },
   },
   debug: process.env.NODE_ENV === "development",
