@@ -25,10 +25,10 @@ const Register = () => {
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      fullName: "",
+      full_name: "",
       username: "",
       password: "",
-      passwordConfirmation: "",
+      confirm_password: "",
       email: "",
     },
   });
@@ -39,8 +39,7 @@ const Register = () => {
     if (!validatedFields.success) {
       return { error: "Invalid fields" };
     }
-    const { fullName, username, password, email, passwordConfirmation } =
-      values;
+    const { full_name, username, password, email, confirm_password } = values;
 
     try {
       const response = await fetch(
@@ -51,11 +50,11 @@ const Register = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            fullName,
+            full_name,
             username,
             password,
             email,
-            passwordConfirmation,
+            confirm_password,
           }),
         }
       );
@@ -94,7 +93,7 @@ const Register = () => {
             <div className="space-y-4">
               <FormField
                 control={form.control}
-                name="fullName"
+                name="full_name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>FullName</FormLabel>
@@ -172,7 +171,7 @@ const Register = () => {
 
               <FormField
                 control={form.control}
-                name="passwordConfirmation"
+                name="confirm_password"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
