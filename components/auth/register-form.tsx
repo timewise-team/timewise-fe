@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Button } from "../ui/Button";
 import Wrapper from "../wrapper";
+import { toast } from "sonner";
 
 const Register = () => {
   const [isPending, startTransition] = useTransition();
@@ -61,10 +62,12 @@ const Register = () => {
       const result = await response.json();
 
       if (result.error) {
+        toast.error("error while registering");
         return { error: result.error };
       }
       return { success: true, data: result };
     } catch (error) {
+      toast.error("error while registering");
       return { error: "Something went wrong!" };
     }
   };

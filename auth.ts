@@ -4,6 +4,7 @@ import NextAuth from "next-auth";
 import type { NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import { InvalidEmailPasswordError } from "./utils/error";
 
 export const privateRoutes = ["/account", "/settings"];
 // @ts-ignore
@@ -59,12 +60,6 @@ export const config = {
     logo: "https://next-auth.js.org/img/logo/logo-sm.png",
   },
   providers: [
-    //login with google
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    // we use credentials provider here
     CredentialsProvider({
       credentials: {
         username: {
@@ -76,7 +71,7 @@ export const config = {
           type: "password",
         },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const payload = {
           username: credentials.username,
           password: credentials.password,
@@ -94,6 +89,10 @@ export const config = {
         );
 
         const user = await res.json();
+
+        if (!user) {
+          throw new InvalidEmailPasswordError();
+        }
 
         if (!res.ok) {
           throw new Error(user.message);
@@ -113,7 +112,6 @@ export const config = {
           console.log("cookies => ", cookies().getAll());
           return user;
         }
-
         return null;
       },
     }),
@@ -122,11 +120,12 @@ export const config = {
   secret: process.env.AUTH_SECRET,
   // our custom login page
   pages: {
-    signIn: "/sign-in",
+    signIn: "/auth/sign-in",
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.user = user;
         token.email = user.email;
         token.id = user.id;
         token.userId = user.id;
@@ -147,19 +146,6 @@ export const config = {
         } else {
           console.error("user or user.accesstoken is undefined");
         }
-
-        // if (user.idToken) {
-        //   const decodedIdToken = JSON.parse(
-        //     Buffer.from(user.idToken.split(".")[1], "base64").toString()
-        //   );
-
-        //   if (decodedIdToken) {
-        //     token.email = decodedIdToken["email"];
-        //     token.cognitoGroups = decodedIdToken["cognito:groups"];
-        //   }
-        // } else {
-        //   console.error("user or user.idToken is undefined");
-        // }
         console.log("úsers => ", user);
         console.log("jwt => ", token);
         return token;
