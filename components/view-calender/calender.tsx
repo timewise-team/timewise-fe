@@ -92,6 +92,43 @@ function CalendarApp() {
     }
   }, []);
 
+  useEffect(() => {
+    const handleClick = (event: Event) => {
+      const target = event.target as HTMLElement;
+      const eventId = target.closest(".sx__time-grid-event")?.getAttribute("data-event-id");
+      if (eventId) {
+        console.log("Event ID:", eventId);
+      }
+    };
+
+    const attachEventListeners = () => {
+      const eventElements = document.querySelectorAll(".sx__time-grid-event");
+      console.log("eventElements", eventElements);
+      eventElements.forEach((element) => {
+        element.addEventListener("click", handleClick);
+      });
+    };
+
+    // Initial attachment of event listeners
+    attachEventListeners();
+
+    // Observe changes in the DOM to re-attach event listeners
+    const observer = new MutationObserver(() => {
+      attachEventListeners();
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      const eventElements = document.querySelectorAll(".sx__time-grid-event");
+      eventElements.forEach((element) => {
+        element.removeEventListener("click", handleClick);
+      });
+    };
+  }, [calendarApp]);
+
+
   return (
     <div className="w-full max-w-[100vw] h-[800px] max-h-[90vw]">
       <ScheduleXCalendar calendarApp={calendarApp} />
