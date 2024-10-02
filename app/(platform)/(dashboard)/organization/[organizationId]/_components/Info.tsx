@@ -37,7 +37,6 @@ const Info = () => {
           <p className="font-semibold text-xl">{name}</p>
           <div className="flex items-center text-xs text-muted-foreground">
             <CreditCard className="h-3 w-3 mr-1" />
-            Free Plan
           </div>
         </div>
       </div>

@@ -9,7 +9,7 @@ import { useFormStatus } from "react-dom";
 import Image from "next/image";
 import { defaultImages } from "@/constants/images";
 import Link from "next/link";
-import FormError from "./form-error";
+import { FormErrors } from "./form-error";
 
 interface Props {
   id: string;
@@ -102,7 +102,7 @@ const FormPicker = ({ id, error }: Props) => {
             </div>
           ))}
         </div>
-        <FormError error={error} id="image" />
+        <FormErrors errors={error} id="image" />
       </div>
     </>
   );

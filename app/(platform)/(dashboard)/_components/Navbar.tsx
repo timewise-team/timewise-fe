@@ -16,15 +16,7 @@ const Navbar = async () => {
           <div className="hidden md:flex">
             <Logo />
           </div>
-          <FormPopOver align="start" side="bottom" sideOffset={10}>
-            <Button
-              className="rounded-sm hidden md:block h-auto py-1.5 px-2 bg-sky-700 text-white
-            hover:bg-gray-800 duration-300
-          "
-            >
-              Create
-            </Button>
-          </FormPopOver>
+
           <FormPopOver>
             <Button
               className="rounded-sm block md:hidden h-auto py-1.5 px-2  bg-sky-700 text-white

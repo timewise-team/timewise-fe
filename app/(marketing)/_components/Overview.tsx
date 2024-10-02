@@ -81,7 +81,7 @@ const Overview = () => {
           {Overviews.map((item, index) => (
             <div
               key={index}
-              className="cursor-pointer bg-sky-50 rounded-lg p-5 flex flex-col items-center space-y-4 hover:shadow-md hover:bg-gray-400 hover:text-white"
+              className="cursor-pointer bg-sky-50 rounded-lg p-5 flex flex-col items-center space-y-4 hover:shadow-md hover:bg-gray-100 hover:text-white"
             >
               {item.icon}
               <div

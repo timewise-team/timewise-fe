@@ -4,7 +4,7 @@ import React from "react";
 
 const FeatureBenefit = () => {
   return (
-    <section className="text-gray-700 body-font border-t border-gray-200 mt-2">
+    <section className=" text-gray-700 body-font border-t border-gray-200 mt-2">
       <div className="container px-5 py-24 mx-auto">
         <div className="flex flex-col text-center w-full mb-20">
           <h2 className="mb-12 text-xl font-bold leading-none text-center sm:text-3xl text-sky-500">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, privateRoutes } from "auth";
+import { auth } from "auth";
 
+export const privateRoutes = ["/organization", "/settings"];
 // TIP: this is how we set up a middleware along with next-auth
 export default auth((request: NextRequest) => {
   // @ts-ignore
