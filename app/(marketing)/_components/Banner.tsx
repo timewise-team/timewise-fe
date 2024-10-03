@@ -25,7 +25,7 @@ export const productivityList = [
 const Banner = () => {
   const [itemIndex, setItemIndex] = useState(0);
   return (
-    <div className="px-[10%] py-10">
+    <div className="px-[10%] py-10 bg-sky-100">
       <p>List Section</p>
       <h1 className="font-semibold tex-4xl">A Productivity Software</h1>
       <p className="w-full lg:w-1/2 text-xl my-5">
@@ -40,7 +40,7 @@ const Banner = () => {
               key={index}
               className={`cursor-pointer p-3 rounded-md ${
                 index === itemIndex
-                  ? "bg-white md:border-l-4 md:border-[#00c7e5]"
+                  ? "bg-gray-200 md:border-l-4 md:border-[#00c7e5]"
                   : ""
               }`}
               onClick={() => setItemIndex(index)}

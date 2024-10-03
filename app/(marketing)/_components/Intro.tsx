@@ -1,5 +1,4 @@
 "use client";
-import { signIn } from "@/auth";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
 import React from "react";

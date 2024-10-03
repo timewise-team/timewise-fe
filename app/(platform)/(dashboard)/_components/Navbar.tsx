@@ -5,7 +5,7 @@ import Logo from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import FormPopOver from "@/components/form/form-popover";
 import { auth } from "@/auth";
-import Image from "next/image";
+import HeaderItem from "./HeaderItem";
 
 const Navbar = async () => {
   const session = await auth();
@@ -17,6 +17,7 @@ const Navbar = async () => {
           <div className="hidden md:flex">
             <Logo />
           </div>
+          <HeaderItem />
 
           <FormPopOver>
             <Button

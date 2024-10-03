@@ -14,7 +14,7 @@ const MAX_SCALE_RATIOS = [0.1, 0.05, 0.025];
 
 export const BENEFITS = [
   {
-    image: "/images/benefits/engage-daily.png",
+    image: "/images/banner/1.webp",
     type: "User Benefits",
     title: "Empowering User-Controlled<br/> Data with Timewise",
     items: [
@@ -26,7 +26,7 @@ export const BENEFITS = [
   },
 
   {
-    image: "/images/benefits/sleep-quality.png",
+    image: "/images/banner/2.webp",
     type: "User Benefits",
     title: "Comprehensive Sleep Monitoring<br/> with Timewise",
     items: [
@@ -37,7 +37,7 @@ export const BENEFITS = [
     bgColor: "#E5989B",
   },
   {
-    image: "/images/benefits/heart-rate.png",
+    image: "/images/banner/3.webp",
     type: "User Benefits",
     title: "Heart Rate Monitoring<br/> for Holistic Wellness",
     items: [
@@ -46,28 +46,6 @@ export const BENEFITS = [
       "Actionable Health Insights",
     ],
     bgColor: "##B5838D",
-  },
-  {
-    image: "/images/benefits/stress.png",
-    type: "User Benefits",
-    title: "AI-Enhanced Stress Management<br/> with Timewise",
-    items: [
-      "Stress Level Detection",
-      "Mindfulness and Relaxation Tips",
-      "Real-time Feedback",
-    ],
-    bgColor: "#6D6875",
-  },
-  {
-    image: "/images/benefits/schedule-management.png",
-    type: "User Benefits",
-    title: "AI-Powered Project Scheduling<br/> with Timewise",
-    items: [
-      "Voice to Text Schedule Creation",
-      "AI-Driven Task Organization",
-      "Automatic Calendar Updates",
-    ],
-    bgColor: "#F9F9F9",
   },
 ];
 
@@ -152,13 +130,13 @@ const Benefit = () => {
 
                   <div className={style.frameWrapper}>
                     <img
-                      src="/images/benefits/smart-watch.png"
+                      src="/images/banner/4.webp"
                       alt="device-frame"
                       className={style.smartWatch}
                     />
                     <img
                       className={style.iphone}
-                      src="/images/benefits/iphone.png"
+                      src="/images/banner/5.webp"
                       alt="device-frame"
                     />
                   </div>

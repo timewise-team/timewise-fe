@@ -13,7 +13,7 @@ const Faq = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="dark:bg-sky-200 dark:text-gray-800">
+    <section className="dark:bg-sky-200 dark:text-gray-800 py-10">
       <h2 className="mb-12 text-xl font-bold leading-none text-center sm:text-3xl text-sky-500">
         Frequently Asked Questions
       </h2>
@@ -21,7 +21,7 @@ const Faq = () => {
       <div className="container flex lg:flex-row flex-col justify-center p-4 mx-auto md:p-8">
         <Image
           className="rounded-lg lg:h-fit h-auto object-contain"
-          src="/images/banner/3.webp"
+          src="/images/banner/1.webp"
           alt="faq"
           width={620}
           height={600}

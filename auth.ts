@@ -32,7 +32,9 @@ export const config = {
     },
     async jwt({ token, user, account }) {
       if (account && user) {
-        console.log("account.id_token:", account.access_token);
+        console.log("account.acc_token:", account.access_token);
+        console.log("account.id_token:", account.id_token);
+
         try {
           const response = await fetch(
             `${process.env.API_BASE_URL}/api/v1/auth/callback`,
@@ -112,7 +114,7 @@ export const config = {
 
       return {
         ...session,
-        
+
         accessToken: String(token.access_token),
         refreshToken: String(token.refresh_token),
         accessTokenIssuedAt: Number(token.issued_at),
