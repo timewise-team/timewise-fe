@@ -32,7 +32,7 @@ export const config = {
     },
     async jwt({ token, user, account }) {
       if (account && user) {
-        console.log("account.id_token:", account.id_token);
+        console.log("account.id_token:", account.access_token);
         try {
           const response = await fetch(
             `${process.env.API_BASE_URL}/api/v1/auth/callback`,
@@ -42,7 +42,7 @@ export const config = {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                credentials: account.id_token,
+                credentials: account.access_token,
               }),
             }
           );
@@ -52,7 +52,8 @@ export const config = {
             console.error("Error saving token:", errorData);
             throw new Error("Error saving token");
           }
-          console.log("response", response);
+          const resp = await response.json();
+          console.log("response", resp);
         } catch (error) {
           console.error("Failed to save token:", error);
         }
