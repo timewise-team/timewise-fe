@@ -13,7 +13,7 @@ interface Props {
 }
 const Wrapper = ({ children, headerLabel, showSocial, isSignUp }: Props) => {
   return (
-    <Card className="w-[400px] shadow-md ">
+    <Card className="w-[400px] h-full border-none m-auto">
       <CardHeader>
         <Header label={headerLabel} />
       </CardHeader>

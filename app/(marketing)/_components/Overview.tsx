@@ -35,32 +35,6 @@ const Overviews = [
   },
 ];
 
-const FeaturesAndBenefits = [
-  {
-    backgroundColor: "#5685FF",
-    icon: <Apple className="w-20 h-20" />,
-    title: "Features",
-    description: "HealthFi Protocol, AI Integration, and DePIN Technology",
-  },
-  {
-    backgroundColor: "#459DE6",
-    icon: <Apple className="w-20 h-20" />,
-    title: "User benefits",
-    description: "Personalized health insights and token rewards",
-  },
-  {
-    backgroundColor: "#41B2D6",
-    icon: <Apple className="w-20 h-20" />,
-    title: "Merchant benefits",
-    description: "Market access and increased sales opportunities",
-  },
-  {
-    backgroundColor: "#3EC6C5",
-    icon: <Apple className="w-20 h-20" />,
-    title: "Community benefits",
-    description: "Health and wellness education and community engagement",
-  },
-];
 const Overview = () => {
   return (
     <>
@@ -81,7 +55,7 @@ const Overview = () => {
           {Overviews.map((item, index) => (
             <div
               key={index}
-              className="cursor-pointer bg-sky-50 rounded-lg p-5 flex flex-col items-center space-y-4 hover:shadow-md hover:bg-gray-400 hover:text-white"
+              className="cursor-pointer bg-sky-50 rounded-lg p-5 flex flex-col items-center space-y-4 hover:shadow-md hover:bg-gray-100 hover:text-white"
             >
               {item.icon}
               <div
@@ -93,33 +67,6 @@ const Overview = () => {
               <p className="text-gray-950 text-center leading-5 tracking-[0.14px] flex flex-grow-1">
                 {item.description}
               </p>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="max-w-6xl mx-auto lg:p-0 p-4">
-        <h2 className="text-gray-950 text-center text-lg font-bold leading-6 tracking-[1px] uppercase">
-          Features & Benefits
-        </h2>
-        <p className="text-gray-950 text-center text-base leading-6 tracking-[0.14px] mt-3">
-          Overview of Timewise as an AI-powered schedule platform Dive into the
-        </p>
-        <div className="mt-7 grid grid-cols-1 gap-5 h-72 mb-10 sm:flex sm:flex-wrap sm:justify-center lg:grid lg:grid-cols-4">
-          {FeaturesAndBenefits.map((item, index) => (
-            <div
-              key={index}
-              style={{ backgroundColor: item.backgroundColor }}
-              className="w-full h-30 p-5 flex items-center justify-center gap-6 box-border rounded-xl"
-            >
-              {item.icon}
-              <div className="max-w-50 flex flex-col gap-2 text-white flex-grow">
-                <p className="text-lg font-semibold leading-6 tracking-[0.14px]">
-                  {item.title}
-                </p>
-                <p className={"tracking-[0.14px] leading-6"}>
-                  {item.description}
-                </p>
-              </div>
             </div>
           ))}
         </div>

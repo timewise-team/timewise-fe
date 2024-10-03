@@ -1,54 +1,37 @@
 "use client";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
 import React from "react";
-import { motion } from "framer-motion";
-import { fadeIn } from "@/utils/motion";
 
-export const textContainer = {
-  hidden: {
-    opacity: 0,
-  },
-  show: (i = 1) => ({
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: i * 0.1,
-    },
-  }),
-};
 const Intro = () => {
   return (
-    <motion.div
-      initial={"hidden"}
-      whileInView={"show"}
-      viewport={{ once: true, amount: 0.25 }}
-    >
-      <motion.div
-        variants={fadeIn({
-          direction: "down",
-          type: "spring",
-          delay: 0.3,
-          duration: 1.8,
-        })}
-        className=" flex items-center justify-center flex-col py-40"
-      >
-        <div
-          className="mt-20 md:mt-100 mb-4 flex items-center border shadow-sm p-4
-        bg-sky-400 text-white rounded-full uppercase font-bold
-        "
-        >
-          No 1 Schedule Management
-        </div>
-        <h1 className="text-3xl md:text-8xl text-center text-sky-500 mb-6">
-          Welcome to TIMEWISE
+    <div className="px-[10%] py-16 grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-b from-sky-300 to-blue-600">
+      <div className="text-white p-2">
+        <h1 className="font-extrabold text-5xl">
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias,
+          nesciunt.
         </h1>
-        <div
-          className="text-3xl md:text-8xl bg-gradient-to-r
-        from-blue-400 to bg-sky-400 text-white px-4 p-2 rounded-lg pb-4 w-fit"
-        >
-          Work Forward
+        <p className="text-lg mt-3 leading-10">
+          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Repellat,
+          molestiae.
+        </p>
+        <h3 className="text-xl font-semibold mt-5">Lorem, ipsum dolor.</h3>
+        <ul className="my-3 leading-10">
+          <li>Lorem, ipsum dolor.</li>
+          <li>Lorem, ipsum dolor.</li>
+        </ul>
+        <div className="flex w-full max-w-sm items-center space-x-2 mt-3">
+          <Input className="" type="email" />
+
+          <Button type="submit" className="bg-black text-white">
+            Sign Up For Free
+          </Button>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+      <div>
+        <img src="/images/header-banner.webp" alt="hero" />
+      </div>
+    </div>
   );
 };
 

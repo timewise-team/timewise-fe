@@ -21,7 +21,7 @@ const BoardIdLayout = async ({ children }: { children: React.ReactNode }) => {
     <div
       className="relative h-full bg-no-repeat bg-cover bg-center"
       style={{
-        backgroundImage: `url(${board.image})`,
+        backgroundImage: `url(${board.imageFullUrl})`,
       }}
     >
       <BoardNavbar data={board} />

@@ -1,8 +1,8 @@
-import { auth } from "@/auth";
+import { EnrichedSession, auth } from "@/auth";
 import React from "react";
 
 const SettingPage = async () => {
-  const sesstion = await auth();
+  const sesstion = (await auth()) as EnrichedSession;
 
   return (
     <div>

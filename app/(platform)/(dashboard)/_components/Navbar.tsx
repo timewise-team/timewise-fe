@@ -5,6 +5,7 @@ import Logo from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import FormPopOver from "@/components/form/form-popover";
 import { auth } from "@/auth";
+import HeaderItem from "./HeaderItem";
 
 const Navbar = async () => {
   const session = await auth();
@@ -16,15 +17,8 @@ const Navbar = async () => {
           <div className="hidden md:flex">
             <Logo />
           </div>
-          <FormPopOver align="start" side="bottom" sideOffset={10}>
-            <Button
-              className="rounded-sm hidden md:block h-auto py-1.5 px-2 bg-sky-700 text-white
-            hover:bg-gray-800 duration-300
-          "
-            >
-              Create
-            </Button>
-          </FormPopOver>
+          <HeaderItem />
+
           <FormPopOver>
             <Button
               className="rounded-sm block md:hidden h-auto py-1.5 px-2  bg-sky-700 text-white
@@ -50,7 +44,11 @@ const Navbar = async () => {
               },
             }}
           /> */}
-          <Button className="rounded-full">{session?.user.email}</Button>
+          <img
+            src={session?.user?.image || ""}
+            alt="profile"
+            className="w-6 h-6 rounded-full"
+          />
         </div>
       </nav>
     </>

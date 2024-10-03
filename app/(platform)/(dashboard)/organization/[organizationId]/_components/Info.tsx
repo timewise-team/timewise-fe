@@ -10,13 +10,13 @@ export const fakeData: Organization[] = [
     id: "1",
     name: "Organization 1",
     slug: "organization-1",
-    imgUrl: "/images/1.jpg",
+    imgUrl: "/images/banner/1.webp",
   },
   {
     id: "2",
     name: "Organization 1",
     slug: "organization-1",
-    imgUrl: "/images/1.jpg",
+    imgUrl: "/images/banner/1.webp",
   },
 ];
 const Info = () => {
@@ -37,7 +37,6 @@ const Info = () => {
           <p className="font-semibold text-xl">{name}</p>
           <div className="flex items-center text-xs text-muted-foreground">
             <CreditCard className="h-3 w-3 mr-1" />
-            Free Plan
           </div>
         </div>
       </div>

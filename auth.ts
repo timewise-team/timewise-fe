@@ -1,207 +1,134 @@
-import { cookies, headers } from "next/headers";
-
 import NextAuth from "next-auth";
-import type { NextAuthConfig } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
-export const privateRoutes = ["/account", "/settings"];
-// @ts-ignore
-async function refreshAccessToken(token) {
-  // this is our refresh token method
-  console.log("Now refreshing the expired token...");
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/refresh`,
-      {
-        method: "POST",
-        headers: headers(),
-        body: JSON.stringify({ userID: token.userId }),
-      }
-    );
-
-    const { success, data } = await res.json();
-
-    if (!success) {
-      console.log("The token could not be refreshed!");
-      throw data;
-    }
-
-    console.log("The token has been refreshed successfully.");
-
-    // get some data from the new access token such as exp (expiration time)
-    const decodedAccessToken = JSON.parse(
-      Buffer.from(data.accessToken.split(".")[1], "base64").toString()
-    );
-
-    return {
-      ...token,
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken ?? token.refreshToken,
-      idToken: data.idToken,
-      accessTokenExpires: decodedAccessToken["exp"] * 1000,
-      error: "",
-    };
-  } catch (error) {
-    console.log(error);
-
-    // return an error if somethings goes wrong
-    return {
-      ...token,
-      error: "RefreshAccessTokenError", // attention!
-    };
-  }
-}
+import type { NextAuthConfig, Session } from "next-auth";
 
 export const config = {
-  trustHost: true,
   theme: {
     logo: "https://next-auth.js.org/img/logo/logo-sm.png",
   },
   providers: [
-    //login with google
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    // we use credentials provider here
-    CredentialsProvider({
-      credentials: {
-        username: {
-          username: "username",
-          type: "text",
+      authorization: {
+        params: {
+          access_type: "offline",
+          prompt: "consent",
+          scope: [
+            "openid",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "https://www.googleapis.com/auth/calendar",
+            // and more scope urls
+          ].join(" "),
+          response: "code",
         },
-        password: {
-          label: "password",
-          type: "password",
-        },
-      },
-      async authorize(credentials, req) {
-        const payload = {
-          username: credentials.username,
-          password: credentials.password,
-        };
-
-        const res = await fetch(
-          `${process.env.API_BASE_URL}/api/v1/auth/login`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          }
-        );
-
-        const user = await res.json();
-
-        if (!res.ok) {
-          throw new Error(user.message);
-        }
-
-        if (res.ok && user) {
-          const prefix = process.env.NODE_ENV === "development" ? "__Dev-" : "";
-
-          cookies().set({
-            name: `${prefix}xxx.refresh-token`,
-            value: user.refreshToken,
-            httpOnly: true,
-            sameSite: "strict",
-            secure: true,
-          } as any);
-          console.log("user => ", user);
-          console.log("cookies => ", cookies().getAll());
-          return user;
-        }
-
-        return null;
       },
     }),
   ],
-  // this is required
-  secret: process.env.AUTH_SECRET,
-  // our custom login page
-  pages: {
-    signIn: "/sign-in",
-  },
+  basePath: "/api/auth",
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.email = user.email;
-        token.id = user.id;
-        token.userId = user.id;
-        token.name = user.name;
-        token.access_token = user.access_token;
-        token.expires_in = user.expires_in;
-        token.token_type = user.token_type;
+    authorized({ request, auth }) {
+      return !!auth;
+    },
+    async jwt({ token, user, account }) {
+      if (account && user) {
+        console.log("account.acc_token:", account.access_token);
+        console.log("account.id_token:", account.id_token);
 
-        if (user.access_token) {
-          const decodedAccessToken = JSON.parse(
-            Buffer.from(user.access_token.split(".")[1], "base64").toString()
+        try {
+          const response = await fetch(
+            `${process.env.API_BASE_URL}/api/v1/auth/callback`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                credentials: account.access_token,
+              }),
+            }
           );
 
-          if (decodedAccessToken) {
-            token.userId = decodedAccessToken["sub"] as string;
-            token.accessTokenExpires = decodedAccessToken["exp"] * 1000;
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Error saving token:", errorData);
+            throw new Error("Error saving token");
           }
-        } else {
-          console.error("user or user.accesstoken is undefined");
+          const resp = await response.json();
+          console.log("response", resp);
+        } catch (error) {
+          console.error("Failed to save token:", error);
         }
 
-        // if (user.idToken) {
-        //   const decodedIdToken = JSON.parse(
-        //     Buffer.from(user.idToken.split(".")[1], "base64").toString()
-        //   );
-
-        //   if (decodedIdToken) {
-        //     token.email = decodedIdToken["email"];
-        //     token.cognitoGroups = decodedIdToken["cognito:groups"];
-        //   }
-        // } else {
-        //   console.error("user or user.idToken is undefined");
-        // }
-        console.log("úsers => ", user);
-        console.log("jwt => ", token);
+        return {
+          ...token,
+          access_token: account.access_token,
+          issued_at: Date.now(),
+          expires_at: Date.now() + Number(account.expires_in) * 1000,
+          refresh_token: account.refresh_token,
+          idToken: account.id_token,
+        };
+      } else if (Date.now() < Number(token.expires_at)) {
         return token;
-      }
+      } else {
+        console.log("Access token expired getting new one");
+        try {
+          const response = await fetch("https://oauth2.googleapis.com/token", {
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              client_id: process.env.AUTH_GOOGLE_ID as string, // Type assertion
+              client_secret: process.env.AUTH_GOOGLE_SECRET as string, // Type assertion
+              grant_type: "refresh_token",
+              refresh_token: token.refresh_token as string, // Type assertion
+            }),
+            method: "POST",
+          });
 
-      return token;
+          const tokens = await response.json();
+
+          if (!response.ok) throw tokens;
+
+          return {
+            ...token, // Keep the previous token properties
+            access_token: tokens.access_token,
+            expires_at: Date.now() + Number(tokens.expires_in) * 1000,
+            // Fall back to old refresh token, but note that
+            // many providers may only allow using a refresh token once.
+            refresh_token: tokens.refresh_token ?? token.refresh_token,
+            tokenId: tokens.id_token,
+          }; // updated inside our session-token cookie
+        } catch (error) {
+          console.error("Error refreshing access token", error);
+          // The error property will be used client-side to handle the refresh token error
+          return { ...token, error: "RefreshAccessTokenError" as const };
+        }
+      }
     },
     async session({ session, token }) {
-      const newSession = {
+      // This will be accessible in the client side using useSession hook
+      // So becareful what you return here. Don't return sensitive data.
+      // The auth() function should return jwt response but instead it returns
+      // the session object. This is a bug in next-auth.
+      // Follow this bug https://github.com/nextauthjs/next-auth/issues/9329
+      //save token id when login google success
+
+      return {
         ...session,
-        user: {
-          ...session.user,
-          id: token.id as string,
-          email: token.email as string,
-          cognitoGroups: token.cognitoGroups as string[],
-          access_token: token.accessToken as string,
-          accessTokenExpires: token.accessTokenExpires as number,
-          role: token.role as string,
-        },
-        error: token.error,
-      };
 
-      console.log("session", newSession);
-      return newSession;
-    },
-
-    async signIn({ user, account, profile, email, credentials }) {
-      if (user) {
-        return `/organization`;
-      }
-      //if error return to sign in page
-      return `/sign-in?error=CredentialsSignin`;
-    },
-
-    authorized({ request, auth }) {
-      if (auth) {
-        return true;
-      }
-      return false;
+        accessToken: String(token.access_token),
+        refreshToken: String(token.refresh_token),
+        accessTokenIssuedAt: Number(token.issued_at),
+        accessTokenExpiresAt: Number(token.expires_at),
+      } satisfies EnrichedSession;
     },
   },
-  debug: process.env.NODE_ENV === "development",
 } satisfies NextAuthConfig;
 
-export const { auth, handlers } = NextAuth(config);
+export interface EnrichedSession extends Session {
+  accessToken: string;
+  refreshToken: string;
+  accessTokenExpiresAt: number;
+  accessTokenIssuedAt: number;
+}
+
+export const { handlers, auth, signIn, signOut } = NextAuth(config);

@@ -1,8 +1,8 @@
 "use server";
 
 import { InputType, ReturnType } from "./types";
-import { createSafeAction } from "@/lib/create-safe-action";
 import { CreateBoard } from "./schema";
+import { createSafeAction } from "@/lib/create-safe-action";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   // const userId = auth();

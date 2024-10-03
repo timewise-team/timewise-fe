@@ -1,7 +1,7 @@
 import React from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import Logo from "@/components/ui/Logo";
+import { signIn } from "@/auth";
 
 const Navbar = () => {
   return (
@@ -13,12 +13,14 @@ const Navbar = () => {
       <div className="md:max-w-screen-xl mx-auto flex items-start w-full justify-between">
         <Logo />
         <div className="space-x-4 md:block md:w-auto flex items-start justify-between w-full">
-          <Link href="auth/sign-in">
-            <Button>Sign In</Button>
-          </Link>
-          <Link href="auth/sign-up">
-            <Button>Get Timewise for free</Button>
-          </Link>
+          <form
+            action={async () => {
+              "use server";
+              await signIn("google");
+            }}
+          >
+            <Button>Get TimeWise For Free</Button>
+          </form>
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@ interface Props {
   children: React.ReactNode;
   disabled?: boolean;
   className?: string;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "ghost";
 }
 
 const FormSubmit = ({ children, disabled, className, variant }: Props) => {
