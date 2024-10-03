@@ -111,7 +111,7 @@ export const config = {
 
       return {
         ...session,
-
+        
         accessToken: String(token.access_token),
         refreshToken: String(token.refresh_token),
         accessTokenIssuedAt: Number(token.issued_at),

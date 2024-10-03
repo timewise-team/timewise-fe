@@ -20,10 +20,10 @@ const Faq = () => {
 
       <div className="container flex lg:flex-row flex-col justify-center p-4 mx-auto md:p-8">
         <Image
-          className="rounded-lg lg:h-fit h-auto"
-          src="/images/1.jpg"
+          className="rounded-lg lg:h-fit h-auto object-contain"
+          src="/images/banner/3.webp"
           alt="faq"
-          width={720}
+          width={620}
           height={600}
           quality={100}
         />

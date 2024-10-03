@@ -5,10 +5,12 @@ import Image from "next/image";
 import { signIn } from "next-auth/react";
 
 const Social = () => {
-  const onClick = () => {
-    signIn("google", {
-      callbackUrl: "http://localhost:3000",
-    });
+  const onClick = async () => {
+    try {
+      await signIn("google", { redirectTo: "/organization" });
+    } catch (error) {
+      throw error;
+    }
   };
   return (
     <div className="flex items-center gap-x-2 w-full px-6 py-2">

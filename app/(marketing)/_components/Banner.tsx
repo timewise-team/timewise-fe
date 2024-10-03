@@ -1,8 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/Button";
 import React, { useState } from "react";
-import Image from "next/image";
-import { Description } from "@radix-ui/react-dialog";
 
 export const productivityList = [
   {
@@ -28,7 +25,7 @@ export const productivityList = [
 const Banner = () => {
   const [itemIndex, setItemIndex] = useState(0);
   return (
-    <div className="px-[10%]">
+    <div className="px-[10%] py-10">
       <p>List Section</p>
       <h1 className="font-semibold tex-4xl">A Productivity Software</h1>
       <p className="w-full lg:w-1/2 text-xl my-5">
@@ -58,7 +55,7 @@ const Banner = () => {
           ))}
         </div>
         <img
-          src={`/images/${itemIndex + 1}.jpg`}
+          src={`/images//banner/${itemIndex + 1}.webp`}
           alt=""
           className="object-cover w-full rounded-t-lg h-auto"
         />

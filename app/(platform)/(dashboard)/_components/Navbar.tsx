@@ -5,6 +5,7 @@ import Logo from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import FormPopOver from "@/components/form/form-popover";
 import { auth } from "@/auth";
+import Image from "next/image";
 
 const Navbar = async () => {
   const session = await auth();
@@ -42,7 +43,11 @@ const Navbar = async () => {
               },
             }}
           /> */}
-          <Button className="rounded-full">{session?.user.email}</Button>
+          <img
+            src={session?.user?.image || ""}
+            alt="profile"
+            className="w-6 h-6 rounded-full"
+          />
         </div>
       </nav>
     </>

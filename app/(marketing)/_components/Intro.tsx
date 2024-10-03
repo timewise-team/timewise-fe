@@ -1,4 +1,5 @@
 "use client";
+import { signIn } from "@/auth";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
 import React from "react";
@@ -21,8 +22,9 @@ const Intro = () => {
           <li>Lorem, ipsum dolor.</li>
         </ul>
         <div className="flex w-full max-w-sm items-center space-x-2 mt-3">
-          <Input type="email" placeholder="email" />
-          <Button type="submit" className="bg-blue-600 text-white">
+          <Input className="" type="email" />
+
+          <Button type="submit" className="bg-black text-white">
             Sign Up For Free
           </Button>
         </div>
