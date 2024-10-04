@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import FormPopOver from "@/components/form/form-popover";
 import { auth } from "@/auth";
 import HeaderItem from "./HeaderItem";
+import MenuAccountList from "./MenuAccountList";
 
 const Navbar = async () => {
   const session = await auth();
@@ -44,11 +45,7 @@ const Navbar = async () => {
               },
             }}
           /> */}
-          <img
-            src={session?.user?.image || ""}
-            alt="profile"
-            className="w-6 h-6 rounded-full"
-          />
+          <MenuAccountList session={session} />
         </div>
       </nav>
     </>
