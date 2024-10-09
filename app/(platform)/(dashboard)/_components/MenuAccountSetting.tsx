@@ -6,7 +6,6 @@ import {
   CreditCard,
   Keyboard,
   LifeBuoy,
-  LogOut,
   Plus,
   Settings,
   User,
@@ -23,9 +22,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/Button";
+import { EnrichedSession } from "@/auth";
 
 interface Props {
-  session: any;
+  session: EnrichedSession;
 }
 
 export const MENU_ITEMS = [
@@ -37,7 +37,6 @@ export const MENU_ITEMS = [
   { icon: Plus, label: "New Team", shortcut: "⌘+T" },
   { icon: LifeBuoy, label: "Support" },
   { icon: Cloud, label: "API", disabled: true },
-  { icon: LogOut, label: "Log out", shortcut: "⇧⌘Q" },
 ];
 
 const MenuAccountList = ({ session }: Props) => {
@@ -57,7 +56,11 @@ const MenuAccountList = ({ session }: Props) => {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           {MENU_ITEMS.map((item, index) => (
-            <DropdownMenuItem key={index} disabled={item.disabled}>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              key={index}
+              disabled={item.disabled}
+            >
               <item.icon className="mr-2 h-4 w-4" />
               <span>{item.label}</span>
               {item.shortcut && (

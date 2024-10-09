@@ -1,12 +1,12 @@
-import { Plus } from "lucide-react";
+import { LogOut, Plus } from "lucide-react";
 import React from "react";
 import MobileSidebar from "./MobileSidebar";
 import Logo from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import FormPopOver from "@/components/form/form-popover";
-import { auth } from "@/auth";
+import { EnrichedSession, auth, signOut } from "@/auth";
 import HeaderItem from "./HeaderItem";
-import MenuAccountList from "./MenuAccountList";
+import MenuAccountList from "./MenuAccountSetting";
 
 const Navbar = async () => {
   const session = await auth();
@@ -30,22 +30,17 @@ const Navbar = async () => {
           </FormPopOver>
         </div>
         <div className="ml-auto flex items-center gap-x-2">
-          {/* <OrganizationSwitcher
-            hidePersonal
-            afterCreateOrganizationUrl="/organization/:id"
-            afterLeaveOrganizationUrl="/select-org"
-            afterSelectOrganizationUrl="/organization/:id"
-            appearance={{
-              elements: {
-                rootBox: {
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                },
-              },
+          <form
+            action={async () => {
+              "use server";
+              await signOut();
             }}
-          /> */}
-          <MenuAccountList session={session} />
+            className="cursor-pointer flex items-center"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Logout</span>
+          </form>
+          <MenuAccountList session={session as EnrichedSession} />
         </div>
       </nav>
     </>

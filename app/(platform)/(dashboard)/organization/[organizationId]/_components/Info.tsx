@@ -24,13 +24,13 @@ const Info = () => {
 
   return (
     <>
-      <div className="flex items-center gap-x-4 mb-4">
+      <div className="flex items-center gap-x-4 mb-4 hover:cursor-pointer">
         <div className="w-[60px] h-[60px] relative">
           <Image
             fill
             src={fakeData[0].imgUrl || "/images/1.jpg"}
             alt={"logo"}
-            className="rounded-md object-cover"
+            className="rounded-md object-cover hover:cursor-pointer"
           />
         </div>
         <div className="space-y-1">

@@ -4,7 +4,7 @@ import { AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion";
 import React from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { Activity, Layout, Settings } from "lucide-react";
+import { Activity, CalendarHeart, Layout, Settings } from "lucide-react";
 import { AccordionContent } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -37,6 +37,11 @@ const NavItem = ({ isExpanded, isActive, organization, onExpand }: Props) => {
       label: "Activity",
       icon: <Activity className="h-4 w-4 mr-2" />,
       href: `/organization/${organization.id}/activity`,
+    },
+    {
+      label: "Calendar",
+      icon: <CalendarHeart className="h-4 w-4 mr-2" />,
+      href: `/organization/${organization.id}/settings`,
     },
     {
       label: "Settings",

@@ -33,6 +33,26 @@ export type List = {
   updatedAt: Date;
 };
 
+export type AuditLog = {
+  id: string;
+  orgId: string;
+  action: ACTION;
+  entityId: string;
+  entityType: ENTITY_TYPE;
+};
+
+export enum ACTION {
+  CREATE,
+  UPDATE,
+  DELETE,
+}
+
+export enum ENTITY_TYPE {
+  BOARD,
+  LIST,
+  CARD,
+}
+
 export type ListWithCards = List & { cards: Card[] };
 
 export type CardWithList = Card & { list: List };

@@ -20,7 +20,7 @@ function CalendarApp() {
 
   const calendarApp = useNextCalendarApp({
     views: [viewWeek, viewMonthAgenda, viewDay, viewMonthGrid],
-    defaultView: viewWeek.name,
+    defaultView: viewMonthGrid.name,
     events: seededEvents,
     plugins: [
       createDragAndDropPlugin(),

@@ -88,15 +88,15 @@ export const CardForm = forwardRef<HTMLTextAreaElement, Props>(
     }
 
     return (
-      <div className="pt-2 px-2">
+      <div className="pt-2 px-2 ">
         <Button
           size={"sm"}
           variant={"ghost"}
           onClick={enableEditing}
           className="h-auto px-2 py-1.5 w-full justify-start text-muted-foreground text-sm"
         >
-          <Plus className={"h-4 w-4 mr-2"} />
-          Add a card
+          <Plus className="h-4 w-4 mr-2" />
+          Add a Card
         </Button>
       </div>
     );

@@ -18,7 +18,6 @@ export const config = {
             "https://www.googleapis.com/auth/userinfo.email",
             "https://www.googleapis.com/auth/userinfo.profile",
             "https://www.googleapis.com/auth/calendar",
-            // and more scope urls
           ].join(" "),
           response: "code",
         },
@@ -33,8 +32,6 @@ export const config = {
     async jwt({ token, user, account }) {
       if (account && user) {
         console.log("account.acc_token:", account.access_token);
-        console.log("account.id_token:", account.id_token);
-
         try {
           const response = await fetch(
             `${process.env.API_BASE_URL}/api/v1/auth/callback`,
@@ -91,7 +88,7 @@ export const config = {
           return {
             ...token, // Keep the previous token properties
             access_token: tokens.access_token,
-            expires_at: Date.now() + Number(tokens.expires_in) * 1000,
+            expires_at: Date.now() + Number(tokens.expires_in) * 100000,
             // Fall back to old refresh token, but note that
             // many providers may only allow using a refresh token once.
             refresh_token: tokens.refresh_token ?? token.refresh_token,
