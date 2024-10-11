@@ -4,26 +4,20 @@ import { AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion";
 import React from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { Activity, Layout, Settings } from "lucide-react";
+import { Activity, CalendarHeart, Layout, Settings } from "lucide-react";
 import { AccordionContent } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/skeleton";
-
-export type Organization = {
-  id: string;
-  slug: string;
-  imgUrl?: string;
-  name: string;
-};
+import { Workspace } from "@/types/Board";
 
 interface Props {
   isExpanded: boolean;
   isActive: boolean;
-  organization: Organization;
+  workspace: Workspace;
   onExpand: (id: string) => void;
 }
 
-const NavItem = ({ isExpanded, isActive, organization, onExpand }: Props) => {
+const NavItem = ({ isExpanded, isActive, workspace, onExpand }: Props) => {
   const router = useRouter();
   const pathName = usePathname();
 
@@ -31,17 +25,22 @@ const NavItem = ({ isExpanded, isActive, organization, onExpand }: Props) => {
     {
       label: "Boards",
       icon: <Layout className="h-4 w-4 mr-2" />,
-      href: `/organization/${organization.id}`,
+      href: `/organization/${workspace.ID}`,
     },
     {
       label: "Activity",
       icon: <Activity className="h-4 w-4 mr-2" />,
-      href: `/organization/${organization.id}/activity`,
+      href: `/organization/${workspace.ID}/activity`,
+    },
+    {
+      label: "Calendar",
+      icon: <CalendarHeart className="h-4 w-4 mr-2" />,
+      href: `/organization/${workspace.ID}/calender`,
     },
     {
       label: "Settings",
       icon: <Settings className="h-4 w-4 mr-2" />,
-      href: `/organization/${organization.id}/settings`,
+      href: `/organization/${workspace.ID}/settings`,
     },
   ];
 
@@ -50,9 +49,9 @@ const NavItem = ({ isExpanded, isActive, organization, onExpand }: Props) => {
   };
 
   return (
-    <AccordionItem value={organization.id} className="border-none">
+    <AccordionItem value={String(workspace.ID)} className="border-none">
       <AccordionTrigger
-        onClick={() => onExpand(organization.id)}
+        onClick={() => onExpand(String(workspace.ID))}
         className={cn(
           "w-full flex items-center gap-x-2 p-1.5 text-neutral-700 rounded-md hover:bg-neutral-500/10 transition text-start no-underline hover:no-underline",
           isActive && !isExpanded && "bg-sky-500/10 text-sky-700"
@@ -62,12 +61,12 @@ const NavItem = ({ isExpanded, isActive, organization, onExpand }: Props) => {
           <div className="w-7 h-7 relative">
             <Image
               fill
-              src={organization.imgUrl || "/images/1.jpg"}
+              src={"/images/1.jpg"}
               alt="organization"
               className="rounded-sm object-cover"
             />
           </div>
-          <span className="font-medium text-sm">{organization.name}</span>
+          <span className="font-medium text-sm">{workspace.title}</span>
         </div>
       </AccordionTrigger>
       <AccordionContent className="pt-1 text-neutral-700">

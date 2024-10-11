@@ -5,6 +5,7 @@ import { BOARD_DATA } from "@/test/fake-board-data";
 import { HelpCircle, User2 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import InviteMember from "./InviteMember";
 
 const BoardList = () => {
   //fetch board data
@@ -14,8 +15,9 @@ const BoardList = () => {
     <div className="space-y-4">
       <div className="flex items-center font-semibold text-neutral-700 text-lg">
         <User2 className="h-6 w-6 mr-2" />
-        Your Board
+        Board
       </div>
+      <InviteMember />
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {boards.map((board) => (
           <Link

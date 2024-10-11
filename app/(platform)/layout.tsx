@@ -1,3 +1,5 @@
+import { ModalProvider } from "@/components/provider/modal-provider";
+import { QueryProvider } from "@/components/provider/querry-provider";
 import React from "react";
 import { Toaster } from "sonner";
 interface Props {
@@ -7,8 +9,11 @@ interface Props {
 const PlatformLayout = ({ children }: Props) => {
   return (
     <div className="w-full h-full">
-      <Toaster />
-      {children}
+      <QueryProvider>
+        <Toaster />
+        <ModalProvider />
+        {children}
+      </QueryProvider>
     </div>
   );
 };

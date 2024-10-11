@@ -4,9 +4,9 @@ import MobileSidebar from "./MobileSidebar";
 import Logo from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import FormPopOver from "@/components/form/form-popover";
-import { auth } from "@/auth";
 import HeaderItem from "./HeaderItem";
-import MenuAccountList from "./MenuAccountList";
+import MenuAccountList from "./MenuAccountSetting";
+import { EnrichedSession, auth } from "@/auth";
 
 const Navbar = async () => {
   const session = await auth();
@@ -30,22 +30,9 @@ const Navbar = async () => {
           </FormPopOver>
         </div>
         <div className="ml-auto flex items-center gap-x-2">
-          {/* <OrganizationSwitcher
-            hidePersonal
-            afterCreateOrganizationUrl="/organization/:id"
-            afterLeaveOrganizationUrl="/select-org"
-            afterSelectOrganizationUrl="/organization/:id"
-            appearance={{
-              elements: {
-                rootBox: {
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                },
-              },
-            }}
-          /> */}
-          <MenuAccountList session={session} />
+         
+
+          <MenuAccountList session={session as EnrichedSession} />
         </div>
       </nav>
     </>

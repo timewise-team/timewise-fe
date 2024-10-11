@@ -17,7 +17,7 @@ const OrganizationIdPage = async () => {
       </div> */}
       <Info />
       <Separator />
-      <div className="px-2 md:px-4">
+      <div className="px-2 md:px-4 py-2">
         {/* list board */}
         <Suspense fallback={<BoardList.Skeleton />}>
           <BoardList />
