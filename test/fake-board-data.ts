@@ -1,4 +1,3 @@
-import { Organization } from "@/app/(platform)/(dashboard)/_components/NavItem";
 import { defaultImages } from "@/constants/images";
 import { Board, Card, List } from "@/types/Board";
 
@@ -41,21 +40,6 @@ export const BOARD_DATA: Board[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     list: [],
-  },
-];
-
-export const fakeData: Organization[] = [
-  {
-    id: "1",
-    name: "Organization 1",
-    slug: "organization-1",
-    imgUrl: "/images/1.jpg",
-  },
-  {
-    id: "2",
-    name: "Organization 1",
-    slug: "organization-1",
-    imgUrl: "/images/1.jpg",
   },
 ];
 
