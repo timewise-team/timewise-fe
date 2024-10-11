@@ -22,7 +22,6 @@ const CustomDialog = ({
   title,
   description,
   children,
-  btnSubmitContent,
   btnContentIcon,
 }: Props) => {
   return (
@@ -35,7 +34,7 @@ const CustomDialog = ({
           variant="ghost"
           className="ml-auto cursor-pointer"
         >
-          <div className="w-fit p-2 text-lg font-semibold space-x-2">
+          <div className="w-fit p-2 text-lg font-semibold space-x-2 flex items-center">
             <p>{btnContentIcon}</p>
             <Plus className="w-4 h-4" />
           </div>
@@ -45,14 +44,10 @@ const CustomDialog = ({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
+          <img src="/images/header-banner.webp" alt="workspace" />
         </DialogHeader>
         {children}
-        <img src="/images/header-banner.webp" alt="workspace" />
-        <DialogFooter>
-          <Button className="w-full" type="submit">
-            {btnSubmitContent}
-          </Button>
-        </DialogFooter>
+        <DialogFooter></DialogFooter>
       </DialogContent>
     </Dialog>
   );

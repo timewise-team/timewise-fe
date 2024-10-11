@@ -3,24 +3,10 @@ import React from "react";
 import Image from "next/image";
 import { CreditCard } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Organization } from "../../../_components/NavItem";
+import { useSession } from "next-auth/react";
 
-export const fakeData: Organization[] = [
-  {
-    id: "1",
-    name: "Organization 1",
-    slug: "organization-1",
-    imgUrl: "/images/banner/1.webp",
-  },
-  {
-    id: "2",
-    name: "Organization 1",
-    slug: "organization-1",
-    imgUrl: "/images/banner/1.webp",
-  },
-];
 const Info = () => {
-  const { name } = fakeData[0];
+  const { data: session } = useSession();
 
   return (
     <>
@@ -28,13 +14,13 @@ const Info = () => {
         <div className="w-[60px] h-[60px] relative">
           <Image
             fill
-            src={fakeData[0].imgUrl || "/images/1.jpg"}
+            src={session?.user.image || "/images/banner/3.webp"}
             alt={"logo"}
             className="rounded-md object-cover hover:cursor-pointer"
           />
         </div>
         <div className="space-y-1">
-          <p className="font-semibold text-xl">{name}</p>
+          <p className="font-semibold text-xl">{session?.user.name}</p>
           <div className="flex items-center text-xs text-muted-foreground">
             <CreditCard className="h-3 w-3 mr-1" />
           </div>

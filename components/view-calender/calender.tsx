@@ -10,13 +10,12 @@ import {
 } from "@schedule-x/calendar";
 import { createDragAndDropPlugin } from "@schedule-x/drag-and-drop";
 import { createEventModalPlugin } from "@schedule-x/event-modal";
-import { createEventsServicePlugin } from "@schedule-x/events-service";
 import { createResizePlugin } from "@schedule-x/resize";
 import { useEffect } from "react";
 import { seededEvents } from "./seeded-events";
 
 function CalendarApp() {
-  const plugins = [createEventsServicePlugin()];
+  // const plugins = [createEventsServicePlugin()];
 
   const calendarApp = useNextCalendarApp({
     views: [viewWeek, viewMonthAgenda, viewDay, viewMonthGrid],
@@ -85,7 +84,6 @@ function CalendarApp() {
   });
 
   useEffect(() => {
-    console.log("calendarApp", plugins);
     if (calendarApp) {
       (calendarApp as any).eventsService.getAll();
     }

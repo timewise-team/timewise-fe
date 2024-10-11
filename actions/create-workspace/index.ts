@@ -1,39 +1,46 @@
 "use server";
 
+import { getSession } from "next-auth/react";
 import { CreateWorkspace } from "./schema";
 import { InputType, ReturnType } from "./types";
 import { createSafeAction } from "@/lib/create-safe-action";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
-  //   const { userId, orgId } = auth();
+  const session = await getSession();
 
-  //   if (!userId || !orgId) {
-  //     return {
-  //       error: "Unauthorized!",
-  //     };
-  //   }
-
-  // const { id, boardId } = data;
-  // let lists;
-
-  //   //fetch API to update list order
-  try {
-    //api update board
-    const response = await fetch(`https://api.example.com/boards/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({}),
-    });
-  } catch (error) {
+  if (!session) {
     return {
-      error: "Failed to update board",
+      error: "Unauthorized!",
     };
   }
 
-  //   revalidatePath(`/board/${boardId}}`);
-  return {};
+  const { title, description, email } = data;
+  try {
+    const response = await fetch(
+      `${process.env.API_BASE_URL}/api/v1/workspace/create-workspace`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.user.access_token}`,
+        },
+        body: JSON.stringify({
+          description,
+          email: email,
+          is_deleted: false,
+          key: "",
+          title,
+          type: "workspace",
+        }),
+      }
+    );
+    const result = await response.json();
+    console.log("result", result);
+    return result;
+  } catch (error) {
+    return {
+      error: "Failed to create workspace",
+    };
+  }
 };
 
-export const createList = createSafeAction(CreateWorkspace, handler);
+export const createWorkspace = createSafeAction(CreateWorkspace, handler);
