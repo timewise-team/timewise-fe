@@ -12,25 +12,44 @@ export type Board = {
   list: List[];
 };
 export type Card = {
-  id: string;
-  title: string;
-  order: number;
+  allDay: boolean;
+  boardColumnId: number;
+  commentsCount: number;
+  createdAt: string;
+  createdBy: number;
   description: string;
-  listId: string;
-  list: List;
-  createdAt: Date;
-  updatedAt: Date;
+  documentsCount: number;
+  endTime: string;
+  id: number;
+  isDeleted: boolean;
+  location: string;
+  recurrencePattern: string;
+  scheduleParticipants: string[];
+  startTime: string;
+  status: string;
+  title: string;
+  updatedAt: string;
+  videoTranscript: string;
+  visibility: string;
+  workspaceId: number;
+  order: number;
 };
 
 export type List = {
   id: string;
+  createdAt: string;
+  deletedAt: string;
+  description: string;
+  extraData: string;
+  isDeleted: boolean;
+  key: string;
   title: string;
-  order: number;
-  boardId: string;
-  board: Board;
-  card: Card[];
-  createdAt: Date;
-  updatedAt: Date;
+  type: string;
+  updatedAt: string;
+  name: string;
+  position: number;
+  workspaceId: number;
+  schedules: Card[];
 };
 
 export type AuditLog = {
@@ -43,15 +62,16 @@ export type AuditLog = {
 
 export type Workspace = {
   ID: number;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string;
   title: string;
-  extra_data: string;
+  extraData: string;
   description: string;
   key: string;
   type: string;
-  is_deleted: boolean;
+  isDeleted: boolean;
+  lists: List[];
 };
 
 export enum ACTION {

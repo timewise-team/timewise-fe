@@ -18,6 +18,9 @@ body,
     --foreground: #ffffff;
   }
 }
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 
 body {
   color: black;

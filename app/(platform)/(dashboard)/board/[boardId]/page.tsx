@@ -1,25 +1,62 @@
+"use client";
 import React from "react";
-import ListContainer from "./_components/ListContainer";
-import { fakeCardData, fakeListData } from "@/test/fake-board-data";
 
-interface Props {
-  params: {
-    boardId: string;
-  };
-}
+// interface Props {
+//   params: {
+//     boardId: string;
+//   };
+// }
 
-const BoardIdPage = ({ params }: Props) => {
-  const lists = fakeListData.map((list) => {
-    return {
-      ...list,
-      cards: fakeCardData.filter((card) => card.listId === list.id),
-    };
-  });
+const BoardIdPage = () => {
+  // const [position, setPosition] = useState(0);
+  // const { data: session } = useSession();
+  // const param = useParams();
+
+  // const { data, isLoading } = useQuery({
+  //   queryKey: ["listBoardColumns"],
+  //   queryFn: async () => {
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/workspace/${param.organizationId}`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           Authorization: `Bearer ${session?.user.access_token}`,
+  //           "X-User-Email": `${session?.user.email}`,
+  //           "X-Workspace-ID": `${param.organizationId}`,
+  //         },
+  //       }
+  //     );
+  //     const data = await response.json();
+  //     console.log("data in board", data);
+  //     let nextPosition = 0;
+  //     if (data && data.length > 0) {
+  //       const lastPosition = data[data.length - 1].position;
+  //       nextPosition = lastPosition + 1;
+  //       setPosition(nextPosition);
+  //       console.log("last-pos", lastPosition);
+  //       console.log("pos", position);
+  //       console.log("next-pos", nextPosition);
+  //     }
+  //     console.log("listBoardColumns", data);
+  //     return data;
+  //   },
+  // });
+
+  // if (isLoading) {
+  //   return <div className="w-full h-full flex items-center">Loading...</div>;
+  // }
 
   return (
-    <div className="p-5 h-full space-y-2 overflow-x-auto">
-      <ListContainer boardId={params.boardId} data={lists} />
-    </div>
+    <>
+      {/* {Array.isArray(data) && (
+        <ListContainer
+          data={data}
+          boardId={param.boardId.toString()}
+          position={position}
+        />
+      )} */}
+      asd
+    </>
   );
 };
 

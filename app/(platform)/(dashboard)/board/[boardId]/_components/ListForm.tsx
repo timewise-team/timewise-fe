@@ -1,6 +1,4 @@
-import { createList } from "@/actions/create-list";
-import { useAction } from "@/hooks/useAction";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import React, { ElementRef, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
@@ -9,15 +7,28 @@ import { Plus, X } from "lucide-react";
 import FormInput from "@/components/form/form-input";
 import FormSubmit from "@/components/form/form-submit";
 import { Button } from "@/components/ui/Button";
+import { useSession } from "next-auth/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CreateList } from "@/actions/create-list/schema";
+import { z } from "zod";
+import { ListWithCards } from "@/types/Board";
 
 const ListForm = () => {
+  const { data: session } = useSession();
+
   const params = useParams();
-  const router = useRouter();
+  const workspaceId = Number(params.organizationId);
 
   const formRef = useRef<ElementRef<"form">>(null);
   const inputRef = useRef<ElementRef<"input">>(null);
 
   const [isEditing, setIsEditing] = useState(false);
+  const queryClient = useQueryClient();
+
+  const position = queryClient.getQueryData([
+    "maxPosition",
+    params.organizationId,
+  ]);
 
   const enableEditing = () => {
     setIsEditing(true);
@@ -30,14 +41,60 @@ const ListForm = () => {
     setIsEditing(false);
   };
 
-  const { execute, fieldErrors } = useAction(createList, {
-    onSuccess: (data) => {
-      toast.success(`List "${data.title}" created!`);
-      disableEditing();
-      router.refresh();
+  const { mutate } = useMutation({
+    mutationFn: async (values: z.infer<typeof CreateList>) => {
+      const validatedFields = CreateList.safeParse(values);
+      if (!validatedFields.success) {
+        throw new Error("Invalid fields");
+      }
+
+      const { name } = values;
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user.access_token}`,
+            "X-User-Email": `${session?.user.email}`,
+            "X-Workspace-ID": `${params.organizationId}`,
+          },
+          body: JSON.stringify({
+            name,
+            position: position,
+            workspace_id: workspaceId,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (response.ok) {
+        toast.success(`Column "${data.name}" created successfully`);
+      }
+      return data;
     },
-    onError: (error) => {
-      toast.error(error);
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        exact: true,
+        queryKey: ["listBoardColumns", params.organizationId],
+      });
+    },
+
+    onMutate: async (newListData) => {
+      await queryClient.cancelQueries({
+        exact: true,
+        queryKey: ["listBoardColumns", params.organizationId],
+      });
+
+      const previousListBoardColumns = queryClient.getQueryData([
+        "listBoardColumns",
+        params.organizationId,
+      ]);
+      queryClient.setQueryData(
+        ["listBoardColumns", params.organizationId],
+        (old: ListWithCards[]) => [...old, newListData]
+      );
+      return { previousListBoardColumns };
     },
   });
 
@@ -50,26 +107,26 @@ const ListForm = () => {
   useEventListener("keydown", onKeyDown);
   useOnClickOutside(formRef, disableEditing);
 
-  const onSubmit = (formData: FormData) => {
+  const handleSubmit = (formData: FormData) => {
     const title = formData.get("title") as string;
-    const boardId = formData.get("boardId") as string;
 
-    execute({
-      title,
-      boardId,
-    });
+    if (!title) {
+      return;
+    }
+
+    mutate({ name: title });
+    disableEditing();
   };
 
   if (isEditing) {
     return (
       <ListWrapper>
         <form
-          action={onSubmit}
+          action={handleSubmit}
           ref={formRef}
           className="w-full p-3 rounded-md bg-white space-y-4 shadow-md"
         >
           <FormInput
-            error={fieldErrors}
             ref={inputRef}
             id="title"
             placeholder="Enter List Title..."

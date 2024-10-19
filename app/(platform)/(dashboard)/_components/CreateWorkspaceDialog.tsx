@@ -11,7 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import React, { useEffect, useState, useTransition } from "react";
+import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -24,19 +24,17 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLinkedEmails } from "@/hooks/useLinkedEmail";
 
-interface Props {
-  onWorkspaceCreated: () => void;
-}
-
-const CreateDialog = ({ onWorkspaceCreated }: Props) => {
+const CreateDialog = () => {
   const { data: session } = useSession();
   const [isPending, startTransition] = useTransition();
-  const [linkedEmails, setLinkedEmails] = useState<string[]>([]);
+  const { linkedEmails } = useLinkedEmails();
+  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof CreateWorkspace>>({
     resolver: zodResolver(CreateWorkspace),
@@ -47,39 +45,13 @@ const CreateDialog = ({ onWorkspaceCreated }: Props) => {
     },
   });
 
-  const getAllLinkedEmail = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user_emails/get-linked-email`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${session?.user.access_token}`,
-          },
-        }
-      );
-      const data = await response.json();
-      const linkedEmails = data.map((email: any) => email.email);
-      setLinkedEmails(linkedEmails);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    if (session) {
-      getAllLinkedEmail();
-    }
-  }, [session]);
-
-  const createWorkspace = async (values: z.infer<typeof CreateWorkspace>) => {
-    const validatedFields = CreateWorkspace.safeParse(values);
-    if (!validatedFields.success) {
-      return { error: "Invalid fields" };
-    }
-    console.log("session", session?.user.access_token);
-    const { title, description, email } = values;
-    try {
+  const { mutate } = useMutation({
+    mutationFn: async (values: z.infer<typeof CreateWorkspace>) => {
+      const validatedFields = CreateWorkspace.safeParse(values);
+      if (!validatedFields.success) {
+        throw new Error("Invalid fields");
+      }
+      const { title, description, email } = values;
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/create-workspace`,
         {
@@ -96,21 +68,26 @@ const CreateDialog = ({ onWorkspaceCreated }: Props) => {
         }
       );
       const result = await response.json();
-
       if (result.error) {
-        toast.error("error while registering");
-        return { error: result.error };
-      } else {
-        toast.success("Workspace created successfully");
-        onWorkspaceCreated();
+        throw new Error(result.error);
       }
+      return result;
+    },
+  });
 
-      return { success: true, data: result };
-    } catch (error) {
-      toast.error("error while create workspace");
-      return { error: "Something went wrong!" };
-    }
-  };
+  const handleSubmit = form.handleSubmit((values) => {
+    startTransition(() => {
+      mutate(values, {
+        onSuccess: () => {
+          toast.success("Workspace created successfully");
+          queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      });
+    });
+  });
 
   return (
     <CustomDialog
@@ -121,13 +98,7 @@ const CreateDialog = ({ onWorkspaceCreated }: Props) => {
       btnSubmitContent="Create Workspace"
     >
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit((values) => {
-            startTransition(() => {
-              createWorkspace(values);
-            });
-          })}
-        >
+        <form onSubmit={handleSubmit}>
           <div className="grid gap-4  ">
             <div className="grid grid-cols-1 items-center gap-4">
               <FormField
@@ -180,8 +151,8 @@ const CreateDialog = ({ onWorkspaceCreated }: Props) => {
                     <FormItem key={field.value} className="w-full">
                       <FormLabel>Email</FormLabel>
                       <Select
-                        onValueChange={(value) => field.onChange(value)} // Update the field value with the selected email
-                        value={field.value} // Pass the selected email as the value of the Select component
+                        onValueChange={(value) => field.onChange(value)}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -193,13 +164,20 @@ const CreateDialog = ({ onWorkspaceCreated }: Props) => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {linkedEmails.map((email) => (
-                            <SelectGroup key={email}>
-                              <SelectItem value={email}>
-                                <SelectLabel>{email}</SelectLabel>
-                              </SelectItem>
-                            </SelectGroup>
-                          ))}
+                          <SelectContent>
+                            {(Array.isArray(linkedEmails)
+                              ? linkedEmails
+                              : []
+                            ).map((emailObj: any) => (
+                              <React.Fragment key={emailObj.email}>
+                                <SelectGroup>
+                                  <SelectItem value={emailObj.email}>
+                                    {emailObj.email}
+                                  </SelectItem>
+                                </SelectGroup>
+                              </React.Fragment>
+                            ))}
+                          </SelectContent>
                         </SelectContent>
                       </Select>
                     </FormItem>
