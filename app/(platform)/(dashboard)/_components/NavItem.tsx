@@ -28,9 +28,9 @@ const NavItem = ({ isExpanded, isActive, workspace, onExpand }: Props) => {
       href: `/organization/${workspace.ID}`,
     },
     {
-      label: "Activity",
+      label: "Members",
       icon: <Activity className="h-4 w-4 mr-2" />,
-      href: `/organization/${workspace.ID}/activity`,
+      href: `/organization/${workspace.ID}/members`,
     },
     {
       label: "Calendar",
@@ -61,7 +61,7 @@ const NavItem = ({ isExpanded, isActive, workspace, onExpand }: Props) => {
           <div className="w-7 h-7 relative">
             <Image
               fill
-              src={"/images/1.jpg"}
+              src={"/images/banner/1.webp"}
               alt="organization"
               className="rounded-sm object-cover"
             />

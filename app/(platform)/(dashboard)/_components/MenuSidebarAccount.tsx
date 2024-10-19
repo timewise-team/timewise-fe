@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -13,37 +13,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/Button";
 import Info from "../organization/[organizationId]/_components/Info";
-import { useSession } from "next-auth/react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useLinkedEmails } from "@/hooks/useLinkedEmail";
 
 const MenuSidebarAccount = () => {
-  const { data: session } = useSession();
+  const { linkedEmails, isLoading } = useLinkedEmails();
 
-  const [linkedEmails, setLinkedEmails] = useState<string[]>([]);
-
-  const getAllLinkedEmail = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user_emails/get-linked-email`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${session?.user.access_token}`,
-          },
-        }
-      );
-      const data = await response.json();
-      const linkedEmails = data.map((email: any) => email.email);
-      setLinkedEmails(linkedEmails);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    if (session) {
-      getAllLinkedEmail();
-    }
-  }, [session]);
+  if (isLoading) {
+    return (
+      <>
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+      </>
+    );
+  }
 
   return (
     <DropdownMenu>
@@ -56,21 +40,22 @@ const MenuSidebarAccount = () => {
         <DropdownMenuLabel>Linked Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {linkedEmails &&
-            linkedEmails.map((email) => (
-              <div key={email} className="flex flex-row gap-x-2 items-center">
+          {linkedEmails?.map((email: any, index: number) => (
+            <React.Fragment key={index}>
+              <div className="flex flex-row gap-x-2 items-center">
                 <Image
-                  src={session?.user?.image || "/images/icons/google.svg"}
-                  alt={session?.user?.name || ""}
                   width={24}
                   height={24}
-                  className="w-4 h-4 rounded-full cursor-pointer "
+                  src={"/images/icons/google.svg"}
+                  alt={"logo"}
+                  className="rounded-md object-cover hover:cursor-pointer"
                 />
                 <DropdownMenuItem className="cursor-pointer">
-                  {email}
+                  {email.email}
                 </DropdownMenuItem>
               </div>
-            ))}
+            </React.Fragment>
+          ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
       </DropdownMenuContent>

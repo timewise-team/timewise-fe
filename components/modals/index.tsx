@@ -1,5 +1,5 @@
 const CardModal = () => {
-  return <div>gello</div>;
+  return <div>gelloasdas</div>;
 };
 // const { id, isOpen, onClose } = useCardModal((state) => ({
 //   id: state.id,

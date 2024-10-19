@@ -8,6 +8,8 @@ import React from "react";
 import InviteMember from "./InviteMember";
 
 const BoardList = () => {
+  //get session from server
+
   //fetch board data
   const boards = BOARD_DATA;
 

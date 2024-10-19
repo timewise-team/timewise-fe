@@ -1,13 +1,14 @@
-import { Board } from "@/types/Board";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React from "react";
 import BoardTitleForm from "./BoardTitleForm";
 import BoardOptions from "./BoardOptions";
 
 interface Props {
-  data: Board;
+  data: any;
 }
 
-const BoardNavbar = async ({ data }: Props) => {
+const BoardNavbar = ({ data }: Props) => {
   return (
     <div>
       <div
@@ -16,7 +17,7 @@ const BoardNavbar = async ({ data }: Props) => {
       >
         <BoardTitleForm data={data} />
         <div className="ml-auto">
-            <BoardOptions id={data.id}/>
+          <BoardOptions id={data.id} />
         </div>
       </div>
     </div>

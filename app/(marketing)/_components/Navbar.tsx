@@ -17,7 +17,7 @@ const Navbar = () => {
           <form
             action={async () => {
               "use server";
-              await signIn("google", { redirectTo: "/organization" });
+              await signIn("google", { redirectTo: "/organization/calender" });
             }}
           >
             <Button>Get TimeWise For Free</Button>

@@ -1,6 +1,6 @@
 "use server";
 
-import { CreateList } from "./schema";
+import { CreateCard } from "./schema";
 import { InputType, ReturnType } from "./types";
 import { createSafeAction } from "@/lib/create-safe-action";
 
@@ -36,4 +36,4 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   return {};
 };
 
-export const createList = createSafeAction(CreateList, handler);
+export const createCard = createSafeAction(CreateCard, handler);
