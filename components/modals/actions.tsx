@@ -1,49 +1,145 @@
-import { CardWithList } from "@/types/Board";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Card } from "@/types/Board";
 import React from "react";
 import { Button } from "../ui/Button";
-import { Trash } from "lucide-react";
+import { Edit, Trash } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
+import { useCardModal } from "@/hooks/useCardModal";
+import { useSession } from "next-auth/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { deleteCardByCardID } from "@/lib/fetcher";
 
 interface Props {
-  data: CardWithList;
+  organizationId: string;
+  id: string | undefined;
 }
 
-const Actions = ({ data }: Props) => {
-  // const params = useParams();
-  // const cardModal = useCardModal();
+const Actions = ({ organizationId, id }: Props) => {
+  const cardModal = useCardModal();
+  const { data: session } = useSession();
+  const queryClient = useQueryClient();
 
-  // const { execute: executeDeleteCard, isLoading: isLoadingDelete } = useAction(
-  //   deleteCard,
-  //   {
-  //     onSuccess: (data: Card) => {
-  //       toast.success(`Card "${data.title}" deleted!`);
-  //       cardModal.onClose();
-  //     },
-  //     onError: (error: string) => {
-  //       toast.error(error);
-  //     },
-  //   }
-  // );
+  // const UpdateCard = useMutation<
+  //   Card,
+  //   string,
+  //   { cardId: string | undefined; session: any }
+  // >({
+  //   mutationFn: ({ cardId, session }) =>
+  //     updateCardID({ cardId, organizationId: organizationId }, session),
+  //   onSuccess: (data: Card) => {
+  //     toast.success(`Card "${data.title}" updated!`);
+  //     cardModal.onClose();
+  //   },
+  //   onError: () => {
+  //     toast.error("Failed to update card. Please try again.");
+  //   },
+  // });
 
-  // const onDelete = () => {
-  //   const boardId = params.boardId as string;
-  //   // executeDeleteCard({
-  //   //   id: data.id,
-  //   //   boardId,
-  //   // });
-  // };
-  console.log("data action", data);
+  // const { mutate } = useMutation({
+  //   mutationFn: async (values: z.infer<typeof UpdateCard>) => {
+  //     const validatedFields = UpdateCard.safeParse(values);
+  //     if (!validatedFields.success) {
+  //       throw new Error("Invalid fields");
+  //     }
+  //     const {
+  //       all_day,
+  //       board_column_id,
+  //       description,
+  //       end_time,
+  //       extra_data,
+  //       is_deleted,
+  //       location,
+  //       recurrence_pattern,
+  //       start_time,
+  //       status,
+  //       title,
+  //       video_transcript,
+  //       visibility,
+  //       workspace_id,
+  //       workspace_user_id,
+  //     } = values;
+
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/update-workspace`, // Ensure this is the correct endpoint
+  //       {
+  //         method: "PUT",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${session?.user.access_token}`,
+  //         },
+  //         body: JSON.stringify({
+  //           all_day,
+  //           board_column_id,
+  //           description,
+  //           end_time,
+  //           extra_data,
+  //           is_deleted,
+  //           location,
+  //           recurrence_pattern,
+  //           start_time,
+  //           status,
+  //           title,
+  //           video_transcript,
+  //           visibility,
+  //           workspace_id,
+  //           workspace_user_id,
+  //         }),
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       const errorResult = await response.json();
+  //       throw new Error(errorResult.error || "Failed to update workspace");
+  //     }
+
+  //     const result = await response.json();
+  //     return result;
+  //   },
+  // });
+
+  const DeleteCard = useMutation<
+    Card,
+    string,
+    { cardId: string | undefined; session: any }
+  >({
+    mutationFn: ({ cardId, session }) =>
+      deleteCardByCardID({ cardId, organizationId: organizationId }, session),
+    onSuccess: (data: Card) => {
+      toast.success(`Card "${data.title}" deleted!`);
+      cardModal.onClose();
+      queryClient.invalidateQueries({
+        exact: true,
+        queryKey: ["listBoardColumns", organizationId],
+      });
+    },
+    onError: () => {
+      toast.error("Failed to delete card. Please try again.");
+    },
+  });
+
+  const onDelete = () => {
+    DeleteCard.mutate({ cardId: id, session });
+  };
+
   return (
     <div className="space-y-2 mt-2">
       <p className="text-xs font-semibold">Actions</p>
       <Button
         variant={"primary"}
         size={"sm"}
-        // onClick={onDelete}
-        // disabled={isLoadingDelete}
+        onClick={onDelete}
         className="w-full justify-start"
       >
         <Trash className="h-4 w-4 mr-2" /> Delete
+      </Button>
+      <Button
+        variant={"primary"}
+        size={"sm"}
+        onClick={onDelete}
+        className="w-full justify-start"
+      >
+        <Edit className="h-4 w-4 mr-2" /> Update
       </Button>
     </div>
   );

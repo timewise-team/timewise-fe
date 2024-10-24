@@ -58,7 +58,7 @@ export const config = {
           ...token,
           access_token: token.accessToken,
           issued_at: Date.now(),
-          expires_at: Date.now() + Number(account.expires_in) * 1000,
+          expires_at: Date.now() + Number(account.expires_in) * 100000,
           refresh_token: account.refresh_token,
           idToken: account.id_token,
         };

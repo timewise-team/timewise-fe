@@ -21,9 +21,8 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number) {
   return result;
 }
 
-const ListContainer = ({ data, boardId }: Props) => {
+const ListContainer = ({ data }: Props) => {
   const [orderedData, setOrderedData] = useState(data);
-
   // const { execute: executeUpdateListOrder } = useAction(updateListOrder, {
   //   onSuccess: () => {
   //     toast.success("Lists Reordered!");
@@ -32,7 +31,6 @@ const ListContainer = ({ data, boardId }: Props) => {
   //     toast.error(error);
   //   },
   // });
-  console.log("boardId", boardId);
 
   // const { execute: executeUpdateCardOrder } = useAction(updateCardOrder, {
   //   onSuccess: () => {
@@ -42,16 +40,6 @@ const ListContainer = ({ data, boardId }: Props) => {
   //     toast.error(error);
   //   },
   // });
-
-  // if (Array.isArray(data) && data.length > 0) {
-  //   data.forEach((item) => {
-  //     if (Array.isArray(item.cards) && item.cards.length > 0) {
-  //       item.cards.forEach((schedule: Card) => {
-  //         console.log("schedule title list container", schedule.title);
-  //       });
-  //     }
-  //   });
-  // }
 
   useEffect(() => {
     setOrderedData(data);
@@ -151,6 +139,9 @@ const ListContainer = ({ data, boardId }: Props) => {
             className=" flex flex-col sm:flex-row gap-y-3 sm:gap-x-3 h-auto sm:h-full w-full"
           >
             {orderedData.map((list, index) => {
+              if (!list.id) {
+                return null;
+              }
               return (
                 <ListItem key={list.id.toString()} index={index} data={list} />
               );

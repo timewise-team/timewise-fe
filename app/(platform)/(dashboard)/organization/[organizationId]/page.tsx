@@ -4,6 +4,7 @@ import BoardNavbar from "../../board/[boardId]/_components/BoardNavbar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
+import { getBoardColumns } from "@/lib/fetcher";
 
 const OrganizationIdPage = () => {
   const { data: session } = useSession();
@@ -13,19 +14,7 @@ const OrganizationIdPage = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["listBoardColumns", params.organizationId],
     queryFn: async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/workspace/${params.organizationId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${session?.user.access_token}`,
-            "X-User-Email": `${session?.user.email}`,
-            "X-Workspace-ID": `${params.organizationId}`,
-          },
-        }
-      );
-      const data = await response.json();
-
+      const data = await getBoardColumns(params, session);
       if (Array.isArray(data)) {
         const maxPosition = data.reduce(
           (max, item) => (item.position > max ? item.position : max),
@@ -38,7 +27,6 @@ const OrganizationIdPage = () => {
       } else {
         queryClient.setQueryData(["maxPosition", params.organizationId], 1);
       }
-
       return data;
     },
     enabled: !!session,
