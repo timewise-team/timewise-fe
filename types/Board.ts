@@ -19,7 +19,7 @@ export type Card = {
   createdBy: number;
   description: string;
   documentsCount: number;
-  endTime: string;
+  end_time: string;
   id: number;
   isDeleted: boolean;
   location: string;

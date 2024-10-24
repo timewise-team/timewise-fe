@@ -32,18 +32,6 @@ export const CardForm = forwardRef<HTMLTextAreaElement, Props>(
     const formRef = useRef<ElementRef<"form">>(null);
     const queryClient = useQueryClient();
     const { data: session } = useSession();
-    //create card
-    // const { execute, fieldErrors } = useAction(createCard, {
-    //   onSuccess: (data) => {
-    //     toast.success(`Card "${data.title}" created!`);
-    //     formRef.current?.reset();
-    //   },
-    //   onError: (error) => {
-    //     toast.error(error);
-    //   },
-    // });
-
-    //create card using use mutation
 
     const { mutate } = useMutation({
       mutationFn: async (values: z.infer<typeof CreateCard>) => {

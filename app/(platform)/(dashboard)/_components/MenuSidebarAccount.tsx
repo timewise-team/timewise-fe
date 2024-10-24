@@ -40,7 +40,7 @@ const MenuSidebarAccount = () => {
         <DropdownMenuLabel>Linked Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {linkedEmails?.map((email: any, index: number) => (
+          {(linkedEmails || []).map((email: any, index: number) => (
             <React.Fragment key={index}>
               <div className="flex flex-row gap-x-2 items-center">
                 <Image

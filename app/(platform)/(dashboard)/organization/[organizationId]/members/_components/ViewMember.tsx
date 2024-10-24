@@ -7,6 +7,7 @@ import InviteMember from "../../_components/InviteMember";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
+import { getMembersInWorkspace } from "@/lib/fetcher";
 
 const ViewMember = () => {
   const { data: session } = useSession();
@@ -15,18 +16,7 @@ const ViewMember = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["listMembers", params.organizationId],
     queryFn: async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/workspace_user_list`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${session?.user.access_token}`,
-            "X-User-Email": `${session?.user.email}`,
-            "X-Workspace-ID": `${params.organizationId}`,
-          },
-        }
-      );
-      const data = await response.json();
+      const data = await getMembersInWorkspace(params, session);
       return data;
     },
   });
@@ -42,7 +32,6 @@ const ViewMember = () => {
         <p className="bg-sky-300 p-2 rounded-sm	 text-black text-md font-semibold">
           Members
         </p>
-        {/* <Separator className=" rotate-90" /> */}
       </div>
       <div>
         <p className="text-black text-md font-semibold">Workspace Members</p>
