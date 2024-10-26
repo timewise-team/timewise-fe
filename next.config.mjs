@@ -13,6 +13,7 @@ const nextConfig = {
     ],
   },
   sassOptions: {},
+  output: "standalone"
 };
 
 export default nextConfig;
