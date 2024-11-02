@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import * as React from "react";
@@ -14,11 +15,11 @@ import { Button } from "../ui/Button";
 import { Calendar } from "../ui/calendar";
 
 interface Props {
-  endTime: string;
+  data: any;
 }
 
-export function DatePicker({ endTime }: Props) {
-  const initialDate = endTime ? parseISO(endTime) : undefined;
+export function DatePicker({ data }: Props) {
+  const initialDate = data.end_time ? parseISO(data.end_time) : undefined;
   const [date, setDate] = React.useState<Date | undefined>(initialDate);
 
   return (

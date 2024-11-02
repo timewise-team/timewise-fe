@@ -19,6 +19,7 @@ const ViewMember = () => {
       const data = await getMembersInWorkspace(params, session);
       return data;
     },
+    
   });
 
   if (isLoading) {

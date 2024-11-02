@@ -6,6 +6,7 @@ import { useAction } from "@/hooks/useAction";
 import { Board } from "@/types/Board";
 import React, { ElementRef, useRef, useState } from "react";
 import { toast } from "sonner";
+import InviteMember from "../../../organization/[organizationId]/_components/InviteMember";
 
 interface Props {
   data: Board;
@@ -70,13 +71,16 @@ const BoardTitleForm = ({ data }: Props) => {
   }
 
   return (
-    <Button
-      onClick={enableEditing}
-      variant={"transparent"}
-      className="font-bold text-lg h-auto w-auto p-1 px-2"
-    >
-      {title}
-    </Button>
+    <div className="">
+      <Button
+        onClick={enableEditing}
+        variant={"transparent"}
+        className="font-bold text-lg h-auto w-auto p-1 px-2"
+      >
+        {title}
+      </Button>
+      <InviteMember />
+    </div>
   );
 };
 

@@ -12,10 +12,10 @@ import { deleteCardByCardID } from "@/lib/fetcher";
 
 interface Props {
   organizationId: string;
-  id: string | undefined;
+  data: any;
 }
 
-const Actions = ({ organizationId, id }: Props) => {
+const Actions = ({ organizationId, data }: Props) => {
   const cardModal = useCardModal();
   const { data: session } = useSession();
   const queryClient = useQueryClient();
@@ -101,25 +101,28 @@ const Actions = ({ organizationId, id }: Props) => {
   const DeleteCard = useMutation<
     Card,
     string,
-    { cardId: string | undefined; session: any }
+    { schedule_id: string | undefined; session: any }
   >({
-    mutationFn: ({ cardId, session }) =>
-      deleteCardByCardID({ cardId, organizationId: organizationId }, session),
-    onSuccess: (data: Card) => {
-      toast.success(`Card "${data.title}" deleted!`);
+    mutationFn: ({ schedule_id, session }) =>
+      deleteCardByCardID(
+        { schedule_id, organizationId: organizationId },
+        session
+      ),
+    onSuccess: () => {
+      toast.success(`Card deleted!`);
       cardModal.onClose();
       queryClient.invalidateQueries({
         exact: true,
         queryKey: ["listBoardColumns", organizationId],
       });
     },
-    onError: () => {
-      toast.error("Failed to delete card. Please try again.");
-    },
   });
 
   const onDelete = () => {
-    DeleteCard.mutate({ cardId: id, session });
+    DeleteCard.mutate({
+      schedule_id: data.ID,
+      session,
+    });
   };
 
   return (

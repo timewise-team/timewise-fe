@@ -74,6 +74,25 @@ export type Workspace = {
   lists: List[];
 };
 
+export type Member = {
+  id: number;
+  email: string;
+  extra_data: string;
+  first_name: string;
+  last_name: string;
+  profile_picture: string;
+  role: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string;
+  is_active: boolean;
+  is_verified: boolean;
+  user_email_id: number;
+  workspace_id: number;
+  workspace_key: string;
+};
+
 export enum ACTION {
   CREATE,
   UPDATE,

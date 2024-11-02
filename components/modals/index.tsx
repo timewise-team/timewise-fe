@@ -52,8 +52,8 @@ const CardModal = () => {
           </div>
           {cardData ? (
             <Actions
+              data={cardData}
               organizationId={params.organizationId.toString()}
-              id={id}
             />
           ) : (
             <Actions.Skeleton />
