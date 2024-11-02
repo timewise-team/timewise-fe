@@ -30,8 +30,6 @@ const Navbar = async () => {
           </FormPopOver>
         </div>
         <div className="ml-auto flex items-center gap-x-2">
-         
-
           <MenuAccountList session={session as EnrichedSession} />
         </div>
       </nav>

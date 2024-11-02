@@ -1,6 +1,6 @@
 import { CardWithList } from "@/types/Board";
 import { Layout } from "lucide-react";
-import React, { ElementRef, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import FormInput from "../form/form-input";
 import { Skeleton } from "../ui/skeleton";
 
@@ -9,7 +9,7 @@ interface Props {
 }
 const Header = ({ data }: Props) => {
   const [title, setTitle] = useState(data.title);
-  const inputRef = useRef<ElementRef<"input">>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const onBlur = () => {
     inputRef.current?.form?.requestSubmit();
@@ -34,23 +34,8 @@ const Header = ({ data }: Props) => {
   //   },
   // });
 
-  // const onSubmit = (formData: FormData) => {
-  //   const title = formData.get("title") as string;
-  //   // const boardId = params.boardId as string;
-
-  //   if (title === data.title) {
-  //     return;
-  //   }
-
-  //   // execute({
-  //   //   title,
-  //   //   boardId,
-  //   //   id: data.id,
-  //   // });
-  // };
-
   return (
-    <div className=" flex items-start gap-x-3 mb-6 w-full">
+    <div className="flex items-start gap-x-3 mb-6 w-full">
       <Layout className="w-5 h-5 mt-1 text-neutral-700" />
       <div className="w-full">
         <form action="">

@@ -1,37 +1,55 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
-import { AirVent, Airplay, AirplayIcon } from "lucide-react";
-import { Separator } from "../ui/separator";
-import { useQuery } from "@tanstack/react-query";
+import { AirVent, Airplay } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { getActivitiesLogs, getCommentByScheduleID } from "@/lib/fetcher";
-import Comments from "./comments";
-import Activities from "./activities";
+import { Separator } from "@/components/ui/separator";
+import { getMembersInWorkspace } from "@/lib/fetcher";
+import { useQuery } from "@tanstack/react-query";
+import BoardMember from "./board-member";
+import JoinRequest from "./join-request";
 
-interface Props {
-  id: string | undefined;
-}
+// const enum TabLabel {
+//   BOARD_MEMBER = "Board Member",
+//   PENDING_STATUS = "Pending Status",
+//   JOIN_REQUESTS = "Join Requests",
+// }
 
 const TAB_DATA = [
   {
     icon: <AirVent className="h-4 w-4" />,
-    label: "Comments",
-    href: "comments",
+    label: "Board Member",
   },
   {
     icon: <Airplay className="w-4 h-4" />,
-    label: "Activities",
-    href: "activities",
+    label: "Pending Status",
   },
   {
-    icon: <AirplayIcon className="w-4 h-4" />,
-    label: "Meet",
-    href: "meet",
+    icon: <Airplay className="w-4 h-4" />,
+    label: "Join Requests",
   },
 ];
 
-const Tab = ({ id }: Props) => {
+export const getUnverifiedMembers = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/get-workspace_user_invitation_not_verified_list
+`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  const data = await response.json();
+  return data;
+};
+
+const Tab = () => {
   const [activeTab, setActiveTab] = useState(TAB_DATA[0].label);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0);
@@ -45,36 +63,22 @@ const Tab = ({ id }: Props) => {
     setActiveTabIndex(index);
   };
 
-  const { data: comments } = useQuery({
-    queryKey: [
-      "listComments",
-      { cardId: id, organizationId: params.organizationId },
-    ],
+  const { data: listMembers } = useQuery({
+    queryKey: ["listMembers", params.organizationId],
     queryFn: async () => {
-      if (!id || !session) return null;
-      const data = await getCommentByScheduleID(
-        { cardId: id, organizationId: params.organizationId },
-        session
-      );
+      const data = await getMembersInWorkspace(params, session);
       return data;
     },
-    enabled: !!id && !!session && activeTab === "Comments",
+    enabled: activeTab === "Board Member",
   });
 
-  const { data: activities } = useQuery({
-    queryKey: [
-      "listActivities",
-      { cardId: id, organizationId: params.organizationId },
-    ],
+  const { data: unverifiedMembers } = useQuery({
+    queryKey: ["unverifiedMembers", params.organizationId],
     queryFn: async () => {
-      if (!id || !session) return null;
-      const data = await getActivitiesLogs(
-        { cardId: id, organizationId: params.organizationId },
-        session
-      );
+      const data = await getUnverifiedMembers(params, session);
       return data;
     },
-    enabled: !!id && !!session && activeTab === "Activities",
+    enabled: activeTab === "Join Requests",
   });
 
   useEffect(() => {
@@ -106,27 +110,25 @@ const Tab = ({ id }: Props) => {
                 tabsRef.current[index] = el;
               }}
               className={`flex-auto text-center hover:bg-gray-100 transition-all ease-in-out 
-                rounded-sm cursor-pointer
+                rounded-sm cursor-pointer h-auto
                 ${activeTab === tab.label ? "bg-sky-100" : "bg-white"}
                 transition duration-300`}
               onClick={() => handleChangeTab(tab.label, index)}
             >
               <a className="flex items-center justify-center p-2">
                 {tab.icon}
-                <span className="ml-2">{tab.label}</span>
+                <span className="text-sm ml-2">{tab.label}</span>
               </a>
             </li>
           ))}
         </ul>
         <Separator />
         <div className="p-4">
-          {activeTab === "Comments" && (
-            <Comments session={session} comments={comments} />
+          {activeTab === "Board Member" && <BoardMember data={listMembers} />}
+
+          {activeTab === "Join Requests" && (
+            <JoinRequest data={unverifiedMembers} />
           )}
-          {activeTab === "Activities" && (
-            <Activities session={session} activities={activities} />
-          )}
-          {activeTab === "Meet" && <div>{/* Render meet content */}</div>}
         </div>
       </div>
     </div>

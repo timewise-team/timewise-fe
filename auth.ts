@@ -53,12 +53,15 @@ export const config = {
         } catch (error) {
           console.error("Failed to save token:", error);
         }
+        console.log("token", token.accessToken);
+        console.log("account", account.access_token);
+        console.log("user", user.access_token);
 
         return {
           ...token,
           access_token: token.accessToken,
           issued_at: Date.now(),
-          expires_at: Date.now() + Number(account.expires_in) * 100000,
+          expires_at: Date.now() + Number(account.expires_in) * 1000,
           refresh_token: account.refresh_token,
           idToken: account.id_token,
         };

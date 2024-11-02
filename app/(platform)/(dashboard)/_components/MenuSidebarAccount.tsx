@@ -40,22 +40,24 @@ const MenuSidebarAccount = () => {
         <DropdownMenuLabel>Linked Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {(linkedEmails || []).map((email: any, index: number) => (
-            <React.Fragment key={index}>
-              <div className="flex flex-row gap-x-2 items-center">
-                <Image
-                  width={24}
-                  height={24}
-                  src={"/images/icons/google.svg"}
-                  alt={"logo"}
-                  className="rounded-md object-cover hover:cursor-pointer"
-                />
-                <DropdownMenuItem className="cursor-pointer">
-                  {email.email}
-                </DropdownMenuItem>
-              </div>
-            </React.Fragment>
-          ))}
+          {(Array.isArray(linkedEmails) ? linkedEmails : []).map(
+            (email: any, index: number) => (
+              <React.Fragment key={index}>
+                <div className="flex flex-row gap-x-2 items-center">
+                  <Image
+                    width={24}
+                    height={24}
+                    src={"/images/icons/google.svg"}
+                    alt={"logo"}
+                    className="rounded-md object-cover hover:cursor-pointer"
+                  />
+                  <DropdownMenuItem className="cursor-pointer">
+                    {email.email}
+                  </DropdownMenuItem>
+                </div>
+              </React.Fragment>
+            )
+          )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
       </DropdownMenuContent>
