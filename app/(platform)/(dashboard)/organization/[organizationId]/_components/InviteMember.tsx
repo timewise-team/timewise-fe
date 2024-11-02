@@ -57,6 +57,7 @@ const InviteMember = () => {
   const handleEmailChange = (value: string) => {
     setEmail(value);
     setValue("email", value);
+    //open command list if email is not empty
     if (value !== "") {
       setIsCommandListOpen(true);
     } else {
