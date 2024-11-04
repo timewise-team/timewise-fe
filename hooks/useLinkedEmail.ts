@@ -8,7 +8,7 @@ export const useLinkedEmails = () => {
     queryKey: ["linked-email"],
     queryFn: async () => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user_emails/get-linked-email`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/user/emails`,
         {
           method: "GET",
           headers: {
@@ -16,8 +16,18 @@ export const useLinkedEmails = () => {
           },
         }
       );
-      const data = await response.json();
-      return data;
+      if (!response.ok) {
+        throw new Error("Failed to fetch linked emails");
+      }
+
+      const result = await response.json();
+
+      // Verify that the result matches the expected format
+      if (Array.isArray(result) && result.every((email) => typeof email === "string")) {
+        return result;
+      } else {
+        throw new Error("Invalid response format");
+      }
     },
     enabled: !!session,
   });
