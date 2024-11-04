@@ -169,10 +169,10 @@ const CreateDialog = () => {
                               ? linkedEmails
                               : []
                             ).map((emailObj: any) => (
-                              <React.Fragment key={emailObj.email}>
+                              <React.Fragment key={emailObj}>
                                 <SelectGroup>
-                                  <SelectItem value={emailObj.email}>
-                                    {emailObj.email}
+                                  <SelectItem value={emailObj}>
+                                    {emailObj}
                                   </SelectItem>
                                 </SelectGroup>
                               </React.Fragment>

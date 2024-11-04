@@ -52,7 +52,7 @@ const MenuSidebarAccount = () => {
                     className="rounded-md object-cover hover:cursor-pointer"
                   />
                   <DropdownMenuItem className="cursor-pointer">
-                    {email.email}
+                    {email}
                   </DropdownMenuItem>
                 </div>
               </React.Fragment>
