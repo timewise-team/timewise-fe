@@ -20,112 +20,85 @@ function CalendarApp() {
   const { data: session } = useSession();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
 
-  const fetchSchedule = async () => {
-    const token = session?.user?.access_token;
-    const email = session?.user?.email;
-    if (!token || !email) throw new Error("Token or email not found");
+  // Định nghĩa type cho Event để tái sử dụng
+  interface Event {
+    id: number;
+    title: string;
+    description?: string;
+    start_time: string;
+    end_time: string;
+    location?: string;
+    all_day: boolean;
+    created_by?: number;
+    color?: string;
+  }
 
-    // Fetch workspace ID
-    const responseWspId = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/filter-workspaces?email=${email}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!responseWspId.ok) {
-      const errorResponse = await responseWspId.text();
-      throw new Error(`Failed to fetch workspaces: ${errorResponse}`);
-    }
-
-    const workspaces = await responseWspId.json();
-    const workspaceId = workspaces[0]?.ID;
-
-    if (!workspaceId) {
-      throw new Error("No workspace ID found");
-    }
-
-    // Fetch events using workspaceId
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedule/schedule?workspace_id=${workspaceId}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorResponse = await response.text();
-      throw new Error(`Failed to fetch events: ${errorResponse}`);
-    }
-
-    const result = await response.json();
-    // Transform data into the required format
-    const transformedEvents = result.map((event: Event) => ({
+  // Hàm chuyển đổi dữ liệu sự kiện sang định dạng `CalendarEvent`
+  const mapEventDates = (events: Event[]): CalendarEvent[] => {
+    const mapEven = events.map((event) => ({
       id: event.id.toString(),
       title: event.title,
       description: event.description || "",
       start: event.start_time.substring(0, 16).replace("T", " "),
       end: event.end_time.substring(0, 16).replace("T", " "),
       location: event.location || "",
-      color: "blue",
+      color: event.color || "blue",
       isEditable: true,
       allDay: event.all_day,
-    }));
-
-    console.log("Events:", transformedEvents);
-    return transformedEvents; // Return the transformed event array
+    });
+    cons
+    return mapEven;
   };
 
-  interface Event {
-    id: number;
-    workspace_id: number;
-    board_column_id: number;
-    title: string;
-    description: string;
-    start_time: string;
-    end_time: string;
-    start: string;
-    end: string;
-    location: string;
-    created_by: number;
-    created_at: string;
-    updated_at: string;
-    status: string;
-    all_day: boolean;
-    visibility: string;
-    video_transcript: string | null;
-    extra_data: string;
-    is_deleted: boolean;
-    recurrence_pattern: string;
-    position: number;
-    color: string;
-    priority: string;
-  }
+  // Hàm fetch lịch
+  const fetchSchedule = async () => {
+    const token = session?.user?.access_token;
+    const email = session?.user?.email;
+    if (!token || !email) throw new Error("Token or email not found");
 
-  const { data: fetchedEvents, isLoading, error } = useQuery({
+    // Fetch workspace ID
+    const workspaceResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/filter-workspaces?email=${email}`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!workspaceResponse.ok) {
+      throw new Error(`Failed to fetch workspaces: ${await workspaceResponse.text()}`);
+    }
+
+    const workspaces = await workspaceResponse.json();
+    const workspaceId = workspaces[0]?.ID;
+    if (!workspaceId) throw new Error("No workspace ID found");
+
+    // Fetch events
+    const eventsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedule/schedule?workspace_id=${workspaceId}`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!eventsResponse.ok) {
+      throw new Error(`Failed to fetch events: ${await eventsResponse.text()}`);
+    }
+
+    const result = await eventsResponse.json();
+    console.log("Fetch respone", result);
+    return mapEventDates(result); // Return transformed events array
+  };
+
+  // useQuery để fetch data và cập nhật state `events`
+  const { isLoading, error } = useQuery({
     queryKey: ['events'],
     queryFn: fetchSchedule,
     onSuccess: (data) => {
-      const mappedEvents = mapEventDates(data);
-      setEvents(mappedEvents); // Set events state with mapped events
+      setEvents(data);
+    },
+    onError: (err) => {
+      console.error("Error fetching events:", err);
     },
   });
 
-  const mapEventDates = (events: Event[]): CalendarEvent[] => {
-    return events.map((event) => ({
-      id: event.id.toString(),
-      title: event.title,
-      with: event.created_by?.toString() || "Unknown",
-      start: event.start_time,
-      end: event.end_time,
-      isEditable: true,
-      allDay: event.all_day,
-      description: event.description || "",
-      location: event.location || "",
-      color: event.color || "blue",
-    }));
-  };
-
+  console.log("Event", events)
+  // Sử dụng `events` để khởi tạo `calendarApp`
   const calendarApp = useNextCalendarApp({
     views: [viewWeek, viewMonthAgenda, viewDay, viewMonthGrid],
     defaultView: viewMonthGrid.name,
@@ -139,15 +112,11 @@ function CalendarApp() {
   });
 
   if (isLoading) {
-    return <div>Loading...</div>; // Loading state
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>Error: {error.message}</div>; // Error state
-  }
-
-  if (!calendarApp) {
-    return <div>Error: Calendar App not initialized</div>; // Error state
+    return <div>Error: {error.message}</div>;
   }
 
   return (
