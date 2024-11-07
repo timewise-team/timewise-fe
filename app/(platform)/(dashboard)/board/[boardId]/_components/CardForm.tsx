@@ -39,7 +39,7 @@ export const CardForm = forwardRef<HTMLTextAreaElement, Props>(
         if (!validatedFields.success) {
           throw new Error("Invalid fields");
         }
-        const { title } = values;
+        const { title, description } = values;
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedules`,
           {
@@ -51,24 +51,28 @@ export const CardForm = forwardRef<HTMLTextAreaElement, Props>(
               "X-Workspace-ID": `${params.organizationId}`,
             },
             body: JSON.stringify({
+              board_column_id: listId,
+              description: description,
               title: title,
               workspace_id: workspaceId,
-              board_column_id: listId,
             }),
           }
         );
         const data = await response.json();
-        if (response.ok) {
-          toast.success(`Card "${title}" created successfully`);
-        }
-        console.log("data create card ", data);
         return data;
       },
-      onSettled: () => {
+      onSuccess: () => {
+        toast.success(`Card created successfully`);
+
         queryClient.invalidateQueries({
           exact: true,
           queryKey: ["listBoardColumns", params.organizationId],
         });
+      },
+      onError: (error) => {
+        toast.error(
+          error.message || "Failed to create card. Please try again."
+        );
       },
 
       onMutate: async (newListData) => {
@@ -110,6 +114,7 @@ export const CardForm = forwardRef<HTMLTextAreaElement, Props>(
 
     const handleSubmit = (formData: FormData) => {
       const title = formData.get("title") as string;
+      const description = formData.get("description") as string;
 
       if (!title) {
         return;
@@ -117,6 +122,7 @@ export const CardForm = forwardRef<HTMLTextAreaElement, Props>(
 
       mutate({
         title,
+        description,
       });
       disableEditing();
     };
@@ -134,9 +140,15 @@ export const CardForm = forwardRef<HTMLTextAreaElement, Props>(
             ref={ref}
             placeholder="Enter a title for this card..."
           />
+          <FormTextarea
+            id="description"
+            onKeyDown={onTextareaKeyDown}
+            ref={ref}
+            placeholder="Enter a description for this card..."
+          />
           <input hidden id="listId" name="listId" value={listId} />
           <div className="flex justify-between items-center gap-x-1">
-            <FormSubmit>Add card</FormSubmit>
+            <FormSubmit>Add Schdule</FormSubmit>
             <Button size={"sm"} variant={"ghost"} onClick={disableEditing}>
               <X className="h-5 w-5" />
             </Button>
@@ -154,7 +166,7 @@ export const CardForm = forwardRef<HTMLTextAreaElement, Props>(
           className="h-auto px-2 py-1.5 w-full justify-start text-muted-foreground text-sm"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Add a Card
+          Add new schedule
         </Button>
       </div>
     );

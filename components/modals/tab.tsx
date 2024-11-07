@@ -51,7 +51,6 @@ const Tab = ({ id }: Props) => {
       { cardId: id, organizationId: params.organizationId },
     ],
     queryFn: async () => {
-      if (!id || !session) return null;
       const data = await getCommentByScheduleID(
         { cardId: id, organizationId: params.organizationId },
         session
@@ -121,7 +120,7 @@ const Tab = ({ id }: Props) => {
         <Separator />
         <div className="p-4">
           {activeTab === "Comments" && (
-            <Comments session={session} comments={comments} />
+            <Comments session={session} data={comments} scheduleId={id} />
           )}
           {activeTab === "Activities" && (
             <Activities session={session} activities={activities} />

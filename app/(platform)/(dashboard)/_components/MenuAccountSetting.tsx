@@ -1,15 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import {
-  Cloud,
-  CreditCard,
-  Keyboard,
-  LifeBuoy,
-  Plus,
-  Settings,
-  User,
-  Users,
-} from "lucide-react";
+import { User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,24 +12,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/Button";
-import { EnrichedSession } from "@/auth";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 
 interface Props {
-  session: EnrichedSession;
+  session: any;
 }
 
 export const MENU_ITEMS = [
-  { icon: User, label: "Profile", shortcut: "⇧⌘P" },
-  { icon: CreditCard, label: "Billing", shortcut: "⌘B" },
-  { icon: Settings, label: "Settings", shortcut: "⌘S" },
-  { icon: Keyboard, label: "Keyboard shortcuts", shortcut: "⌘K" },
-  { icon: Users, label: "Team" },
-  { icon: Plus, label: "New Team", shortcut: "⌘+T" },
-  { icon: LifeBuoy, label: "Support" },
-  { icon: Cloud, label: "API", disabled: true },
+  {
+    icon: User,
+    label: "Manage Account",
+    shortcut: "⇧⌘M",
+    href: "/manage-profile",
+  },
 ];
+
+
 
 const MenuAccountList = ({ session }: Props) => {
   return (
@@ -46,7 +37,7 @@ const MenuAccountList = ({ session }: Props) => {
       <DropdownMenuTrigger asChild>
         <Button className="bg-white hover:bg-white">
           <Image
-            src={session?.user?.image || "/images/icons/google.svg"}
+            src={session?.user?.picture || "/images/icons/google.svg"}
             alt={session?.user?.name || ""}
             width={24}
             height={24}
@@ -73,17 +64,15 @@ const MenuAccountList = ({ session }: Props) => {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           {MENU_ITEMS.map((item, index) => (
-            <DropdownMenuItem
-              className="cursor-pointer"
-              key={index}
-              disabled={item.disabled}
-            >
-              <item.icon className="mr-2 h-4 w-4" />
-              <span>{item.label}</span>
-              {item.shortcut && (
-                <DropdownMenuShortcut>{item.shortcut}</DropdownMenuShortcut>
-              )}
-            </DropdownMenuItem>
+            <Link href={item.href} key={index} passHref>
+              <DropdownMenuItem className="cursor-pointer">
+                <item.icon className="mr-2 h-4 w-4" />
+                <span>{item.label}</span>
+                {item.shortcut && (
+                  <DropdownMenuShortcut>{item.shortcut}</DropdownMenuShortcut>
+                )}
+              </DropdownMenuItem>
+            </Link>
           ))}
         </DropdownMenuGroup>
         <DropdownMenuItem>

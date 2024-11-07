@@ -17,7 +17,7 @@ const BoardNavbar = ({ data }: Props) => {
       >
         <BoardTitleForm data={data} />
         <div className="ml-auto">
-          <BoardOptions id={data.id} />
+          <BoardOptions />
         </div>
       </div>
     </div>

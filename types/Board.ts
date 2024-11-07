@@ -12,27 +12,50 @@ export type Board = {
   list: List[];
 };
 export type Card = {
-  allDay: boolean;
-  boardColumnId: number;
-  commentsCount: number;
+  all_day: boolean;
+  board_column_id: number;
+  comments_count: number;
   createdAt: string;
   createdBy: number;
   description: string;
-  documentsCount: number;
+  documents_count: number;
   end_time: string;
   id: number;
-  isDeleted: boolean;
+  is_deleted: boolean;
   location: string;
-  recurrencePattern: string;
-  scheduleParticipants: string[];
-  startTime: string;
+  recurrence_pattern: string;
+  schedule_participants: Participant[];
+  start_time: string;
   status: string;
   title: string;
   updatedAt: string;
-  videoTranscript: string;
+  video_transcript: string;
   visibility: string;
-  workspaceId: number;
-  order: number;
+  workspace_id: number;
+  position: number;
+  priority: string;
+  extra_data: string;
+  workspace_user_id: number;
+};
+
+export type Participant = {
+  assign_at: string;
+  assign_by: number;
+  email: string;
+  first_name: string;
+  id: number;
+  invitation_sent_at: string;
+  invitation_status: string;
+  is_verified: boolean;
+  last_name: string;
+  profile_picture: string;
+  response_time: string;
+  role: string;
+  schedule_id: number;
+  status: string;
+  status_workspace_user: string;
+  user_id: number;
+  workspace_user_id: number;
 };
 
 export type List = {
@@ -91,6 +114,25 @@ export type Member = {
   user_email_id: number;
   workspace_id: number;
   workspace_key: string;
+};
+
+export type Comment = {
+  ID: number;
+  commenter: string;
+  content: string;
+  created_at: string;
+  email: string;
+  first_name: string;
+  is_deleted: boolean;
+  is_verified: boolean;
+  last_name: string;
+  profile_picture: string;
+  role: string;
+  schedule_id: number;
+  status_workspace_user: string;
+  updated_at: string;
+  user_id: number;
+  workspace_user_id: number;
 };
 
 export enum ACTION {
