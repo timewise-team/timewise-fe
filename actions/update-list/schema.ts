@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const UpdateList = z.object({
-  title: z
+  name: z
     .string({
       required_error: "Title is required!",
       invalid_type_error: "Title is required!",
@@ -9,5 +9,6 @@ export const UpdateList = z.object({
     .min(3, {
       message: "Title is too short!",
     }),
-  id: z.string(),
+  workspace_id: z.number(),
+  position: z.number(),
 });

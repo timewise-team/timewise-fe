@@ -76,7 +76,6 @@ const BoardMember = ({ data }: Props) => {
 
   const { mutate: removeMemberMutation } = useMutation({
     mutationFn: async (workspaceUserId: number) => {
-      console.log("workspaceUserId", workspaceUserId);
 
       const response = await removeMember(
         {

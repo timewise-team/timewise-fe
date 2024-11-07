@@ -5,15 +5,7 @@ import { PopoverTrigger } from "@radix-ui/react-popover";
 import { MoreHorizontal, X } from "lucide-react";
 import React from "react";
 
-interface Props {
-  id: string;
-}
-
-const BoardOptions = ({ id }: Props) => {
-  const deleteBoard = async (id: string) => {
-    // Add your logic here
-    console.log("Delete board with id: ", id);
-  };
+const BoardOptions = () => {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -34,7 +26,6 @@ const BoardOptions = ({ id }: Props) => {
           </Button>
         </PopoverClose>
         <Button
-          onClick={() => deleteBoard(id)}
           className="rounded-none w-full h-auto p-2 px-5 justify-start font-normal text-sm"
           variant={"ghost"}
         >

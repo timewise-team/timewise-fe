@@ -117,12 +117,11 @@ export const updateCardID = async (
       },
       body: JSON.stringify({
         all_day: params.all_day,
-        board_column_id: params.board_column_id,
         description: params.description,
         end_time: params.end_time,
         extra_data: params.extra_data,
-        is_deleted: params.is_deleted,
         location: params.location,
+        priority: params.priority,
         recurrence_pattern: params.recurrence_pattern,
         start_time: params.start_time,
         status: params.status,
@@ -130,7 +129,6 @@ export const updateCardID = async (
         video_transcript: params.video_transcript,
         visibility: params.visibility,
         workspace_id: params.workspace_id,
-        workspace_user_id: params.workspace_user_id,
       }),
     }
   );
@@ -288,6 +286,191 @@ export const inviteMemberToCard = async (params: any, session: any) => {
         email: params.email,
         schedule_id: params.schedule_id,
       }),
+    }
+  );
+  const data = await response.json();
+  return data;
+};
+
+//add comment
+export const addComment = async (params: any, session: any): Promise<Card> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/comment`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        schedule_id: params.schedule_id,
+        content: params.content,
+        commenter: "",
+      }),
+    }
+  );
+  const data: Card = await response.json();
+  return data;
+};
+
+//detele comment by comment id
+export const deleteComment = async (
+  params: any,
+  session: any
+): Promise<Card> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/comment/${params.commentId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const data: Card = await response.json();
+  return data;
+};
+
+//edit commnent
+export const editComment = async (params: any, session: any): Promise<Card> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/comment/${params.commentId}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        schedule_id: params.schedule_id,
+        content: params.content,
+        commenter: "",
+      }),
+    }
+  );
+  const data: Card = await response.json();
+  return data;
+};
+
+//update user infor-
+export const updateUserInfo = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/update-user`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        calendar_settings: params.calendar_settings,
+        first_name: params.first_name,
+        last_name: params.last_name,
+        notification_settings: params.notification_settings,
+        profile_picture: params.profile_picture,
+      }),
+    }
+  );
+  const data = await response.json();
+  return data;
+};
+
+//link email
+export const linkEmail = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/user/emails/send?email=${params.email}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: params.email,
+      }),
+    }
+  );
+  const data = await response.json();
+  return data;
+};
+
+//unlink email
+export const unlinkEmail = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/unlink-email/${params.email}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: params.email,
+      }),
+    }
+  );
+  const data = await response.json();
+  return data;
+};
+
+//assignee
+export const AssigneeSchedules = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedule_participant/assign`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: params.email,
+        schedule_id: params.schedule_id,
+        organizationId: params.organizationId,
+      }),
+    }
+  );
+  const data = await response.json();
+  return data;
+};
+
+//get schedule by id
+export const getScheduleByID = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedule_participant/schedule/${params.schedule_id}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+      },
+    }
+  );
+  const data = await response.json();
+  return data;
+};
+
+//get user information
+export const getAccountInformation = async (session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/user`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "Content-Type": "application/json",
+      },
     }
   );
   const data = await response.json();
