@@ -20,7 +20,6 @@ function CalendarApp() {
   const { data: session } = useSession();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
 
-  // Định nghĩa type cho Event để tái sử dụng
   interface Event {
     id: number;
     title: string;
@@ -33,9 +32,10 @@ function CalendarApp() {
     color?: string;
   }
 
-  // Hàm chuyển đổi dữ liệu sự kiện sang định dạng `CalendarEvent`
   const mapEventDates = (events: Event[]): CalendarEvent[] => {
-    const mapEven = events.map((event) => ({
+    console.log("Original events:", events); // Log sự kiện gốc trước khi ánh xạ
+
+    const mappedEvents = events.map((event) => ({
       id: event.id.toString(),
       title: event.title,
       description: event.description || "",
@@ -45,18 +45,18 @@ function CalendarApp() {
       color: event.color || "blue",
       isEditable: true,
       allDay: event.all_day,
-    });
-    cons
-    return mapEven;
+    }));
+
+    console.log("Mapped events:", mappedEvents); // Log sự kiện sau khi ánh xạ
+
+    return mappedEvents;
   };
 
-  // Hàm fetch lịch
   const fetchSchedule = async () => {
     const token = session?.user?.access_token;
     const email = session?.user?.email;
     if (!token || !email) throw new Error("Token or email not found");
 
-    // Fetch workspace ID
     const workspaceResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/filter-workspaces?email=${email}`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
@@ -70,7 +70,6 @@ function CalendarApp() {
     const workspaceId = workspaces[0]?.ID;
     if (!workspaceId) throw new Error("No workspace ID found");
 
-    // Fetch events
     const eventsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedule/schedule?workspace_id=${workspaceId}`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
@@ -81,28 +80,35 @@ function CalendarApp() {
     }
 
     const result = await eventsResponse.json();
-    console.log("Fetch respone", result);
-    return mapEventDates(result); // Return transformed events array
-  };
+    console.log("Fetched events:", result); // Kiểm tra dữ liệu trả về từ API
 
-  // useQuery để fetch data và cập nhật state `events`
+    // Kiểm tra nếu dữ liệu không rỗng
+    if (result && Array.isArray(result)) {
+      return mapEventDates(result); // Nếu dữ liệu hợp lệ, map nó vào cấu trúc CalendarEvent
+    }
+
+    return [];
+  };
+  console.log("Session data:", session);
   const { isLoading, error } = useQuery({
-    queryKey: ['events'],
-    queryFn: fetchSchedule,
+    queryKey: ['events', session],
+    queryFn: async () => {
+      console.log("Fetching schedule..."); // Log khi gọi fetchSchedule
+      return fetchSchedule();
+    },
     onSuccess: (data) => {
-      setEvents(data);
+      console.log("Mapped events onSuccess:", data); // Kiểm tra dữ liệu sau khi ánh xạ
+      setEvents(data); // Lưu dữ liệu vào state
     },
     onError: (err) => {
       console.error("Error fetching events:", err);
     },
   });
 
-  console.log("Event", events)
-  // Sử dụng `events` để khởi tạo `calendarApp`
   const calendarApp = useNextCalendarApp({
     views: [viewWeek, viewMonthAgenda, viewDay, viewMonthGrid],
     defaultView: viewMonthGrid.name,
-    events: events.length > 0 ? events : seededEvents,
+    events: events.length > 0 ? events : seededEvents, // Sử dụng events đã fetch được thay vì seededEvents
     plugins: [
       createDragAndDropPlugin(),
       createEventModalPlugin(),
@@ -112,16 +118,21 @@ function CalendarApp() {
   });
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Hiển thị Loading khi đang fetch dữ liệu
   }
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return <div>Error: {error?.message}</div>; // Hiển thị lỗi nếu có vấn đề khi fetch dữ liệu
   }
 
   return (
       <div className="w-full max-w-[100vw] h-[800px] max-h-[90vw]">
-        <ScheduleXCalendar calendarApp={calendarApp} />
+        {/* Chỉ render lịch khi events đã có dữ liệu */}
+        {events.length > 0 ? (
+            <ScheduleXCalendar calendarApp={calendarApp} />
+        ) : (
+            <div>Loading events...</div> // Hiển thị Loading events nếu chưa có dữ liệu
+        )}
       </div>
   );
 }
