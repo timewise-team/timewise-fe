@@ -75,7 +75,6 @@ const FormInvite = ({ children, data }: Props) => {
         },
         session
       );
-      console.log("response mutate", response);
 
       return response;
     },

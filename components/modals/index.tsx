@@ -24,7 +24,6 @@ const CardModal = () => {
   const { data: cardData } = useQuery<CardWithList>({
     queryKey: ["detailCard", id],
     queryFn: async () => {
-      if (!id || !session) return null;
       const data = await getCardByID(
         { cardId: id, organizationId: params.organizationId },
         session

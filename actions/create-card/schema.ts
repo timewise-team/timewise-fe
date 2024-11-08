@@ -9,4 +9,13 @@ export const CreateCard = z.object({
     .min(3, {
       message: "Title is too short!",
     }),
+
+  description: z
+    .string({
+      required_error: "Title is required!",
+      invalid_type_error: "Title is required!",
+    })
+    .min(3, {
+      message: "Title is too short!",
+    }),
 });

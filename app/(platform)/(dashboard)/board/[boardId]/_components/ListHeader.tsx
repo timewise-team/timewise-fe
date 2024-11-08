@@ -11,6 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { updateListBoardColumns } from "@/lib/fetcher";
+import { Mailbox } from "lucide-react";
 
 interface Props {
   data: List;
@@ -116,8 +117,9 @@ const ListHeader = ({ data, onAddCard }: Props) => {
       ) : (
         <div
           onClick={enableEditing}
-          className="w-full text-sm px-2.5 py-1 h-7 font-bold border-transparent"
+          className="flex flex-row items-center w-full text-sm px-2.5 py-1 h-7 font-bold border-transparent"
         >
+          <Mailbox className="h-4 w-4 mr-2" />
           {data.name}
         </div>
       )}
