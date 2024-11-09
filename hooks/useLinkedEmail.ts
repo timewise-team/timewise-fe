@@ -23,8 +23,8 @@ export const useLinkedEmails = () => {
       const result = await response.json();
 
       // Verify that the result matches the expected format
-      if (Array.isArray(result) && result.every((email) => typeof email === "string")) {
-        return result;
+      if (Array.isArray(result) && result.every((item) => typeof item.email === "string")) {
+        return result.map((item) => item.email);
       } else {
         throw new Error("Invalid response format");
       }
