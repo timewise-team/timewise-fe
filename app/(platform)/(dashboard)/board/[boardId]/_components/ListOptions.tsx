@@ -1,5 +1,5 @@
-import { copyList } from "@/actions/copy-list";
-import { deleteList } from "@/actions/delete-list";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import FormSubmit from "@/components/form/form-submit";
 import { Button } from "@/components/ui/Button";
 import {
@@ -9,9 +9,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { useAction } from "@/hooks/useAction";
 import { List } from "@/types/Board";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MoreHorizontal, X } from "lucide-react";
+import { useSession } from "next-auth/react";
 import React, { ElementRef, useRef } from "react";
 import { toast } from "sonner";
 
@@ -20,41 +21,54 @@ interface Props {
   onAddCard: () => void;
 }
 
+export const deleteListBoardColumns = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/${params.boardId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const data = await response.json();
+  return data;
+};
+
 const ListOptions = ({ data, onAddCard }: Props) => {
   const closeRef = useRef<ElementRef<"button">>(null);
+  const { data: session } = useSession();
+  const queryClient = useQueryClient();
 
-  const { execute: executeDelete } = useAction(deleteList, {
-    onSuccess: (data) => {
-      toast.success(`List "${data.title}" deleted!`);
-      closeRef.current?.click();
+  const { mutate: deleteBoardColumn } = useMutation({
+    mutationFn: async () => {
+      const response = await deleteListBoardColumns(
+        {
+          boardId: data.id,
+          organizationId: data.workspace_id,
+        },
+        session
+      );
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["listBoardColumns"],
+      });
+      toast.success("Board deleted successfully");
     },
     onError: (error) => {
-      toast.error(error);
+      toast.error(error.message || "Failed to delete comment");
     },
   });
 
-  const { execute: executeCopy } = useAction(copyList, {
-    onSuccess: (data) => {
-      toast.success(`List "${data.title}" copied!`);
-      closeRef.current?.click();
-    },
-    onError: (error) => {
-      toast.error(error);
-    },
-  });
-
-  const onDelete = (formData: FormData) => {
-    const id = formData.get("id") as string;
-    const boardId = formData.get("boardId") as string;
-
-    executeDelete({ id, boardId });
-  };
-
-  const onCopy = (formData: FormData) => {
-    const id = formData.get("id") as string;
-    const boardId = formData.get("boardId") as string;
-
-    executeCopy({ id, boardId });
+  const onDelete = (e: React.FormEvent) => {
+    e.preventDefault();
+    deleteBoardColumn();
+    closeRef.current?.click();
   };
 
   return (
@@ -81,27 +95,20 @@ const ListOptions = ({ data, onAddCard }: Props) => {
           variant={"ghost"}
           className="rounded-none w-full h-auto p-2 px-5 justify-start font-normal text-sm"
         >
-          Add Card
+          Add new schedule
         </Button>
-        <form action={onCopy}>
-          <input hidden name="id" id="id" value={data.id} />
-          <input hidden name="boardId" id="boardId" value={data.id} />
-          <FormSubmit
-            variant="ghost"
-            className="rounded-none w-full h-auto p-2 px-5 justify-start font-normal text-sm"
-          >
-            Copy List
-          </FormSubmit>
-        </form>
         <Separator className="bg-neutral-500 " />
-        <form action={onDelete}>
+        <form
+          onSubmit={onDelete}
+          className="space-y-2 w-full h-auto p-2 px-5 justify-start font-normal text-sm"
+        >
           <input hidden name="id" id="id" value={data.id} />
           <input hidden name="boardId" id="boardId" value={data.id} />
           <FormSubmit
             variant="ghost"
             className="rounded-none w-full h-auto p-2 px-5 justify-start font-normal text-sm"
           >
-            Delete this List
+            Delete this board
           </FormSubmit>
         </form>
       </PopoverContent>

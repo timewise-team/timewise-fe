@@ -7,14 +7,13 @@ import { useSession } from "next-auth/react";
 
 const Info = () => {
   const { data: session } = useSession();
-
   return (
     <>
       <div className="flex items-center gap-x-4 mb-4 hover:cursor-pointer">
         <div className="w-[60px] h-[60px] relative">
           <Image
             fill
-            src={session?.user.image || "/images/banner/3.webp"}
+            src={session?.user?.image || "/images/icons/google.svg"}
             alt={"logo"}
             className="rounded-md object-cover hover:cursor-pointer"
           />

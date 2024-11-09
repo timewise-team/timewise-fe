@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { UpdateCard } from "@/actions/update-card/schema";
-import { UpdateList } from "@/actions/update-list/schema";
 import { Card } from "@/types/Board";
 
 export const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -39,35 +38,6 @@ export const getCardByID = async (params: any, session: any) => {
   return data;
 };
 
-export const updateListBoardColumns = async (params: any, session: any) => {
-  const validatedFields = UpdateList.safeParse(params);
-  if (!validatedFields.success) {
-    throw new Error("Invalid fields");
-  }
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/${params.listId}`;
-  console.log("updateListBoardColumns", url);
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/${params.ID}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
-        "X-Workspace-ID": `${params.organizationId}`,
-      },
-      body: JSON.stringify({
-        name: params.title,
-        position: params.position,
-        workspace_id: params.workspaceId,
-      }),
-    }
-  );
-
-  const data = await response.json();
-  console.log("updateListBoardColumns", data);
-  return data;
-};
-
 export const deleteCardByCardID = async (
   params: any,
   session: any
@@ -93,55 +63,6 @@ export const deleteCardByCardID = async (
   return data;
 };
 
-export const updateCardID = async (
-  params: any,
-  session: any
-): Promise<Card> => {
-  const validatedFields = UpdateCard.safeParse(params);
-  if (!validatedFields.success) {
-    throw new Error(
-      `Validation failed: ${validatedFields.error.errors
-        .map((err) => err.message)
-        .join(", ")}`
-    );
-  }
-
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedules/${params.cardId}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
-        "X-Workspace-ID": `${params.organizationId}`,
-      },
-      body: JSON.stringify({
-        all_day: params.all_day,
-        description: params.description,
-        end_time: params.end_time,
-        extra_data: params.extra_data,
-        location: params.location,
-        priority: params.priority,
-        recurrence_pattern: params.recurrence_pattern,
-        start_time: params.start_time,
-        status: params.status,
-        title: params.title,
-        video_transcript: params.video_transcript,
-        visibility: params.visibility,
-        workspace_id: params.workspace_id,
-      }),
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to update card");
-  }
-
-  const data: Card = await response.json();
-  console.log("Update data:", data);
-  return data;
-};
-
 export const getMembersInWorkspace = async (params: any, session: any) => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/workspace_user_list`,
@@ -154,6 +75,10 @@ export const getMembersInWorkspace = async (params: any, session: any) => {
       },
     }
   );
+
+  if (response.status === 500) {
+    throw new Error("User does not exist");
+  }
 
   const data = await response.json();
   return data;
@@ -474,5 +399,86 @@ export const getAccountInformation = async (session: any) => {
     }
   );
   const data = await response.json();
+  return data;
+};
+
+//detele board column by id
+export const deleteListBoardColumns = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/${params.listId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const data = await response.json();
+  return data;
+};
+
+//update board column by board id
+export const updateListBoardColumns = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/${params.listId}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: params.name,
+      }),
+    }
+  );
+  const data = await response.json();
+  return data;
+};
+
+//update card information
+export const updateCardID = async (
+  params: any,
+  session: any
+): Promise<Card> => {
+  const validatedFields = UpdateCard.safeParse(params);
+  if (!validatedFields.success) {
+    throw new Error("Invalid fields");
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedules/${params.cardId}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        all_day: params.all_day,
+        description: params.description,
+        end_time: params.end_time,
+        extra_data: params.extra_data,
+        location: params.location,
+        priority: params.priority,
+        recurrence_pattern: params.recurrence_pattern,
+        start_time: params.start_time,
+        status: params.status,
+        title: params.title,
+        video_transcript: params.video_transcript,
+        visibility: params.visibility,
+        workspace_id: params.workspace_id,
+      }),
+    }
+  );
+
+  const data: Card = await response.json();
   return data;
 };

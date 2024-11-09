@@ -71,7 +71,7 @@ export type List = {
   updatedAt: string;
   name: string;
   position: number;
-  workspaceId: number;
+  workspace_id: number;
   schedules: Card[];
 };
 

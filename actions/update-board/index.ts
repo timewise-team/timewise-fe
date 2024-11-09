@@ -11,27 +11,8 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   //     error: "unauthorized",
   //   };
   // }
-  const { title, id } = data;
 
   let board;
-
-  try {
-    //api update board
-    const response = await fetch(`https://api.example.com/boards/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title,
-        id,
-      }),
-    });
-  } catch (error) {
-    return {
-      error: "Failed to update board",
-    };
-  }
 
   return {
     data: board,

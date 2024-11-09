@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 "use client";
-import FormInput from "@/components/form/form-input";
-import React, { ElementRef, useRef, useState } from "react";
+import React, { ElementRef, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useEventListener } from "usehooks-ts";
 import ListOptions from "./ListOptions";
@@ -10,8 +9,13 @@ import { List } from "@/types/Board";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { updateListBoardColumns } from "@/lib/fetcher";
 import { Mailbox } from "lucide-react";
+import { UpdateBoard } from "@/actions/update-board/schema";
+import { z } from "zod";
+import { Form, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+import { updateListBoardColumns } from "@/lib/fetcher";
 
 interface Props {
   data: List;
@@ -23,24 +27,64 @@ const ListHeader = ({ data, onAddCard }: Props) => {
   const params = useParams();
   const formRef = useRef<ElementRef<"form">>(null);
   const inputRef = useRef<ElementRef<"input">>(null);
+  const [isPending, startTransition] = useTransition();
 
   const [title, setTitle] = useState(data.name);
   const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
   const workspaceId = Number(params.organizationId);
-  const listId = Number(data.id);
 
-  const position = queryClient.getQueryData([
-    "maxPosition",
-    params.organizationId,
-  ]);
+  const form = useForm<z.infer<typeof UpdateBoard>>({
+    resolver: zodResolver(UpdateBoard),
+    defaultValues: {
+      name: title,
+    },
+  });
+
+  const { mutate: updateBoardInformation } = useMutation({
+    mutationFn: async (values: z.infer<typeof UpdateBoard>) => {
+      const response = await updateListBoardColumns(
+        {
+          listId: data.id,
+          organizationId: workspaceId,
+          name: values.name,
+        },
+        session
+      );
+      console.log("updateListBoardColumns", response);
+      return response;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["listBoardColumns"] });
+      setTitle(data.title);
+      startTransition(() => {
+        setIsEditing(false);
+      });
+      toast.success("Schedule updated successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update schedule");
+    },
+  });
 
   const enableEditing = () => {
     setIsEditing(true);
     setTimeout(() => {
       inputRef.current?.focus();
-      inputRef.current?.select();
     });
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = form;
+
+  const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      form.handleSubmit((values) => updateBoardInformation(values))();
+    }
   };
 
   const disableEditing = () => {
@@ -50,79 +94,61 @@ const ListHeader = ({ data, onAddCard }: Props) => {
     }
   };
 
-  const updateListBoard = useMutation<
-    List,
-    string,
-    { title: string; position: number; ID: number; workspaceId: number }
-  >({
-    mutationFn: ({ title, position, ID, workspaceId }) =>
-      updateListBoardColumns(
-        {
-          title,
-          position,
-          ID,
-          workspaceId,
-        },
-        session
-      ),
-    onSuccess: (data: List) => {
-      toast.success(`Board "${data.name}" updated!`);
-      queryClient.invalidateQueries({
-        exact: true,
-        queryKey: ["listBoardColumns", params.organizationId],
-      });
-      disableEditing();
-    },
-    onError: () => {
-      toast.error("Failed to update Board. Please try again.");
-    },
+  const handleSubmission = handleSubmit((values) => {
+    updateBoardInformation(values);
   });
-
-  const onUpdate = () => {
-    updateListBoard.mutate({
-      title,
-      position: position as number,
-      ID: listId,
-      workspaceId,
-    });
-  };
-
-  const onBlur = () => {
-    formRef.current?.requestSubmit();
-  };
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
-      formRef.current?.requestSubmit();
+      disableEditing();
     }
   };
   useEventListener("keydown", onKeyDown);
 
   return (
     <div className="pt-2 px-2 text-sm font-semibold flex justify-between items-start gap-x-2">
-      {isEditing ? (
-        <form ref={formRef} onSubmit={onUpdate} className="flex-1 px-[2px]">
-          <input hidden id="id" name="id" value={data.id} />
-          <input hidden id="listId" name="listId" value={data.id} />
-          <FormInput
-            ref={inputRef}
-            onBlur={onBlur}
-            id="title"
-            placeholder="Enter list title..."
-            defaltValue={title}
-            className="text-sm px-[7px] py-1 h-7 font-medium border-transparent hover:border-input focus:border-input transition truncate bg-transparent focus:bg-white"
-          />
-          <button type="submit" />
-        </form>
-      ) : (
-        <div
-          onClick={enableEditing}
-          className="flex flex-row items-center w-full text-sm px-2.5 py-1 h-7 font-bold border-transparent"
-        >
-          <Mailbox className="h-4 w-4 mr-2" />
-          {data.name}
-        </div>
-      )}
+      <Form {...form}>
+        {isEditing ? (
+          <>
+            <form
+              ref={formRef}
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmission();
+              }}
+              className="flex-1 px-[2px]"
+            >
+              <input hidden id="id" name="id" value={data.id} />
+              <input hidden id="listId" name="listId" value={data.id} />
+              <Input
+                id="title"
+                placeholder="Enter list title..."
+                defaultValue={title}
+                onFocus={enableEditing}
+                disabled={isPending}
+                {...register("name")}
+                onKeyDown={handleEnterPress}
+                className="text-sm px-[7px] py-1 h-7 font-medium border-transparent hover:border-input focus:border-input transition truncate bg-transparent focus:bg-white"
+              />
+              {errors.name && (
+                <p className="text-red-500 text-sm items-start">
+                  {errors.name.message}
+                </p>
+              )}
+              <button type="submit" />
+            </form>
+          </>
+        ) : (
+          <div
+            onClick={enableEditing}
+            className="flex flex-row items-center w-full text-sm px-2.5 py-1 h-7 font-bold border-transparent"
+          >
+            <Mailbox className="h-4 w-4 mr-2" />
+            {data.name}
+          </div>
+        )}
+      </Form>
+
       <ListOptions data={data} onAddCard={onAddCard} />
     </div>
   );
