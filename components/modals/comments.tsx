@@ -22,6 +22,10 @@ interface Props {
   scheduleId: string | undefined;
 }
 
+const truncateName = (name: string, maxLength: number) => {
+  return name.length > maxLength ? `${name.substring(0, maxLength)}...` : name;
+};
+
 const Comments = ({ session, data, scheduleId }: Props) => {
   const queryClient = useQueryClient();
   const [isPending, startTransition] = useTransition();
@@ -157,15 +161,16 @@ const Comments = ({ session, data, scheduleId }: Props) => {
     setValue("content", content);
   };
 
+
   return (
     <div className="space-y-2">
       <div className="flex flex-row items-center gap-x-2">
         <Image
-          src={session?.user?.image || "/images/banner/1.webp"}
+          src={session?.user?.picture}
           alt="avatar"
           width={40}
           height={40}
-          className="h-4 w-4 rounded-full object-cover"
+          className="h-6 w-6 rounded-full object-cover"
         />
         <Form {...form}>
           <form className="flex flex-row gap-x-1">
@@ -194,16 +199,17 @@ const Comments = ({ session, data, scheduleId }: Props) => {
               className="flex flex-col p-2 bg-sky-50 rounded-lg"
               key={comment.ID}
             >
-              <div className="flex flex-row items-center gap-x-1 justify-between">
+              <div className="flex flex-row items-center gap-x-1 justify-start space-x-1">
                 <Image
-                  src={session?.user?.image || "/images/banner/1.webp"}
+                  src={comment.profile_picture}
                   alt="avatar"
                   width={40}
                   height={40}
                   className="h-4 w-4 rounded-full object-cover"
                 />
-                <p>
-                  {comment.first_name} {comment.last_name}
+                <p className="font-bold text-sm">
+                  {comment.first_name}
+                  {truncateName(comment.last_name, 10)}
                 </p>
                 <p>-</p>
                 <p>{format(new Date(comment.created_at), "dd/MM/yyyy")}</p>
@@ -230,7 +236,7 @@ const Comments = ({ session, data, scheduleId }: Props) => {
                   </>
                 )}
               </div>
-              <p className="pl-7">{comment.content}</p>
+              <p className="pl-6 text-sm">{comment.content}</p>
             </div>
           ))
         ) : (

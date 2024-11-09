@@ -29,6 +29,7 @@ const CardItem = ({ data, index }: Props) => {
   if (!data.id) {
     return null;
   }
+
   return (
     <>
       <Draggable draggableId={data.id.toString()} index={index}>

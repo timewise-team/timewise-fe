@@ -1,12 +1,10 @@
-import { title } from "process";
 import { z } from "zod";
 
 export const UpdateBoard = z.object({
-  title: z
+  name: z
     .string({
       required_error: "Title is required",
       invalid_type_error: "Title must be a string",
     })
     .min(3, { message: "Title must be at least 3 characters long" }),
-  id: z.string(),
 });

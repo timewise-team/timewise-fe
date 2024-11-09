@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import {
   Table,
   TableBody,
@@ -8,13 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Button } from "@/components/ui/Button";
 import AddLinkEmail from "./add-link-email";
@@ -81,21 +76,27 @@ const LinkedEmail = ({ accountInformation }: Props) => {
           </TableHeader>
           <TableBody>
             {Array.isArray(accountInformation?.email) &&
-              accountInformation?.email.map((email: string) => (
-                <TableRow key={email}>
-                  <TableCell className="font-medium">{email}</TableCell>
-                  <TableCell>
-                    <Button
-                      className="hover:bg-sky-50 bg-transparent text-red-500"
-                      onClick={() => {
-                        unlinkEmailMutation({ email });
-                      }}
-                    >
-                      Unlink Email
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              accountInformation?.email.map(
+                (emailObj: { email: string; status: string }) => (
+                  <TableRow key={emailObj.email}>
+                    <TableCell className="font-medium">
+                      {emailObj.email}
+                    </TableCell>
+                    {session?.user.email !== emailObj.email && (
+                      <TableCell>
+                        <Button
+                          className="hover:bg-sky-50 bg-transparent text-red-500"
+                          onClick={() => {
+                            unlinkEmailMutation({ email: emailObj.email });
+                          }}
+                        >
+                          Unlink
+                        </Button>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                )
+              )}
           </TableBody>
           <TableFooter>
             <TableRow>
@@ -109,7 +110,6 @@ const LinkedEmail = ({ accountInformation }: Props) => {
           </TableFooter>
         </Table>
       </CardContent>
-      <CardFooter></CardFooter>
     </Card>
   );
 };

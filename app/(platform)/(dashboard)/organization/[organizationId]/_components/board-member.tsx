@@ -76,7 +76,6 @@ const BoardMember = ({ data }: Props) => {
 
   const { mutate: removeMemberMutation } = useMutation({
     mutationFn: async (workspaceUserId: number) => {
-
       const response = await removeMember(
         {
           workspaceUserId,
@@ -114,7 +113,12 @@ const BoardMember = ({ data }: Props) => {
               <p className="text-black text-sm font-semibold">
                 {member?.email}
               </p>
-              <p className="text-black text-sm font-medium">{member?.role}</p>
+              <p className="text-black text-sm font-medium">
+                {member?.role}
+                {session?.user.email === member.email && (
+                  <span className="text-black"> (You)</span>
+                )}
+              </p>
             </div>
           </div>
           <Form {...form}>
