@@ -6,36 +6,22 @@ import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import React, { useEffect, useState } from "react";
 import ListItem from "./ListItem";
 import ListForm from "./ListForm";
-import { UpdateList } from "@/actions/update-list/schema";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
+import { UpdateListOrder } from "@/actions/update-list-order/schema";
 
 interface Props {
   data: ListWithCards[];
   boardId?: string;
 }
 
-export const UpdateCard = z.object({
-  all_day: z.boolean(),
+export const UpdateCardOrder = z.object({
   board_column_id: z.number(),
-  description: z.string(),
-  end_time: z.string(),
-  extra_data: z.string(),
-  is_deleted: z.boolean(),
-  location: z.string(),
   position: z.number(),
-  priority: z.string(),
-  recurrence_pattern: z.string(),
-  start_time: z.string(),
-  status: z.string(),
-  title: z.string(),
-  video_transcript: z.string(),
-  visibility: z.string(),
-  workspace_id: z.number(),
-  workspace_user_id: z.number(),
+  cardId: z.number(),
 });
 
 function reorder<T>(list: T[], startIndex: number, endIndex: number) {
@@ -47,13 +33,13 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number) {
   return result;
 }
 
-export const updateListBoardColumns = async (params: any, session: any) => {
-  const validatedFields = UpdateList.safeParse(params);
+export const updateBoardOrder = async (params: any, session: any) => {
+  const validatedFields = UpdateListOrder.safeParse(params);
   if (!validatedFields.success) {
     throw new Error("Invalid fields");
   }
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/${params.ID}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/${params.boardId}`,
     {
       method: "PUT",
       headers: {
@@ -63,9 +49,7 @@ export const updateListBoardColumns = async (params: any, session: any) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: params.name,
         position: params.position,
-        workspace_id: params.workspaceId,
       }),
     }
   );
@@ -75,8 +59,8 @@ export const updateListBoardColumns = async (params: any, session: any) => {
   return data;
 };
 
-export const updateCard = async (params: any, session: any) => {
-  const validatedFields = UpdateCard.safeParse(params);
+export const updateCardPosition = async (params: any, session: any) => {
+  const validatedFields = UpdateCardOrder.safeParse(params);
   if (!validatedFields.success) {
     throw new Error("Invalid fields");
   }
@@ -92,30 +76,11 @@ export const updateCard = async (params: any, session: any) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        all_day: params.all_day,
         board_column_id: params.board_column_id,
-        description: params.description,
-        end_time: params.end_time,
-        extra_data: params.extra_data,
-        is_deleted: params.is_deleted,
-        location: params.location,
         position: params.position,
-        priority: params.priority,
-        recurrence_pattern: params.recurrence_pattern,
-        start_time: params.start_time,
-        status: params.status,
-        title: params.title,
-        video_transcript: params.video_transcript,
-        visibility: params.visibility,
-        workspace_id: params.workspace_id,
-        workspace_user_id: params.workspace_user_id,
       }),
     }
   );
-
-  if (!response.ok) {
-    throw new Error("Failed to update card");
-  }
 
   return response.json();
 };
@@ -127,16 +92,15 @@ const ListContainer = ({ data }: Props) => {
   const queryClient = useQueryClient();
 
   const { mutate: updateBoardColumns } = useMutation({
-    mutationFn: async (values: z.infer<typeof UpdateList>) => {
-      const validatedFields = UpdateList.safeParse(values);
+    mutationFn: async (values: z.infer<typeof UpdateListOrder>) => {
+      const validatedFields = UpdateListOrder.safeParse(values);
       if (!validatedFields.success) {
         throw new Error("Invalid fields");
       }
-      const response = await updateListBoardColumns(
+      const response = await updateBoardOrder(
         {
-          name: values.name,
           position: values.position,
-          workspaceId: values.workspace_id,
+          boardId: params.boardId,
           organizationId: params.organizationId,
         },
         session
@@ -153,29 +117,21 @@ const ListContainer = ({ data }: Props) => {
   });
 
   const { mutate: updateCardOrder } = useMutation({
-    mutationFn: async (values: z.infer<typeof UpdateCard>) => {
-      const validatedFields = UpdateCard.safeParse(values);
+    mutationFn: async (values: z.infer<typeof UpdateCardOrder>) => {
+      const validatedFields = UpdateCardOrder.safeParse(values);
       if (!validatedFields.success) {
         throw new Error("Invalid fields");
       }
-      const response = await updateCard(
+      const response = await updateCardPosition(
         {
-          all_day: values.all_day,
+          cardId: values.cardId,
           board_column_id: values.board_column_id,
-          description: values.description,
-          end_time: values.end_time,
-          extra_data: values.extra_data,
-          is_deleted: values.is_deleted,
-          location: values.location,
           position: values.position,
-          priority: values.priority,
-          recurrence_pattern: values.recurrence_pattern,
-          start_time: values.start_time,
-          status: values.status,
-          title: values.title,
+          organizationId: params.organizationId,
         },
         session
       );
+
       return response;
     },
     onSuccess: () => {
@@ -212,9 +168,7 @@ const ListContainer = ({ data }: Props) => {
 
       setOrderedData(items);
       updateBoardColumns({
-        name: items[destination.index].name,
         position: destination.index,
-        workspace_id: items[destination.index].workspaceId,
       });
     }
 
@@ -256,27 +210,10 @@ const ListContainer = ({ data }: Props) => {
         sourceList.cards = reorderedCards;
 
         setOrderedData(newOrderedData);
-        //update card in here
         updateCardOrder({
-          all_day: reorderedCards[destination.index].all_day,
-          board_column_id: reorderedCards[destination.index].board_column_id,
-          description: reorderedCards[destination.index].description,
-          end_time: reorderedCards[destination.index].end_time,
-          extra_data: reorderedCards[destination.index].extra_data,
-          is_deleted: reorderedCards[destination.index].is_deleted,
-          location: reorderedCards[destination.index].location,
-          position: reorderedCards[destination.index].position,
-          priority: reorderedCards[destination.index].priority,
-          recurrence_pattern:
-            reorderedCards[destination.index].recurrence_pattern,
-          start_time: reorderedCards[destination.index].start_time,
-          status: reorderedCards[destination.index].status,
-          title: reorderedCards[destination.index].title,
-          video_transcript: reorderedCards[destination.index].video_transcript,
-          visibility: reorderedCards[destination.index].visibility,
-          workspace_id: reorderedCards[destination.index].workspace_id,
-          workspace_user_id:
-            reorderedCards[destination.index].workspace_user_id,
+          cardId: parseInt(result.draggableId),
+          board_column_id: parseInt(source.droppableId),
+          position: destination.index,
         });
       } else {
         const [movedCard] = sourceList.cards.splice(source.index, 1);
@@ -295,23 +232,9 @@ const ListContainer = ({ data }: Props) => {
 
         setOrderedData(newOrderedData);
         updateCardOrder({
-          all_day: movedCard.all_day,
-          board_column_id: movedCard.board_column_id,
-          description: movedCard.description,
-          end_time: movedCard.end_time,
-          extra_data: movedCard.extra_data,
-          is_deleted: movedCard.is_deleted,
-          location: movedCard.location,
-          position: movedCard.position,
-          priority: movedCard.priority,
-          recurrence_pattern: movedCard.recurrence_pattern,
-          start_time: movedCard.start_time,
-          status: movedCard.status,
-          title: movedCard.title,
-          video_transcript: movedCard.video_transcript,
-          visibility: movedCard.visibility,
-          workspace_id: movedCard.workspace_id,
-          workspace_user_id: movedCard.workspace_user_id,
+          cardId: parseInt(result.draggableId),
+          board_column_id: parseInt(source.droppableId),
+          position: destination.index,
         });
       }
     }

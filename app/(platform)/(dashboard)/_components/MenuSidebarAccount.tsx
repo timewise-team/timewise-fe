@@ -18,7 +18,6 @@ import { useLinkedEmails } from "@/hooks/useLinkedEmail";
 
 const MenuSidebarAccount = () => {
   const { linkedEmails, isLoading } = useLinkedEmails();
-
   if (isLoading) {
     return (
       <>

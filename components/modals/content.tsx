@@ -16,26 +16,11 @@ import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import { Participant } from "@/types/Board";
+import { getScheduleByID } from "@/lib/fetcher";
 
 interface Props {
   data: any;
 }
-
-export const getScheduleByID = async (params: any, session: any) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedule_participant/schedule/${params.schedule_id}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
-        "X-Workspace-ID": `${params.organizationId}`,
-      },
-    }
-  );
-  const data = await response.json();
-  return data;
-};
 
 const Content = ({ data }: Props) => {
   const { data: session } = useSession();
@@ -56,13 +41,11 @@ const Content = ({ data }: Props) => {
     enabled: !!data.ID && !!session,
   });
 
-  console.log("scheduleParticipant", scheduleParticipant);
-
   return (
     <>
       <div className="flex flex-row items-center gap-x-3 text-sm font-normal">
         <ArchiveIcon className="h-4 w-4 text-gray-500" />
-        Due date:
+        Dates:
         <DatePicker data={data} />
       </div>
       {/* <div className="flex flex-row items-center gap-x-3 text-sm font-normal">
@@ -72,7 +55,7 @@ const Content = ({ data }: Props) => {
       <div className="flex flex-row items-center gap-x-3 text-sm font-normal">
         <PersonStanding className="h-4 w-4 items-center" />
         Assignee:
-        {scheduleParticipant?.last_name}
+        <p className="text-yellow-500">{scheduleParticipant?.email}</p>
         <div className="flex flex-row items-center gap-x-1">
           <Assignee data={data}>
             <div className="cursor-pointer flex flex-row items-center gap-x-3 text-sm font-normal">
