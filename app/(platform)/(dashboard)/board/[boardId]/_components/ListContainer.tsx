@@ -12,17 +12,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
 import { UpdateListOrder } from "@/actions/update-list-order/schema";
+import { updateBoardOrder, updateCardPosition } from "@/lib/fetcher";
+import { UpdateCardOrder } from "@/actions/update-card-order/schema";
 
 interface Props {
   data: ListWithCards[];
   boardId?: string;
 }
-
-export const UpdateCardOrder = z.object({
-  board_column_id: z.number(),
-  position: z.number(),
-  cardId: z.number(),
-});
 
 function reorder<T>(list: T[], startIndex: number, endIndex: number) {
   const result = Array.from(list);
@@ -33,63 +29,13 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number) {
   return result;
 }
 
-export const updateBoardOrder = async (params: any, session: any) => {
-  const validatedFields = UpdateListOrder.safeParse(params);
-  if (!validatedFields.success) {
-    throw new Error("Invalid fields");
-  }
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/${params.boardId}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
-        "X-Workspace-ID": `${params.organizationId}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        position: params.position,
-      }),
-    }
-  );
-
-  const data = await response.json();
-  console.log("updateListBoardColumns", data);
-  return data;
-};
-
-export const updateCardPosition = async (params: any, session: any) => {
-  const validatedFields = UpdateCardOrder.safeParse(params);
-  if (!validatedFields.success) {
-    throw new Error("Invalid fields");
-  }
-
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedules/${params.cardId}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
-        "X-Workspace-ID": `${params.organizationId}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        board_column_id: params.board_column_id,
-        position: params.position,
-      }),
-    }
-  );
-
-  return response.json();
-};
-
 const ListContainer = ({ data }: Props) => {
   const { data: session } = useSession();
   const params = useParams();
   const [orderedData, setOrderedData] = useState(data);
   const queryClient = useQueryClient();
+
+  const boardColumnsId = data.map((item) => item.id);
 
   const { mutate: updateBoardColumns } = useMutation({
     mutationFn: async (values: z.infer<typeof UpdateListOrder>) => {
@@ -100,7 +46,9 @@ const ListContainer = ({ data }: Props) => {
       const response = await updateBoardOrder(
         {
           position: values.position,
-          boardId: params.boardId,
+          board_column_id: boardColumnsId.find(
+            (item) => item === orderedData[values.position].id
+          ),
           organizationId: params.organizationId,
         },
         session
@@ -108,11 +56,11 @@ const ListContainer = ({ data }: Props) => {
       return response;
     },
     onSuccess: () => {
-      toast.success("List updated successfully");
+      toast.success("Board reordered !");
       queryClient.invalidateQueries({ queryKey: ["listBoardColumns"] });
     },
     onError: () => {
-      toast.error("Error when updating list");
+      toast.error("Error when updating board");
     },
   });
 
@@ -135,7 +83,7 @@ const ListContainer = ({ data }: Props) => {
       return response;
     },
     onSuccess: () => {
-      toast.success("Card updated successfully");
+      toast.success("Card reordered !");
       queryClient.invalidateQueries({ queryKey: ["listBoardColumns"] });
     },
     onError: () => {
@@ -150,10 +98,20 @@ const ListContainer = ({ data }: Props) => {
   const onDragEnd = (result: any) => {
     const { destination, source, type } = result;
 
+    if (!result.destination) {
+      return;
+    }
+
+    if (typeof result.draggableId === "number") {
+      result.draggableId = result.draggableId.toString();
+    }
+
+    // Check if destination is valid
     if (!destination) {
       return;
     }
 
+    // If Dropped in the same position
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
@@ -161,6 +119,7 @@ const ListContainer = ({ data }: Props) => {
       return;
     }
 
+    // If User moves a Card
     if (type === "list") {
       const items = reorder(orderedData, source.index, destination.index).map(
         (item, index) => ({ ...item, order: index })
@@ -175,6 +134,7 @@ const ListContainer = ({ data }: Props) => {
     if (type === "card") {
       const newOrderedData = [...orderedData];
 
+      // Source and Destination List
       const sourceList = newOrderedData.find(
         (list) => list.id === source.droppableId
       );
@@ -186,14 +146,17 @@ const ListContainer = ({ data }: Props) => {
         return;
       }
 
+      // Check if cards exist on the sourceList
       if (!sourceList.cards) {
         sourceList.cards = [];
       }
 
+      // Check if Cards exist on the destinationList
       if (!destList.cards) {
         destList.cards = [];
       }
 
+      // Moving the card in the same list
       if (source.droppableId === destination.droppableId) {
         const reorderedCards = reorder(
           sourceList.cards,
@@ -201,9 +164,10 @@ const ListContainer = ({ data }: Props) => {
           destination.index
         );
 
+        // Update the position of each card in the reordered list
         reorderedCards.forEach((card, idx) => {
           if (card) {
-            card.position = idx;
+            card.position = idx + 1; // Changed line: position starts from 1
           }
         });
 
@@ -211,30 +175,42 @@ const ListContainer = ({ data }: Props) => {
 
         setOrderedData(newOrderedData);
         updateCardOrder({
-          cardId: parseInt(result.draggableId),
-          board_column_id: parseInt(source.droppableId),
+          board_column_id: parseInt(destination.droppableId),
           position: destination.index,
+          cardId: parseInt(result.draggableId),
         });
+
+        // User moves the cards to another list
       } else {
+        // Remove card from the source list
         const [movedCard] = sourceList.cards.splice(source.index, 1);
 
-        movedCard.board_column_id = destination.droppableId;
+        if (!movedCard) {
+          console.error("Moved card not found");
+          return;
+        }
 
+        // Assign the new listId to the moved card
+        movedCard.board_column_id = parseInt(destination.droppableId);
+
+        // ADD card to the destination list
         destList.cards.splice(destination.index, 0, movedCard);
 
+        // Update the position of each card in the source list
         sourceList.cards.forEach((card, idx) => {
-          card.position = idx;
+          card.position = idx + 1; // Changed line: position starts from 1
         });
 
+        // Update the order for each card in the destination list
         destList.cards.forEach((card, idx) => {
-          card.position = idx;
+          card.position = idx + 1; // Changed line: position starts from 1
         });
 
         setOrderedData(newOrderedData);
         updateCardOrder({
-          cardId: parseInt(result.draggableId),
-          board_column_id: parseInt(source.droppableId),
+          board_column_id: parseInt(destination.droppableId),
           position: destination.index,
+          cardId: parseInt(result.draggableId),
         });
       }
     }
@@ -250,12 +226,7 @@ const ListContainer = ({ data }: Props) => {
             className=" flex flex-col sm:flex-row gap-y-3 sm:gap-x-3 h-auto sm:h-full w-full"
           >
             {orderedData.map((list, index) => {
-              if (!list.id) {
-                return null;
-              }
-              return (
-                <ListItem key={list.id.toString()} index={index} data={list} />
-              );
+              return <ListItem key={list.id} index={index} data={list} />;
             })}
             {provided.placeholder}
             <ListForm />

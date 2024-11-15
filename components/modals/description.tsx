@@ -1,18 +1,81 @@
-import React, { ElementRef, useRef, useState } from "react";
-import { useEventListener, useOnClickOutside } from "usehooks-ts";
+import React, { ElementRef, useRef, useState, useTransition } from "react";
 import { CardWithList } from "@/types/Board";
 import { AlignLeft } from "lucide-react";
-import { FormTextarea } from "../form/form-textarea";
-import FormSubmit from "../form/form-submit";
-import { Button } from "../ui/Button";
 import { Skeleton } from "../ui/skeleton";
+import { Form, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { UpdateCard } from "@/actions/update-card/schema";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import { useParams } from "next/navigation";
+import { updateCardID } from "@/lib/fetcher";
+import { toast } from "sonner";
+import { Input } from "../ui/input";
 
 interface Props {
   data: CardWithList;
 }
 
 const Description = ({ data }: Props) => {
+  const [isPending, startTransition] = useTransition();
+  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
+  const { data: session } = useSession();
+  const params = useParams();
+  const [description, setDescription] = useState(data.description);
+
+  const form = useForm<z.infer<typeof UpdateCard>>({
+    resolver: zodResolver(UpdateCard),
+    defaultValues: {
+      ...data,
+    },
+  });
+
+  const { mutate: updateCardInformation } = useMutation({
+    mutationFn: async (values: z.infer<typeof UpdateCard>) => {
+      const response = await updateCardID(
+        {
+          cardId: data.id,
+          all_day: values.all_day,
+          description: values.description,
+          end_time: values.end_time,
+          extra_data: values.extra_data,
+          location: values.location,
+          priority: values.priority,
+          recurrence_pattern: values.recurrence_pattern,
+          start_time: values.start_time,
+          status: values.status,
+          title: values.title,
+          organizationId: params.organizationId,
+        },
+        session
+      );
+      return response;
+    },
+    onSuccess: (data) => {
+      setDescription(data.description);
+      startTransition(() => {
+        setIsEditing(false);
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["detailCard"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["listBoardColumns"],
+      });
+
+      toast.success("Schedule updated successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update schedule");
+    },
+  });
+
+  const {
+    register,
+    formState: { errors },
+  } = form;
 
   const textareaRef = useRef<ElementRef<"textarea">>(null);
   const formRef = useRef<ElementRef<"form">>(null);
@@ -24,80 +87,59 @@ const Description = ({ data }: Props) => {
     });
   };
 
-  const disableEditing = () => {
-    setIsEditing(false);
-  };
+  const handleSubmission = form.handleSubmit((values) => {
+    updateCardInformation(values);
+  });
 
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      disableEditing();
+  const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      form.handleSubmit((values) => updateCardInformation(values))();
     }
   };
-
-  useEventListener("keydown", onKeyDown);
-  useOnClickOutside(formRef, disableEditing);
-
-  // const { execute, fieldErrors } = useAction(updateCard, {
-  //   onSuccess: (data: Card) => {
-  //     queryClient.invalidateQueries({
-  //       queryKey: ["card", data.id],
-  //     });
-
-  //     queryClient.invalidateQueries({
-  //       queryKey: ["card-logs", data.id],
-  //     });
-
-  //     toast.success(`Card "${data.title}" updated!`);
-  //     disableEditing();
-  //   },
-  //   onError: (error) => {
-  //     toast.error(error);
-  //   },
-  // });
-
-  // const onSubmit = (formData: FormData) => {
-  //   const description = formData.get("description") as string;
-  //   const boardId = params.boardId as string;
-
-  //   execute({ id: data.id.toString(), boardId, description });
-  // };
 
   return (
     <div className="flex items-start gap-x-3 w-full">
       <AlignLeft className="h-5 w-5 mt-0.5 text-neutral-700" />
       <div className="w-full">
         <p className="font-semibold text-neutral-700 mb-2">Description</p>
-        {isEditing ? (
-          <form action={"asd"} ref={formRef} className="space-y-2">
-            <FormTextarea
-              id={"description"}
-              ref={textareaRef}
-              className="w-full mt-2"
-              placeholder="Add a more detailed description..."
-              defaultValue={data.description || undefined}
-              // errors={}
-            />
-            <div className="flex items-center gap-x-2">
-              <FormSubmit>Save</FormSubmit>
-              <Button
-                type="button"
-                onClick={disableEditing}
-                size={"sm"}
-                variant={"ghost"}
-              >
-                Cancel
-              </Button>
+        <Form {...form}>
+          {isEditing ? (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmission();
+              }}
+              ref={formRef}
+              className="space-y-2"
+            >
+              <Input
+                id={"description"}
+                disabled={isPending}
+                onFocus={enableEditing}
+                onKeyDown={handleEnterPress}
+                className="min-h-[78px] w-full "
+                placeholder="Add a more detailed description..."
+                defaultValue={description}
+                {...register("description")}
+              />
+              {errors.description && (
+                <p className="text-red-500 text-sm items-start">
+                  {errors.description.message}
+                </p>
+              )}
+              <button type="submit" />
+            </form>
+          ) : (
+            <div
+              onClick={enableEditing}
+              role="button"
+              className="min-h-[78px] bg-neutral-200 text-s, font-medium py-3 px-3.5 rounded-md"
+            >
+              {data.description || "Add a more detailed description..."}
             </div>
-          </form>
-        ) : (
-          <div
-            onClick={enableEditing}
-            role="button"
-            className="min-h-[78px] bg-neutral-200 text-s, font-medium py-3 px-3.5 rounded-md"
-          >
-            {data.description || "Add a more detailed description..."}
-          </div>
-        )}
+          )}
+        </Form>
       </div>
     </div>
   );

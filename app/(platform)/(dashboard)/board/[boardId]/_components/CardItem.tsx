@@ -9,6 +9,7 @@ import { Link, MessageCircle, Tv } from "lucide-react";
 interface Props {
   data: Card;
   index: number;
+  isBlurred?: boolean;
 }
 
 const getRandomColor = () => {
@@ -24,7 +25,7 @@ const getRandomColor = () => {
   return colors[Math.floor(Math.random() * colors.length)];
 };
 
-const CardItem = ({ data, index }: Props) => {
+const CardItem = ({ data, index, isBlurred }: Props) => {
   const cardModal = useCardModal();
   if (!data.id) {
     return null;
@@ -40,7 +41,9 @@ const CardItem = ({ data, index }: Props) => {
             ref={provided.innerRef}
             role="button"
             onClick={() => cardModal.onOpen(data.id.toString())}
-            className="flex flex-col gap-[2px] h-[150px] truncate border-2 border-transparent hover:border-black py-2 px-3 text-sm bg-white rounded-md shadow-md"
+            className={`flex flex-col gap-[2px] h-[150px] truncate border-2 border-transparent hover:border-black py-2 px-3 text-sm bg-white rounded-md shadow-md ${
+              isBlurred ? "blur-sm pointer-events-none" : ""
+            }`}
           >
             {data.title && (
               <span
@@ -69,7 +72,7 @@ const CardItem = ({ data, index }: Props) => {
                   }
                 >
                   {data.schedule_participants
-                    .slice(0, 3)
+                    ?.slice(0, 3)
                     .map((participant, index) => (
                       <Image
                         key={index}
@@ -80,11 +83,12 @@ const CardItem = ({ data, index }: Props) => {
                         className="h-4 w-4 rounded-full object-cover"
                       />
                     ))}
-                  {data.schedule_participants.length > 3 && (
-                    <span className="flex items-center justify-center h-4 w-4 rounded-full bg-gray-300 text-xs text-white -ml-2 border-2 border-white">
-                      +{data.schedule_participants.length - 3}
-                    </span>
-                  )}
+                  {data.schedule_participants &&
+                    data.schedule_participants?.length > 3 && (
+                      <span className="flex items-center justify-center h-4 w-4 rounded-full bg-gray-300 text-xs text-white -ml-2 border-2 border-white">
+                        +{data.schedule_participants.length - 3}
+                      </span>
+                    )}
                 </span>
 
                 <div className="flex items-center gap-x-2">

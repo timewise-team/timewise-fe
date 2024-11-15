@@ -42,7 +42,7 @@ const Actions = ({ organizationId, data }: Props) => {
 
   const onDelete = () => {
     DeleteCard.mutate({
-      schedule_id: data.ID,
+      schedule_id: data.id,
       session,
     });
   };

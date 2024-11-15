@@ -11,7 +11,6 @@ import { useSession } from "next-auth/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CreateList } from "@/actions/create-list/schema";
 import { z } from "zod";
-import { ListWithCards } from "@/types/Board";
 
 const ListForm = () => {
   const { data: session } = useSession();
@@ -25,10 +24,11 @@ const ListForm = () => {
   const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
 
-  const position = queryClient.getQueryData([
-    "maxPosition",
-    params.organizationId,
-  ]);
+  const position =
+    (queryClient.getQueryData([
+      "maxPosition",
+      params.organizationId,
+    ]) as number) || 1;
 
   const enableEditing = () => {
     setIsEditing(true);
@@ -62,7 +62,7 @@ const ListForm = () => {
           },
           body: JSON.stringify({
             name,
-            position: position,
+            position: position + 1,
             workspace_id: workspaceId,
           }),
         }
@@ -73,28 +73,16 @@ const ListForm = () => {
       }
       return data;
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         exact: true,
         queryKey: ["listBoardColumns", params.organizationId],
       });
     },
-
-    onMutate: async (newListData) => {
-      await queryClient.cancelQueries({
-        exact: true,
-        queryKey: ["listBoardColumns", params.organizationId],
-      });
-
-      const previousListBoardColumns = queryClient.getQueryData([
-        "listBoardColumns",
-        params.organizationId,
-      ]);
-      queryClient.setQueryData(
-        ["listBoardColumns", params.organizationId],
-        (old: ListWithCards[]) => [...old, newListData]
+    onError: (error) => {
+      toast.error(
+        error.message || "Failed to create column. Please try again."
       );
-      return { previousListBoardColumns };
     },
   });
 
@@ -151,7 +139,7 @@ const ListForm = () => {
         className="w-full rounded0md bg-white/80 hover:bg-white/50 transition p-3 flex items-center font-medium text-sm"
       >
         <Plus className="h-4 w-4 mr-2" />
-        Add a list
+        Add a board
       </button>
     </ListWrapper>
   );

@@ -63,7 +63,7 @@ export type List = {
   createdAt: string;
   deletedAt: string;
   description: string;
-  extraData: string;
+  extra_data: string;
   isDeleted: boolean;
   key: string;
   title: string;

@@ -74,18 +74,18 @@ const ListHeader = ({ data, onAddCard }: Props) => {
     });
   };
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = form;
-
   const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
       form.handleSubmit((values) => updateBoardInformation(values))();
     }
   };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = form;
 
   const disableEditing = () => {
     setIsEditing(false);
