@@ -6,10 +6,10 @@ import {useQuery} from "@tanstack/react-query";
 import {getSchedules} from "@/lib/fetcher";
 import {Workspace} from "@/types/Board";
 import {useLinkedEmails} from "@/hooks/useLinkedEmail";
-import {format} from "date-fns";
+import {Schedule, TransformedSchedule} from "@/types/Calendar";
 
-const transformScheduleData = (data: any) => {
-    const output = data.map((schedule: any) => {
+const transformScheduleData = (data: Schedule[]): TransformedSchedule[] => {
+    return data.map((schedule: Schedule) => {
         return {
             id: schedule.id.toString(),
             title: schedule.title,
@@ -22,17 +22,18 @@ const transformScheduleData = (data: any) => {
             topic: "test",
         };
     });
-    return output;
 };
 
 const CalenderPage = () => {
     const {data: session} = useSession();
     const {linkedEmails} = useLinkedEmails();
-    const [scheduleData, setScheduleData] = useState([]);
+    const [scheduleData, setScheduleData] = useState<TransformedSchedule[]>([]);
 
     const {data: workspaceData} = useQuery({
         queryKey: ["workspaces"],
         queryFn: async () => {
+            if (!linkedEmails) return [];
+
             const allWorkspaces = await Promise.all(linkedEmails.map(async (email) => {
                 const response = await fetch(
                     `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/get-workspaces-by-email/${email}`,
@@ -54,11 +55,12 @@ const CalenderPage = () => {
     const {data, isLoading} = useQuery({
         queryKey: ["schedules"],
         queryFn: async () => {
+            if (!workspaceData) return [];
             const workspaceIds = workspaceData.map((workspace: Workspace) => workspace.ID);
 
-            const currentDate = new Date();
-            const startOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1));
-            const endOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 7));
+            // const currentDate = new Date();
+            // const startOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1));
+            // const endOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 7));
 
             const payload = {
                 workspaceIds,
