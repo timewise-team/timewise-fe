@@ -15,7 +15,7 @@ const BoardTitleForm = ({ data }: Props) => {
   const inputRef = useRef<ElementRef<"input">>(null);
   const [title, setTitle] = useState(data.title);
 
-  console.log("BoardTitleForm", setTitle);
+  console.log(setTitle);
 
   // const { execute } = useAction(updateBoard, {
   //   onSuccess: (data) => {
@@ -54,7 +54,7 @@ const BoardTitleForm = ({ data }: Props) => {
       <form
         action={onSubmit}
         ref={formRef}
-        className="flex items-center gap-x-2"
+        className="flex items-center gap-x-2 "
       >
         <FormInput
           ref={inputRef}
@@ -70,7 +70,7 @@ const BoardTitleForm = ({ data }: Props) => {
   }
 
   return (
-    <div className="">
+    <div>
       <Button
         onClick={enableEditing}
         variant={"transparent"}

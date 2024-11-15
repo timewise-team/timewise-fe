@@ -2,96 +2,86 @@
 "use client";
 
 import * as React from "react";
-import { Calendar as CalendarIcon } from "lucide-react";
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "../ui/Button";
-import { useState } from "react";
-import { Card } from "@/types/Board";
+import { ArchiveIcon, CalendarHeart } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { useState, useTransition } from "react";
 import { useSession } from "next-auth/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { UpdateCard } from "@/actions/update-card/schema";
 import { Input } from "../ui/input";
+import { useParams } from "next/navigation";
+import { Form, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "../ui/Button";
+import { updateCardID } from "@/lib/fetcher";
 
 interface Props {
   data: any;
 }
 
-//update card information
-export const updateCardID = async (
-  params: any,
-  session: any
-): Promise<Card> => {
-  const validatedFields = UpdateCard.safeParse(params);
-  if (!validatedFields.success) {
-    throw new Error("Invalid fields");
-  }
-
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedules/${params.cardId}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
-        "X-Workspace-ID": `${params.organizationId}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        all_day: params.all_day,
-        description: params.description,
-        end_time: params.end_time,
-        extra_data: params.extra_data,
-        location: params.location,
-        priority: params.priority,
-        recurrence_pattern: params.recurrence_pattern,
-        start_time: params.start_time,
-        status: params.status,
-        title: params.title,
-        video_transcript: params.video_transcript,
-        visibility: params.visibility,
-        workspace_id: params.workspace_id,
-      }),
-    }
-  );
-
-  const data: Card = await response.json();
-  return data;
-};
-
 export function DatePicker({ data }: Props) {
-  const [startDate, setStartDate] = useState(data.start_time?.split("T")[0]); // YYYY-MM-DD format
-  const [startTime, setStartTime] = useState(
-    data.start_time?.split("T")[1].slice(0, 5)
+  const [startDate, setStartDate] = useState(
+    format(parseISO(data.start_time), "yyyy-MM-dd HH:mm:ss.SSS")
   );
-  const [endDate, setEndDate] = useState(data.end_time?.split("T")[0]);
-  const [endTime, setEndTime] = useState(
-    data.end_time?.split("T")[1].slice(0, 5)
+  const [endDate, setEndDate] = useState(
+    format(parseISO(data.end_time), "yyyy-MM-dd HH:mm:ss.SSS")
   );
+  const [isPending, startTransition] = useTransition();
+  const [isEditing, setIsEditing] = useState(false);
+  const params = useParams();
   const { data: session } = useSession();
   const queryClient = useQueryClient();
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const form = useForm<z.infer<typeof UpdateCard>>({
+    resolver: zodResolver(UpdateCard),
+    defaultValues: {
+      ...data,
+      start_time: startDate,
+      end_time: endDate,
+    },
+  });
 
   const { mutate: updateCardInformation } = useMutation({
-    mutationFn: async (values: any) => {
+    mutationFn: async (values: z.infer<typeof UpdateCard>) => {
       const response = await updateCardID(
         {
           cardId: data.id,
-          start_time: `${values.startDate}T${values.startTime}:00`,
-          end_time: `${values.endDate}T${values.endTime}:00`,
-          ...data,
+          all_day: values.all_day,
+          description: values.description,
+          end_time: format(
+            new Date(values.end_time),
+            "yyyy-MM-dd HH:mm:ss.SSS"
+          ),
+          extra_data: values.extra_data,
+          location: values.location,
+          priority: values.priority,
+          recurrence_pattern: values.recurrence_pattern,
+          start_time: format(
+            new Date(values.start_time),
+            "yyyy-MM-dd HH:mm:ss.SSS"
+          ),
+          status: values.status,
+          title: values.title,
+          organizationId: params.organizationId,
         },
         session
       );
       return response;
     },
     onSuccess: () => {
+      // setStartDate(data.start_time);
+      // setEndDate(data.end_time);
+      startTransition(() => {
+        setIsEditing(false);
+      });
       queryClient.invalidateQueries({
-        queryKey: ["detailCard", data.id],
+        queryKey: ["detailCard"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["listBoardColumns"],
       });
       toast.success("Schedule updated successfully");
     },
@@ -100,74 +90,103 @@ export function DatePicker({ data }: Props) {
     },
   });
 
-  const handleSaveDates = () => {
-    updateCardInformation({
-      startDate,
-      startTime,
-      endDate,
-      endTime,
+  const enableEditing = () => {
+    setIsEditing(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
     });
   };
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = form;
+
+  const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      form.handleSubmit((values) => updateCardInformation(values))();
+    }
+  };
+
+  const handleSubmission = handleSubmit((values) => {
+    updateCardInformation(values);
+  });
+
   return (
     <div className="flex flex-col space-y-1">
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline">
-            <CalendarIcon className="mr-2" />
-            Set Date Range
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
-          <div className="flex flex-col p-4">
-            <div className="mb-4">
-              <label
-                htmlFor="start-date"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-              >
+      <div className="flex flex-col">
+        <Form {...form}>
+          {isEditing ? (
+            <>
+              <form>
+                <div className="mb-4 flex flex-row items-center gap-x-1">
+                  <div className="flex flex-row gap-x-2 items-start">
+                    <CalendarHeart className="w-6 h-6" />
+                    Start:
+                  </div>
+                  <Input
+                    type="datetime-local"
+                    id="start-time"
+                    value={startDate}
+                    disabled={isPending}
+                    defaultValue={startDate}
+                    onKeyDown={handleEnterPress}
+                    {...register("start_time")}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                  />
+                </div>
+                {errors.start_time && (
+                  <p className="text-red-500 text-sm items-start pb-1">
+                    {"Start Date must be higher than the current date"}
+                  </p>
+                )}
+                <div className="mb-4 flex flex-row items-center gap-x-1">
+                  <div className="flex flex-row gap-x-2 items-start">
+                    <ArchiveIcon className="w-6 h-6" />
+                    End:
+                  </div>{" "}
+                  <Input
+                    type="datetime-local"
+                    id="end-time"
+                    value={endDate}
+                    disabled={isPending}
+                    defaultValue={endDate}
+                    onKeyDown={handleEnterPress}
+                    {...register("end_time")}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                  />
+                </div>
+                {errors.end_time && (
+                  <p className="text-red-500 text-sm items-start pb-1">
+                    {"End Date must be higher than the current date"}
+                  </p>
+                )}
+                <Button onClick={handleSubmission}>Save</Button>
+              </form>
+            </>
+          ) : (
+            <div
+              onClick={enableEditing}
+              className="flex flex-col items-start gap-x-1 space-y-2"
+            >
+              <div className="flex flex-row gap-x-2 items-start">
+                <ArchiveIcon className="w-6 h-6" />
                 Start Date:
-              </label>
-              <input
-                type="date"
-                id="start-date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-              />
-              <input
-                type="time"
-                id="start-time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="mt-2 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="end-date"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-              >
+              </div>{" "}
+              <Input type="datetime-local" value={startDate} />
+              <div className="flex flex-row gap-x-2 items-start">
+                <ArchiveIcon className="w-6 h-6" />
                 End Date:
-              </label>
-              <Input
-                type="date"
-                id="end-date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-              />
-              <Input
-                type="time"
-                id="end-time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="mt-2 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-              />
+              </div>{" "}
+              <Input type="datetime-local" value={endDate} />
             </div>
-            <Button onClick={handleSaveDates}>Save Dates</Button>
-          </div>
-        </PopoverContent>
-      </Popover>
+          )}
+        </Form>
+      </div>
     </div>
   );
 }

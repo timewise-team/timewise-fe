@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { UpdateCardOrder } from "@/actions/update-card-order/schema";
 import { UpdateCard } from "@/actions/update-card/schema";
+import { UpdateListOrder } from "@/actions/update-list-order/schema";
 import { Card } from "@/types/Board";
 
 export const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -480,5 +482,90 @@ export const updateCardID = async (
   );
 
   const data: Card = await response.json();
+  return data;
+};
+
+//get document by schedule id
+export const getDocumentByScheduleID = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/document/schedule/${params.cardId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const data = await response.json();
+  return data;
+};
+
+export const updateCardPosition = async (params: any, session: any) => {
+  const validatedFields = UpdateCardOrder.safeParse(params);
+  if (!validatedFields.success) {
+    throw new Error("Invalid fields");
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedules/position/${params.cardId}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        board_column_id: params.board_column_id,
+        position: params.position,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    if (response.status === 500) {
+      throw new Error("Server error: Failed to update card position");
+    } else {
+      throw new Error("Failed to update card position");
+    }
+  }
+
+  return response.json();
+};
+
+export const updateBoardOrder = async (params: any, session: any) => {
+  const validatedFields = UpdateListOrder.safeParse(params);
+  if (!validatedFields.success) {
+    throw new Error("Invalid fields");
+  }
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/update_position/${params.board_column_id}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        position: params.position,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    if (response.status === 500) {
+      throw new Error("Server error: Failed to update Board position");
+    } else {
+      throw new Error("Failed to update Board position");
+    }
+  }
+
+  const data = await response.json();
   return data;
 };

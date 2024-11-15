@@ -1,6 +1,6 @@
 import { CardWithList } from "@/types/Board";
 import { Layout } from "lucide-react";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useTransition } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { UpdateCard } from "@/actions/update-card/schema";
 import { useSession } from "next-auth/react";
@@ -23,6 +23,8 @@ const Header = ({ data }: Props) => {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
   const params = useParams();
+  const [isPending, startTransition] = useTransition();
+  const [isEditing, setIsEditing] = useState(false);
 
   const form = useForm<z.infer<typeof UpdateCard>>({
     resolver: zodResolver(UpdateCard),
@@ -53,10 +55,17 @@ const Header = ({ data }: Props) => {
       return response;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ["detailCard", data.id],
-      });
       setTitle(data.title);
+      startTransition(() => {
+        setIsEditing(false);
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["detailCard"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["listBoardColumns"],
+      });
+
       toast.success("Schedule updated successfully");
     },
     onError: (error) => {
@@ -71,7 +80,18 @@ const Header = ({ data }: Props) => {
     }
   };
 
-  const { handleSubmit } = form;
+  const enableEditing = () => {
+    setIsEditing(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    });
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = form;
 
   const handleSubmission = handleSubmit((values) => {
     updateCardInformation(values);
@@ -82,21 +102,40 @@ const Header = ({ data }: Props) => {
       <Layout className="w-5 h-5 mt-1 text-neutral-700" />
       <div className="w-full">
         <Form {...form}>
-          <form
-            className="flex items-center gap-x-1"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSubmission();
-            }}
-          >
-            <Input
-              id="title"
-              ref={inputRef}
-              defaultValue={title}
-              onKeyDown={handleEnterPress}
-              className="font-semibold text-xl px-1 text-neutral-700 bg-transparent border-transparent relative left-1.5 w-[95%] focus-visible:bg-white focus-visible:border-input mb-0.5 truncate"
-            />
-          </form>
+          {isEditing ? (
+            <>
+              <form
+                className="flex flex-col items-start gap-x-1"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubmission();
+                }}
+              >
+                <Input
+                  id="title"
+                  disabled={isPending}
+                  onFocus={enableEditing}
+                  defaultValue={title}
+                  onKeyDown={handleEnterPress}
+                  {...register("title")}
+                  className="font-semibold text-xl px-1 text-neutral-700 bg-transparent border-transparent relative left-1.5 w-[95%] focus-visible:bg-white focus-visible:border-input mb-0.5 truncate"
+                />
+                {errors.title && (
+                  <p className="text-red-500 text-sm items-start">
+                    {errors.title.message}
+                  </p>
+                )}
+                <button type="submit" />
+              </form>
+            </>
+          ) : (
+            <div
+              onClick={enableEditing}
+              className="flex flex-row items-center w-full text-sm px-2.5 py-1 h-7 font-bold border-transparent"
+            >
+              {data.title}
+            </div>
+          )}
         </Form>
         <p className="text-sm text-muted-foreground">
           In List <span className="underline">{data.title}</span>

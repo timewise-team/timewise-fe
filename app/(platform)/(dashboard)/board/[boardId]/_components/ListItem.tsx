@@ -15,6 +15,8 @@ export const ListItem = ({ index, data }: Props) => {
   const textareaRef = useRef<ElementRef<"textarea">>(null);
   const [isEditing, setIsEditing] = useState(false);
 
+  console.log("list item", data);
+
   const disableEditing = () => {
     setIsEditing(false);
   };
@@ -26,8 +28,12 @@ export const ListItem = ({ index, data }: Props) => {
     });
   };
 
+  if (!data || !data.id) {
+    return <></>;
+  }
+
   return (
-    <Draggable draggableId={data.id} index={index}>
+    <Draggable draggableId={data.id.toString()} index={index}>
       {(provided) => (
         <li
           {...provided.draggableProps}
@@ -55,15 +61,13 @@ export const ListItem = ({ index, data }: Props) => {
                         key={schedule.id}
                         index={index}
                         data={schedule}
+                        isBlurred={data.extra_data === "IsLocked"}
                       />
                     ))
                   ) : (
-                    <div
-                      className="w-full bg-gray-200 
-                      animate-pulse h-8 rounded-md
-                    "
-                    ></div>
+                    <></>
                   )}
+                  {provided.placeholder}
                 </ol>
               )}
             </Droppable>

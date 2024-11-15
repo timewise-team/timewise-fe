@@ -22,6 +22,23 @@ interface Props {
   data: any;
 }
 
+export const getDocumentByScheduleID = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/document/schedule/${params.cardId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const data = await response.json();
+  return data;
+};
+
 const Content = ({ data }: Props) => {
   const { data: session } = useSession();
   const params = useParams();
@@ -31,27 +48,43 @@ const Content = ({ data }: Props) => {
     queryFn: async () => {
       const response = await getScheduleByID(
         {
-          schedule_id: data.ID,
+          schedule_id: data.id,
           organizationId: params.organizationId,
         },
         session
       );
       return response;
     },
-    enabled: !!data.ID && !!session,
+    enabled: !!data.id && !!session,
   });
+
+  const { data: documents } = useQuery({
+    queryKey: ["documents"],
+    queryFn: async () => {
+      const response = await getDocumentByScheduleID(
+        {
+          cardId: data.id,
+          organizationId: params.organizationId,
+        },
+        session
+      );
+      return response;
+    },
+    enabled: !!data.id && !!session,
+  });
+
+  console.log("documents", documents);
 
   return (
     <>
       <div className="flex flex-row items-center gap-x-3 text-sm font-normal">
-        <ArchiveIcon className="h-4 w-4 text-gray-500" />
-        Dates:
         <DatePicker data={data} />
       </div>
       {/* <div className="flex flex-row items-center gap-x-3 text-sm font-normal">
         <ArchiveIcon className="h-4 w-4 text-gray-500" />
         Create By: {data.first_name} {data.last_name}
       </div> */}
+
       <div className="flex flex-row items-center gap-x-3 text-sm font-normal">
         <PersonStanding className="h-4 w-4 items-center" />
         Assignee:
@@ -81,7 +114,7 @@ const Content = ({ data }: Props) => {
           >
             <Gauge className="h-3 w-3 " />
             <span className={"text-sm ml-2 font-medium text-teal-900"}>
-              Dashboard
+              Board
             </span>
           </span>
         </div>
@@ -91,6 +124,7 @@ const Content = ({ data }: Props) => {
       <div className="flex flex-row gap-x-3 text-sm font-normal">
         <ArchiveIcon className="h-4 w-4 text-gray-500" />
         Attachment:
+        {/* <Document data={documents} /> */}
       </div>
       <FormInvite data={data}>
         {/* invite member to schedule */}

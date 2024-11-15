@@ -1,10 +1,10 @@
 "use client";
 import ListContainer from "../../board/[boardId]/_components/ListContainer";
-import BoardNavbar from "../../board/[boardId]/_components/BoardNavbar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { getBoardColumns } from "@/lib/fetcher";
+import InviteMember from "./_components/InviteMember";
 
 const OrganizationIdPage = () => {
   const { data: session } = useSession();
@@ -18,11 +18,11 @@ const OrganizationIdPage = () => {
       if (Array.isArray(data)) {
         const maxPosition = data.reduce(
           (max, item) => (item.position > max ? item.position : max),
-          0
+          1
         );
         queryClient.setQueryData(
           ["maxPosition", params.organizationId],
-          maxPosition + 1
+          maxPosition
         );
       } else {
         queryClient.setQueryData(["maxPosition", params.organizationId], 1);
@@ -39,10 +39,8 @@ const OrganizationIdPage = () => {
   return (
     <div className="w-full mb-5">
       <div className=" relative bg-no-repeat bg-cover bg-center">
-        <div className="absolute inset-0">
-          <BoardNavbar data={[]} />
-        </div>
-        <main className="relative pt-5 h-full">
+        <main className="relative space-y-1 h-full ">
+          <InviteMember />
           <ListContainer
             data={Array.isArray(data) ? data : []}
             boardId={params.organizationId.toString()}
