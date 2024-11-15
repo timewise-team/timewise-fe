@@ -12,12 +12,12 @@ import ScheduleDetailsDrawer from "@components/view-calender/custom-event-modal"
 import {useCardModal} from "@/hooks/useCardModal";
 
 interface CalendarAppProps {
-    scheduleData: any;
+    scheduleData: never;
 }
 
 function CalendarApp({scheduleData}: CalendarAppProps) {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+    const [isModalOpen] = useState(false);
+    const [selectedEventId] = useState<string | null>(null);
     const cardModal = useCardModal();
 
 
