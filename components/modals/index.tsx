@@ -12,8 +12,9 @@ import Content from "./content";
 import Tab from "./tab";
 
 const CardModal = () => {
-  const { id, isOpen, onClose } = useCardModal((state) => ({
+  const { id, isOpen, onClose, workspaceId } = useCardModal((state) => ({
     id: state.id,
+    workspaceId: state.workspaceId,
     isOpen: state.isOpen,
     onClose: state.onClose,
   }));
@@ -52,7 +53,7 @@ const CardModal = () => {
           {cardData ? (
             <Actions
               data={cardData}
-              organizationId={params.organizationId.toString()}
+              organizationId={params.organizationId?.toString() || workspaceId as string}
             />
           ) : (
             <Actions.Skeleton />

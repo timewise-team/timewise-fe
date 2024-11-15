@@ -1050,6 +1050,11 @@
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.10.4.tgz#427d5549943a9c6fce808e39ea64dbe60d4047f1"
   integrity sha512-WJgX9nzTqknM393q1QJDJmoW28kUfEnybeTfVNcNAPnIx210RXm2DiXiHzfNPJNIUUb1tJnz/l4QGtJ30PgWmA==
 
+"@schedule-x/calendar-controls@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@schedule-x/calendar-controls/-/calendar-controls-2.5.0.tgz#72a45ffdaec6b225f880a9805aa96877ba37623d"
+  integrity sha512-415pEHjLtub7nzsQPwxh+5q76RKjhbSJhAsG5h7qIVyzjOclkd/u3qhKWD80s+3JDQlR1LNRLWzjMszKbHudBA==
+
 "@schedule-x/calendar@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@schedule-x/calendar/-/calendar-2.2.1.tgz#787a9c614f92471b2ecf7c3746b729c7e2a2884e"

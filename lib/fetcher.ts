@@ -23,6 +23,28 @@ export const getBoardColumns = async (params: any, session: any) => {
   return data;
 };
 
+export const getSchedules = async (params: any, session: any) => {
+  console.log("params", params);
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedule/schedule?` +
+      new URLSearchParams({
+        workspace_id: params.workspaceIds.join(","),
+        start_time: params.startTime,
+        end_time: params.endTime,
+      }).toString(),
+    {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${session?.user.access_token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+  return data;
+};
+
 export const getCardByID = async (params: any, session: any) => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedules/${params.cardId}`,
