@@ -10,9 +10,10 @@ import {format} from "date-fns";
 import {createCalendarControlsPlugin} from "@schedule-x/calendar-controls";
 import ScheduleDetailsDrawer from "@components/view-calender/custom-event-modal";
 import {useCardModal} from "@/hooks/useCardModal";
+import {TransformedSchedule} from "@/types/Calendar";
 
 interface CalendarAppProps {
-    scheduleData: never;
+    scheduleData: TransformedSchedule[];
 }
 
 function CalendarApp({scheduleData}: CalendarAppProps) {
@@ -127,17 +128,17 @@ function CalendarApp({scheduleData}: CalendarAppProps) {
         };
     }, [calendarApp]);
 
-    useEffect(() => {
-        if (calendarApp) {
-            const updateRange = () => {
-                const range = calendarApp.calendarControls.getRange();
-                console.log("Calendar range:", range);
-            };
-
-            // Initial range fetch
-            updateRange();
-        }
-    }, [calendarApp]);
+    // useEffect(() => {
+    //     if (calendarApp && calendarApp.calendarControls) {
+    //         const updateRange = () => {
+    //             const range = calendarApp.calendarControls.getRange();
+    //             console.log("Calendar range:", range);
+    //         };
+    //
+    //         // Initial range fetch
+    //         updateRange();
+    //     }
+    // }, [calendarApp]);
 
     // todo: handle change view or date range to fetch schedules
 
