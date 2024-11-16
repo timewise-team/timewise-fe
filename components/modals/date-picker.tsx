@@ -86,7 +86,7 @@ export function DatePicker({ data }: Props) {
       toast.success("Schedule updated successfully");
     },
     onError: (error: any) => {
-      toast.error(`Failed to update schedule: ${error?.message}`);
+      toast.error(error.message || "An error occurred");
     },
   });
 

@@ -503,6 +503,14 @@ export const updateCardID = async (
     }
   );
 
+  if (!response.ok) {
+    if (response.status === 500) {
+      throw new Error("Server error: Failed to update");
+    } else {
+      throw new Error("");
+    }
+  }
+
   const data: Card = await response.json();
   return data;
 };

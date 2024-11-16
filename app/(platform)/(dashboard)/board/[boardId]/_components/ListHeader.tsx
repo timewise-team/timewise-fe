@@ -63,7 +63,7 @@ const ListHeader = ({ data, onAddCard }: Props) => {
       toast.success("Schedule updated successfully");
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to update schedule");
+      toast.error(error.message);
     },
   });
 
