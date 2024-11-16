@@ -34,6 +34,8 @@ const CardModal = () => {
     enabled: !!id && !!session,
   });
 
+  console.log("cardData", cardData);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-white">
@@ -53,7 +55,9 @@ const CardModal = () => {
           {cardData ? (
             <Actions
               data={cardData}
-              organizationId={params.organizationId?.toString() || workspaceId as string}
+              organizationId={
+                params.organizationId?.toString() || (workspaceId as string)
+              }
             />
           ) : (
             <Actions.Skeleton />

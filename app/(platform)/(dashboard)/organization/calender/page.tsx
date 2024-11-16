@@ -9,9 +9,7 @@ import { useLinkedEmails } from "@/hooks/useLinkedEmail";
 import { Schedule, TransformedSchedule } from "@/types/Calendar";
 
 const transformScheduleData = (data: Schedule[]): TransformedSchedule[] => {
-
   return data.map((schedule: Schedule) => {
-    
     return {
       id: schedule.id.toString(),
       title: schedule.title,
@@ -53,7 +51,7 @@ const CalenderPage = () => {
       );
       return allWorkspaces.flat();
     },
-    enabled: !!session || !!linkedEmails,
+    enabled: !!session && !!linkedEmails,
   });
 
   const { data, isLoading } = useQuery({

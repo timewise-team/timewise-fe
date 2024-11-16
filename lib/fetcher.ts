@@ -260,6 +260,11 @@ export const addComment = async (params: any, session: any): Promise<Card> => {
       }),
     }
   );
+
+  if (!response.ok) {
+    throw new Error("Failed to add comment");
+  }
+
   const data: Card = await response.json();
   return data;
 };
@@ -474,6 +479,9 @@ export const updateCardID = async (
   if (!validatedFields.success) {
     throw new Error("Invalid fields");
   }
+
+  console.log("API call");
+  console.log("params", params);
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedules/${params.cardId}`,

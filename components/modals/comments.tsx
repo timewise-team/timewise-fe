@@ -59,7 +59,7 @@ const Comments = ({ session, data, scheduleId }: Props) => {
         {
           content: values.content,
           schedule_id: id,
-          organizationId: params.organizationId,
+          organizationId: params.organizationId ,
         },
         session
       );
@@ -160,7 +160,6 @@ const Comments = ({ session, data, scheduleId }: Props) => {
     setEditingCommentId(commentId);
     setValue("content", content);
   };
-
 
   return (
     <div className="space-y-2">
