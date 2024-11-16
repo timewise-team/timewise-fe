@@ -48,7 +48,7 @@ const Header = ({ data }: Props) => {
           start_time: values.start_time,
           status: values.status,
           title: values.title,
-          organizationId: params.organizationId,
+          organizationId: params.organizationId || data.workspace_id,
         },
         session
       );

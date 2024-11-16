@@ -65,7 +65,7 @@ export function DatePicker({ data }: Props) {
           ),
           status: values.status,
           title: values.title,
-          organizationId: params.organizationId,
+          organizationId: params.organizationId || params.workspace_id,
         },
         session
       );

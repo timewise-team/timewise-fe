@@ -71,7 +71,7 @@ const FormInvite = ({ children, data }: Props) => {
         {
           email: values.email,
           schedule_id: data.ID,
-          organizationId: params.organizationId,
+          organizationId: params.organizationId || data.workspace_id,
         },
         session
       );

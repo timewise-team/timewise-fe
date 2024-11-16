@@ -482,7 +482,7 @@ export const updateCardID = async (
       headers: {
         Authorization: `Bearer ${session?.user.access_token}`,
         "X-User-Email": `${session?.user.email}`,
-        "X-Workspace-ID": `${params.organizationId}`,
+        "X-Workspace-ID": `${params.organizationId || params.workspace_id}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
