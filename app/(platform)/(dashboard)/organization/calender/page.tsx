@@ -49,7 +49,7 @@ const CalenderPage = () => {
             }));
             return allWorkspaces.flat();
         },
-        enabled: !!session,
+        enabled: !!session && !!linkedEmails,
     });
 
     const {data, isLoading} = useQuery({
@@ -78,6 +78,10 @@ const CalenderPage = () => {
             setScheduleData(transformScheduleData(data));
         }
     }, [isLoading, data]);
+
+    if (!scheduleData || scheduleData.length === 0) {
+        return <div className="w-full h-full">Loading...</div>;
+    }
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center">
