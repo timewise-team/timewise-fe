@@ -48,7 +48,7 @@ const Assignee = ({ children, data }: Props) => {
       const response = await AssigneeSchedules(
         {
           email: values.email,
-          schedule_id: data.ID,
+          schedule_id: data.id,
           organizationId: params.organizationId,
         },
         session

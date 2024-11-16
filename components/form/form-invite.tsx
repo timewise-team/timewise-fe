@@ -31,6 +31,8 @@ const FormInvite = ({ children, data }: Props) => {
   const params = useParams();
   const [email, setEmail] = useState("");
 
+  console.log("data forminvite", data);
+
   const form = useForm<z.infer<typeof InviteMembers>>({
     resolver: zodResolver(InviteMembers),
     defaultValues: {
@@ -70,7 +72,7 @@ const FormInvite = ({ children, data }: Props) => {
       const response = await inviteMemberToCard(
         {
           email: values.email,
-          schedule_id: data.ID,
+          schedule_id: data.id,
           organizationId: params.organizationId || data.workspace_id,
         },
         session

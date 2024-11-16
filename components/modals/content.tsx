@@ -74,6 +74,7 @@ const Content = ({ data }: Props) => {
   });
 
   console.log("documents", documents);
+  console.log("data content", data);
 
   return (
     <>
