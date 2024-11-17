@@ -89,20 +89,20 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
   }
 
   return (
-    <div className="space-y-2 h-[700px] overflow-auto pt-3">
+    <div className="space-y-2 h-full overflow-auto p-3 mr-0">
       <div>
         <MenuSidebarAccount />
-        <Separator />
+        <Separator className="my-3" />
         <Link href={"/organization/calender"}>
           <div className="font-medium text-xs flex items-center mb-1 hover:cursor-pointer hover:bg-gray-200">
-            <span className="flex flex-row items-center gap-1 pl-4 font-bold text-lg">
+            <span className="flex flex-row items-center gap-1 font-bold text-lg">
               <CalendarRange className="w-4 h-4" />
               Calendar
             </span>
           </div>
         </Link>
         <div className="font-medium text-xs flex items-center mb-1">
-          <span className="flex flex-row gap-1 items-center pl-4 font-bold text-lg">
+          <span className="flex flex-row gap-1 items-center font-bold text-lg">
             <Store className="w-4 h-4" />
             Workspaces
           </span>
@@ -116,7 +116,7 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
       >
         {Object.entries(workspacesByEmail || {}).map(([email, workspaces]) => (
           <div key={email}>
-            <h2 className="pl-4 text-sm font-semibold text-gray-600">
+            <h2 className="text-sm font-semibold text-gray-600">
               {email}
             </h2>
             {workspaces.map((workspace: Workspace, index: number) => (

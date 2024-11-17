@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { UpdateCardOrder } from "@/actions/update-card-order/schema";
-import { UpdateCard } from "@/actions/update-card/schema";
-import { UpdateListOrder } from "@/actions/update-list-order/schema";
-import { Card } from "@/types/Board";
+import {UpdateCardOrder} from "@/actions/update-card-order/schema";
+import {UpdateCard} from "@/actions/update-card/schema";
+import {UpdateListOrder} from "@/actions/update-list-order/schema";
+import {Card} from "@/types/Board";
 
 export const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export const getBoardColumns = async (params: any, session: any) => {
@@ -31,6 +31,7 @@ export const getSchedules = async (params: any, session: any) => {
         workspace_id: params.workspaceIds.join(","),
         start_time: params.startTime,
         end_time: params.endTime,
+        is_deleted: params.isDeleted,
       }).toString(),
     {
       method: "GET",
@@ -41,8 +42,7 @@ export const getSchedules = async (params: any, session: any) => {
     }
   );
 
-  const data = await response.json();
-  return data;
+  return await response.json();
 };
 
 export const getCardByID = async (params: any, session: any) => {
