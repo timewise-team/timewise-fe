@@ -513,7 +513,7 @@ export const updateCardID = async (
 
   if (!response.ok) {
     if (response.status === 500) {
-      throw new Error("Server error: Failed to update");
+      throw new Error("You do not have permission to update this schedule !");
     } else {
       throw new Error("");
     }
