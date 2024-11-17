@@ -34,8 +34,6 @@ const CardModal = () => {
     enabled: !!id && !!session,
   });
 
-  console.log("cardData", cardData);
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-white">
