@@ -5,7 +5,7 @@ interface Props {
 }
 
 const CalenderLayout = ({ children }: Props) => {
-  return <div className="w-full h-full bg-white">{children}</div>;
+  return <div className="w-full h-full bg-gray-100">{children}</div>;
 };
 
 export default CalenderLayout;

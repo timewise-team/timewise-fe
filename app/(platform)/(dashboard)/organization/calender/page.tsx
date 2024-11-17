@@ -9,15 +9,17 @@ import { useLinkedEmails } from "@/hooks/useLinkedEmail";
 import { Schedule, TransformedSchedule } from "@/types/Calendar";
 
 const transformScheduleData = (data: Schedule[]): TransformedSchedule[] => {
+
   return data.map((schedule: Schedule) => {
+
     return {
       id: schedule.id.toString(),
       title: schedule.title,
       with: "Khanh Hoang",
       start: schedule.start_time.replace("T", " ").substring(0, 16),
       end: schedule.end_time.replace("T", " ").substring(0, 16),
-      color: "blue", // Assuming a default color
-      isEditable: true, // Assuming all events are editable
+      color: "blue",
+      isEditable: false,
       location: schedule.location + "123",
       topic: "test",
     };
@@ -57,7 +59,7 @@ const CalenderPage = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["schedules"],
     queryFn: async () => {
-      if (!workspaceData) return [];
+      if (!workspaceData || workspaceData.length < 1) return [];
       const workspaceIds = workspaceData.map(
         (workspace: Workspace) => workspace.ID
       );
@@ -70,11 +72,14 @@ const CalenderPage = () => {
         workspaceIds,
         // startTime: format(startOfWeek, "yyyy-MM-dd HH:mm:ss.SSS"),
         // endTime: format(endOfWeek, "yyyy-MM-dd HH:mm:ss.SSS"),
-        startTime: "2010-10-01 00:00:00.000",
-        endTime: "2025-12-31 23:59:59.000",
+        startTime: "0001-10-01 00:00:00.000",
+        endTime: "9999-12-31 23:59:59.000",
+        isDeleted: false
       };
-      return await getSchedules(payload, session);
+      const response = await getSchedules(payload, session);
+      return response || [];
     },
+    enabled: !!workspaceData
   });
 
   useEffect(() => {
@@ -83,12 +88,14 @@ const CalenderPage = () => {
     }
   }, [isLoading, data]);
 
-  if (!scheduleData || scheduleData.length === 0) {
+  console.log('scheduleData', scheduleData)
+
+  if (!scheduleData) {
     return <div className="w-full h-full">Loading...</div>;
   }
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center">
+    <div className="w-full h-full flex flex-col items-center justify-center p-2">
       {scheduleData.length > 0 && <CalendarApp scheduleData={scheduleData} />}
     </div>
   );

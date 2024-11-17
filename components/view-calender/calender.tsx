@@ -21,15 +21,13 @@ function CalendarApp({scheduleData}: CalendarAppProps) {
     const [selectedEventId] = useState<string | null>(null);
     const cardModal = useCardModal();
 
-
     const calendarApp = useNextCalendarApp({
         views: [viewWeek, viewMonthAgenda, viewDay, viewMonthGrid],
         defaultView: viewMonthGrid.name,
         events: scheduleData,
         plugins: [
-            createDragAndDropPlugin(),
-            createEventModalPlugin(),
-            createResizePlugin(),
+            // createDragAndDropPlugin(),
+            // createResizePlugin(),
             createCalendarControlsPlugin()
         ],
         selectedDate: format(new Date(), 'yyyy-MM-dd'),

@@ -1,14 +1,14 @@
 "use client";
-import { cn } from "@/lib/utils";
-import { AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion";
+import {cn} from "@/lib/utils";
+import {AccordionItem, AccordionTrigger} from "@radix-ui/react-accordion";
 import React from "react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import { Activity, CalendarHeart, Layout, Settings } from "lucide-react";
-import { AccordionContent } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/Button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Workspace } from "@/types/Board";
+import {usePathname, useRouter} from "next/navigation";
+import {CalendarHeart, Layout, Settings, Users} from "lucide-react";
+import {AccordionContent} from "@/components/ui/accordion";
+import {Button} from "@/components/ui/Button";
+import {Skeleton} from "@/components/ui/skeleton";
+import {Workspace} from "@/types/Board";
 
 interface Props {
   isExpanded: boolean;
@@ -28,14 +28,14 @@ const NavItem = ({ isExpanded, isActive, workspace, onExpand }: Props) => {
       href: `/organization/${workspace.ID}`,
     },
     {
-      label: "Members",
-      icon: <Activity className="h-4 w-4 mr-2" />,
-      href: `/organization/${workspace.ID}/members`,
-    },
-    {
       label: "Calendar",
       icon: <CalendarHeart className="h-4 w-4 mr-2" />,
       href: `/organization/${workspace.ID}/calender`,
+    },
+    {
+      label: "Members",
+      icon: <Users className="h-4 w-4 mr-2" />,
+      href: `/organization/${workspace.ID}/members`,
     },
     {
       label: "Settings",
