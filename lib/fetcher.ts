@@ -24,11 +24,10 @@ export const getBoardColumns = async (params: any, session: any) => {
 };
 
 export const getSchedules = async (params: any, session: any) => {
-  console.log("params", params);
-  const response = await fetch(
+    const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedule/schedule?` +
       new URLSearchParams({
-        workspace_id: params.workspaceIds.join(","),
+        workspace_id: params.checkedWorkspaces.join(","),
         start_time: params.startTime,
         end_time: params.endTime,
         is_deleted: params.isDeleted,
@@ -41,7 +40,6 @@ export const getSchedules = async (params: any, session: any) => {
       },
     }
   );
-
   return await response.json();
 };
 

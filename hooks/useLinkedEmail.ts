@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import {useStateContext} from "@/stores/StateContext";
 
 export const useLinkedEmails = () => {
   const { data: session } = useSession();
+  const { setStateLinkedEmails } = useStateContext();
 
   const { data, isLoading } = useQuery({
     queryKey: ["linked-email"],
@@ -24,6 +26,7 @@ export const useLinkedEmails = () => {
 
       // Verify that the result matches the expected format
       if (Array.isArray(result) && result.every((item) => typeof item.email === "string")) {
+        setStateLinkedEmails(result.map((item) => item.email));
         return result.map((item) => item.email);
       } else {
         throw new Error("Invalid response format");
