@@ -1,6 +1,7 @@
 import * as z from "zod";
 
 export const UpdateCard = z.object({
+  visibility: z.string(),
   all_day: z.boolean(),
   description: z.string(),
   end_time: z.string().refine(

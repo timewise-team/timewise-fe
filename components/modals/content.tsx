@@ -17,6 +17,7 @@ import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import { Participant } from "@/types/Board";
 import { getScheduleByID } from "@/lib/fetcher";
+import Status from "./status";
 
 interface Props {
   data: any;
@@ -30,7 +31,7 @@ export const getDocumentByScheduleID = async (params: any, session: any) => {
       headers: {
         Authorization: `Bearer ${session?.user.access_token}`,
         "X-User-Email": `${session?.user.email}`,
-        "X-Workspace-ID": `${params.organizationId || params.workspace_id}`,
+        "X-Workspace-ID": `${params.organizationId}`,
         "Content-Type": "application/json",
       },
     }
@@ -74,25 +75,27 @@ const Content = ({ data }: Props) => {
   });
 
   console.log("documents", documents);
-  console.log("data content", data);
 
   return (
     <>
-      <div className="flex flex-row items-center gap-x-3 text-sm font-normal">
+      <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
+        <Status data={data} />
+      </div>
+      <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
         <DatePicker data={data} />
       </div>
-      {/* <div className="flex flex-row items-center gap-x-3 text-sm font-normal">
+      {/* <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
         <ArchiveIcon className="h-4 w-4 text-gray-500" />
         Create By: {data.first_name} {data.last_name}
       </div> */}
 
-      <div className="flex flex-row items-center gap-x-3 text-sm font-normal">
+      <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
         <PersonStanding className="h-4 w-4 items-center" />
         Assignee:
         <p className="text-yellow-500">{scheduleParticipant?.email}</p>
         <div className="flex flex-row items-center gap-x-1">
           <Assignee data={data}>
-            <div className="cursor-pointer flex flex-row items-center gap-x-3 text-sm font-normal">
+            <div className="cursor-pointer flex flex-row items-center gap-x-3 text-sm font-bold">
               <Button
                 variant={"primary"}
                 size={"sm"}
@@ -104,7 +107,7 @@ const Content = ({ data }: Props) => {
           </Assignee>
         </div>
       </div>
-      <div className="flex flex-row items-center gap-x-3 text-sm font-normal">
+      <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
         <Theater className="h-4 w-4 items-center" />
         Tags:
         <div className="flex flex-row items-center gap-x-1">
@@ -122,14 +125,14 @@ const Content = ({ data }: Props) => {
       </div>
 
       {/* attachment */}
-      <div className="flex flex-row gap-x-3 text-sm font-normal">
+      <div className="flex flex-row gap-x-3 text-sm font-bold">
         <ArchiveIcon className="h-4 w-4 text-gray-500" />
         Attachment:
         {/* <Document data={documents} /> */}
       </div>
       <FormInvite data={data}>
         {/* invite member to schedule */}
-        <div className="cursor-pointer flex flex-row items-center gap-x-3 text-sm font-normal">
+        <div className="cursor-pointer flex flex-row items-center gap-x-3 text-sm font-bold">
           <Button
             variant={"primary"}
             size={"sm"}
