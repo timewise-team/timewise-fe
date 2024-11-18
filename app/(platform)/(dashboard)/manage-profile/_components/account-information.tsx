@@ -41,7 +41,6 @@ const AccountInformation = ({ accountInformation }: Props) => {
     register,
     handleSubmit,
     reset,
-    setValue,
     formState: { errors },
   } = useForm<z.infer<typeof ManageAccount>>({
     resolver: zodResolver(ManageAccount),
@@ -107,19 +106,6 @@ const AccountInformation = ({ accountInformation }: Props) => {
     }
   };
 
-  // Handle avatar file change
-  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
-        setValue("profile_picture", reader.result as string); // Set the base64 image as profile_picture
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
       <form onSubmit={handleSubmit(handleSaveChanges)} key={isEditing ? "edit" : "view"}>
         <Card>
@@ -168,17 +154,6 @@ const AccountInformation = ({ accountInformation }: Props) => {
                   </div>
               )}
             </div>
-            {isEditing && (
-                <div className="space-y-1">
-                  <Label htmlFor="avatar">Change Avatar</Label>
-                  <Input
-                      id="avatar"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleAvatarChange}
-                  />
-                </div>
-            )}
           </CardContent>
           <CardFooter>
             {!isEditing ? (
