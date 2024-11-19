@@ -2,7 +2,7 @@
 import {UpdateCardOrder} from "@/actions/update-card-order/schema";
 import {UpdateCard} from "@/actions/update-card/schema";
 import {UpdateListOrder} from "@/actions/update-list-order/schema";
-import {Card, Workspace} from "@/types/Board";
+import {Card} from "@/types/Board";
 
 export const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export const getBoardColumns = async (params: any, session: any) => {
