@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { User } from "lucide-react";
+import {SettingsIcon, User} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/Button";
@@ -24,8 +23,12 @@ export const MENU_ITEMS = [
   {
     icon: User,
     label: "Manage Account",
-    shortcut: "⇧⌘M",
     href: "/manage-profile",
+  },
+  {
+    icon: SettingsIcon,
+    label: "Settings",
+    href: "/settings",
   },
 ];
 
@@ -68,9 +71,6 @@ const MenuAccountList = ({ session }: Props) => {
               <DropdownMenuItem className="cursor-pointer">
                 <item.icon className="mr-2 h-4 w-4" />
                 <span>{item.label}</span>
-                {item.shortcut && (
-                  <DropdownMenuShortcut>{item.shortcut}</DropdownMenuShortcut>
-                )}
               </DropdownMenuItem>
             </Link>
           ))}
