@@ -43,6 +43,15 @@ const ListContainer = ({ data }: Props) => {
       if (!validatedFields.success) {
         throw new Error("Invalid fields");
       }
+
+      console.log('aaa', {
+        position: values.position,
+        board_column_id: boardColumnsId.find(
+            (item) => item === orderedData[values.position].id
+        ),
+        organizationId: params.organizationId,
+      })
+
       const response = await updateBoardOrder(
         {
           position: values.position,
@@ -183,7 +192,7 @@ const ListContainer = ({ data }: Props) => {
         // User moves the cards to another list
       } else {
         // Remove card from the source list
-        const [movedCard] = sourceList.cards.splice(source.index, 1);
+        const [movedCard] = sourceList.schedules.splice(source.index, 1);
 
         if (!movedCard) {
           console.error("Moved card not found");

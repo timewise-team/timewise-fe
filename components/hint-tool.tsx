@@ -8,7 +8,7 @@ import {
 
 interface Props {
   children: React.ReactNode;
-  description: string;
+  description: string | React.ReactNode;
   side?: "left" | "right" | "top" | "bottom";
   sideOffSet?: number;
 }

@@ -7,21 +7,28 @@ import {getSchedules} from "@/lib/fetcher";
 import {Schedule, TransformedSchedule} from "@/types/Calendar";
 import {useStateContext} from "@/stores/StateContext";
 import CalendarFilter from "@components/view-calender/calendar-filter";
+import {format, parseISO} from "date-fns";
 
 const transformScheduleData = (data: Schedule[]): TransformedSchedule[] => {
-
     return data.map((schedule: Schedule) => {
-
+        let start, end = "";
+        if (schedule.all_day) {
+            start = format(parseISO(schedule.start_time), "yyyy-MM-dd");
+            end = format(parseISO(schedule.end_time), "yyyy-MM-dd");
+        } else {
+            start = format(parseISO(schedule.end_time), "yyyy-MM-dd HH:mm");
+            end = format(parseISO(schedule.end_time), "yyyy-MM-dd HH:mm");
+        }
         return {
             id: schedule.id.toString(),
             title: schedule.title,
-            with: "Khanh Hoang",
-            start: schedule.start_time.replace("T", " ").substring(0, 16),
-            end: schedule.end_time.replace("T", " ").substring(0, 16),
-            color: "blue",
+            with: "",
+            start: start,
+            end: end,
+            color: "",
             isEditable: false,
-            location: schedule.location + "123",
-            topic: "test",
+            location: schedule.location,
+            topic: "",
         };
     });
 };
