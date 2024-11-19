@@ -2,7 +2,7 @@
 import {UpdateCardOrder} from "@/actions/update-card-order/schema";
 import {UpdateCard} from "@/actions/update-card/schema";
 import {UpdateListOrder} from "@/actions/update-list-order/schema";
-import {Card} from "@/types/Board";
+import {Card, Workspace} from "@/types/Board";
 
 export const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export const getBoardColumns = async (params: any, session: any) => {
@@ -604,4 +604,50 @@ export const updateBoardOrder = async (params: any, session: any) => {
 
   const data = await response.json();
   return data;
+};
+
+export const fetchWorkspaces = async (params: any, session: any) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/get-workspaces-by-email/${params}`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${session?.user.access_token}`,
+                },
+            }
+        );
+        if (!response.ok) {
+            throw new Error("Failed to fetch workspaces");
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching workspaces:", error);
+        throw error;
+    }
+};
+
+export const fetchWorkspaceDetails = async (params: any, session: any) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/get-workspace-by-id/${params}`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${session?.user.access_token}`,
+                },
+            }
+        );
+        if (!response.ok) {
+            throw new Error("Failed to fetch workspaces");
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching workspaces:", error);
+        throw error;
+    }
 };
