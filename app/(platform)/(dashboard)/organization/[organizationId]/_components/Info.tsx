@@ -9,8 +9,8 @@ const Info = () => {
   const { data: session } = useSession();
   return (
     <>
-      <div className="flex items-center gap-x-4 mb-4 hover:cursor-pointer">
-        <div className="w-[60px] h-[60px] relative">
+      <div className="flex items-center gap-x-4 hover:cursor-pointer">
+        <div className="w-[40px] h-[40px] relative">
           <Image
             fill
             src={session?.user?.image || "/images/icons/google.svg"}

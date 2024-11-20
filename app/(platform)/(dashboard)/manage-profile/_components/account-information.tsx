@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -14,7 +14,8 @@ import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { useSession } from "next-auth/react";
 
 interface Props {
   accountInformation: any;
@@ -22,135 +23,149 @@ interface Props {
 
 export const ManageAccount = z.object({
   first_name: z
-    .string({
-      required_error: "First name is required",
-      invalid_type_error: "First name must be a string",
-    })
-    .min(3, {
-      message: "Title must be at least 3 characters long",
-    }),
+      .string()
+      .min(3, "First name must be at least 3 characters long"),
   last_name: z
-    .string({
-      required_error: "Last name is required",
-      invalid_type_error: "Last name must be a string",
-    })
-    .min(3, {
-      message: "Last name must be at least 3 characters long",
-    }),
-  profile_picture: z.string({
-    required_error: "Profile picture is required",
-    invalid_type_error: "Profile picture is required",
-  }),
+      .string()
+      .min(3, "Last name must be at least 3 characters long"),
+  profile_picture: z.string(),
 });
 
-export const updateUserInfo = async (params: any, session: any) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/update-user`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        calendar_settings: params.calendar_settings,
-        first_name: params.first_name,
-        last_name: params.last_name,
-        notification_settings: params.notification_settings,
-        profile_picture: params.profile_picture,
-      }),
-    }
-  );
-  const data = await response.json();
-  return data;
-};
-
 const AccountInformation = ({ accountInformation }: Props) => {
-  const form = useForm<z.infer<typeof ManageAccount>>({
+  const [isEditing, setIsEditing] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(
+      accountInformation?.profile_picture || null
+  );
+  const { data: session } = useSession();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<z.infer<typeof ManageAccount>>({
     resolver: zodResolver(ManageAccount),
     defaultValues: {
-      first_name: accountInformation?.first_name,
-      last_name: accountInformation?.last_name,
-      profile_picture: accountInformation?.profile_picture,
+      first_name: "",
+      last_name: "",
+      profile_picture: "",
     },
   });
 
-  // const { mutate: updateUserInfoMutation } = useMutation({
-  //   mutationFn: async (values: z.infer<typeof ManageAccount>) => {
-  //     const validatedFields = ManageAccount.safeParse(values);
-  //     if (!validatedFields.success) {
-  //       throw new Error("Invalid fields");
-  //     }
-  //     const response = await updateUserInfo(
-  //       {
-  //         first_name: values.first_name,
-  //         last_name: values.last_name,
-  //         profile_picture: values.profile_picture,
-  //       },
-  //       session
-  //     );
-  //     return response;
-  //   },
-  //   onSuccess: () => {
-  //     toast.success("User information updated successfully");
-  //     queryClient.invalidateQueries({ queryKey: ["accountInformation"] });
-  //   },
-  //   onError: () => {
-  //     toast.error("Error updating user information");
-  //   },
-  // });
+  // Load data when accountInformation changes
+  useEffect(() => {
+    if (accountInformation) {
+      reset({
+        first_name: accountInformation.first_name || "",
+        last_name: accountInformation.last_name || "",
+        profile_picture: accountInformation.profile_picture || "",
+      });
+      setAvatarPreview(accountInformation.profile_picture || null);
+    }
+  }, [accountInformation, reset]);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+
+    // Reset the form to remove disabled state
+    reset((prev) => ({
+      ...prev,
+      first_name: accountInformation.first_name || "",
+      last_name: accountInformation.last_name || "",
+    }));
+  };
+
+  const handleSaveChanges = async (data: z.infer<typeof ManageAccount>) => {
+    console.log("Saving changes:", data);
+    setIsEditing(false);
+
+    try {
+      const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/user`,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: `Bearer ${session?.user.access_token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              first_name: data.first_name,
+              last_name: data.last_name,
+              profile_picture: data.profile_picture, // Send updated avatar URL if changed
+            }),
+          }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update user information");
+      }
+
+      const responseData = await response.json();
+      console.log("User information updated successfully:", responseData);
+    } catch (error) {
+      console.error("Failed to update user information:", error);
+    }
+  };
 
   return (
-    <Form {...form}>
-      <form>
+      <form onSubmit={handleSubmit(handleSaveChanges)} key={isEditing ? "edit" : "view"}>
         <Card>
           <CardHeader>
             <CardTitle>Account Information</CardTitle>
             <Image
-              src={accountInformation?.profile_picture}
-              alt="avatar"
-              width={40}
-              height={40}
-              className="rounded-full"
+                src={avatarPreview || "/default-avatar.png"}
+                alt="avatar"
+                width={40}
+                height={40}
+                className="rounded-full"
             />
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="space-y-1">
               <Label htmlFor="first-name">First name</Label>
               <Input
-                id="first-name"
-                defaultValue={accountInformation?.first_name}
+                  id="first-name"
+                  {...register("first_name")}
+                  disabled={!isEditing}
               />
+              {errors.first_name && (
+                  <p className="text-red-500">{errors.first_name.message}</p>
+              )}
             </div>
             <div className="space-y-1">
               <Label htmlFor="last-name">Last name</Label>
               <Input
-                id="last-name"
-                defaultValue={accountInformation?.last_name}
+                  id="last-name"
+                  {...register("last_name")}
+                  disabled={!isEditing}
               />
+              {errors.last_name && (
+                  <p className="text-red-500">{errors.last_name.message}</p>
+              )}
             </div>
             <div className="space-y-1">
-              {accountInformation?.is_verified &&
-                accountInformation?.is_active && (
+              {accountInformation?.is_verified && accountInformation?.is_active && (
                   <div className="space-y-1">
                     <Label htmlFor="status">Status</Label>
                     <Input
-                      id="status"
-                      defaultValue="Verified and Active"
-                      readOnly
+                        id="status"
+                        defaultValue="Verified and Active"
+                        readOnly
                     />
                   </div>
-                )}
+              )}
             </div>
           </CardContent>
-
           <CardFooter>
-            <Button>Save changes</Button>
+            {!isEditing ? (
+                <Button type="button" onClick={handleEdit}>
+                  Change Information
+                </Button>
+            ) : (
+                <Button type="submit">Save Changes</Button>
+            )}
           </CardFooter>
         </Card>
       </form>
-    </Form>
   );
 };
 

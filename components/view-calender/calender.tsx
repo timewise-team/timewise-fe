@@ -1,13 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 import React, {useEffect, useState} from "react";
 import {ScheduleXCalendar, useNextCalendarApp} from "@schedule-x/react";
 import "@schedule-x/theme-default/dist/index.css";
 import {viewDay, viewMonthAgenda, viewMonthGrid, viewWeek} from "@schedule-x/calendar";
-import {createDragAndDropPlugin} from "@schedule-x/drag-and-drop";
-import {createEventModalPlugin} from "@schedule-x/event-modal";
-import {createResizePlugin} from "@schedule-x/resize";
 import {format} from "date-fns";
 import {createCalendarControlsPlugin} from "@schedule-x/calendar-controls";
+import {createEventsServicePlugin} from '@schedule-x/events-service';
 import ScheduleDetailsDrawer from "@components/view-calender/custom-event-modal";
 import {useCardModal} from "@/hooks/useCardModal";
 import {TransformedSchedule} from "@/types/Calendar";
@@ -21,15 +21,14 @@ function CalendarApp({scheduleData}: CalendarAppProps) {
     const [selectedEventId] = useState<string | null>(null);
     const cardModal = useCardModal();
 
-
     const calendarApp = useNextCalendarApp({
         views: [viewWeek, viewMonthAgenda, viewDay, viewMonthGrid],
         defaultView: viewMonthGrid.name,
         events: scheduleData,
         plugins: [
-            createDragAndDropPlugin(),
-            createEventModalPlugin(),
-            createResizePlugin(),
+            // createDragAndDropPlugin(),
+            // createResizePlugin(),
+            createEventsServicePlugin(),
             createCalendarControlsPlugin()
         ],
         selectedDate: format(new Date(), 'yyyy-MM-dd'),
@@ -87,7 +86,13 @@ function CalendarApp({scheduleData}: CalendarAppProps) {
                 },
             },
         },
-    });
+    }) as any;
+
+    useEffect(() => {
+        if (calendarApp) {
+            calendarApp.eventsService.set(scheduleData);
+        }
+    }, [scheduleData, calendarApp]);
 
     useEffect(() => {
         const handleClick = (event: Event) => {
@@ -126,21 +131,7 @@ function CalendarApp({scheduleData}: CalendarAppProps) {
                 element.removeEventListener("click", handleClick);
             });
         };
-    }, [calendarApp]);
-
-    // useEffect(() => {
-    //     if (calendarApp && calendarApp.calendarControls) {
-    //         const updateRange = () => {
-    //             const range = calendarApp.calendarControls.getRange();
-    //             console.log("Calendar range:", range);
-    //         };
-    //
-    //         // Initial range fetch
-    //         updateRange();
-    //     }
-    // }, [calendarApp]);
-
-    // todo: handle change view or date range to fetch schedules
+    }, [calendarApp, cardModal]);
 
     return (
         <div className="w-full max-w-[100vw] h-full">

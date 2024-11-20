@@ -1,14 +1,13 @@
 "use client";
-import { cn } from "@/lib/utils";
-import { AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion";
+import {cn} from "@/lib/utils";
+import {AccordionItem, AccordionTrigger} from "@radix-ui/react-accordion";
 import React from "react";
-import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import { Activity, CalendarHeart, Layout, Settings } from "lucide-react";
-import { AccordionContent } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/Button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Workspace } from "@/types/Board";
+import {usePathname, useRouter} from "next/navigation";
+import {CalendarHeart, Layout, Settings, Users} from "lucide-react";
+import {AccordionContent} from "@/components/ui/accordion";
+import {Button} from "@/components/ui/Button";
+import {Skeleton} from "@/components/ui/skeleton";
+import {Workspace} from "@/types/Board";
 
 interface Props {
   isExpanded: boolean;
@@ -17,29 +16,29 @@ interface Props {
   onExpand: (id: string) => void;
 }
 
-const NavItem = ({ isExpanded, isActive, workspace, onExpand }: Props) => {
+const NavItem = ({ workspace, onExpand }: Props) => {
   const router = useRouter();
   const pathName = usePathname();
 
   const routers = [
     {
       label: "Boards",
-      icon: <Layout className="h-4 w-4 mr-2" />,
+      icon: <Layout className="h-3 w-3 mr-1" />,
       href: `/organization/${workspace.ID}`,
     },
     {
-      label: "Members",
-      icon: <Activity className="h-4 w-4 mr-2" />,
-      href: `/organization/${workspace.ID}/members`,
-    },
-    {
       label: "Calendar",
-      icon: <CalendarHeart className="h-4 w-4 mr-2" />,
+      icon: <CalendarHeart className="h-3 w-3 mr-1" />,
       href: `/organization/${workspace.ID}/calender`,
     },
     {
+      label: "Members",
+      icon: <Users className="h-3 w-3 mr-1" />,
+      href: `/organization/${workspace.ID}/members`,
+    },
+    {
       label: "Settings",
-      icon: <Settings className="h-4 w-4 mr-2" />,
+      icon: <Settings className="h-3 w-3 mr-1" />,
       href: `/organization/${workspace.ID}/settings`,
     },
   ];
@@ -53,30 +52,30 @@ const NavItem = ({ isExpanded, isActive, workspace, onExpand }: Props) => {
       <AccordionTrigger
         onClick={() => onExpand(String(workspace.ID))}
         className={cn(
-          "w-full flex items-center gap-x-2 p-1.5 text-neutral-700 rounded-md hover:bg-neutral-500/10 transition text-start no-underline hover:no-underline",
-          isActive && !isExpanded && "bg-sky-500/10 text-sky-700"
+          "w-full flex items-center gap-x-2 text-neutral-700 rounded-md transition text-start no-underline hover:no-underline",
+          // isActive && !isExpanded && "bg-sky-500/10 text-sky-700"
         )}
       >
         <div className="flex items-center gap-x-2">
-          <div className="w-7 h-7 relative">
-            <Image
-              fill
-              src={"/images/banner/1.webp"}
-              alt="organization"
-              className="rounded-sm object-cover"
-            />
-          </div>
-          <span className="font-medium text-sm">{workspace.title}</span>
+          {/*<div className="w-6 h-6 relative">*/}
+          {/*  <Image*/}
+          {/*    fill*/}
+          {/*    src={"/images/banner/1.webp"}*/}
+          {/*    alt="organization"*/}
+          {/*    className="rounded-sm object-cover"*/}
+          {/*  />*/}
+          {/*</div>*/}
+          <span className="text-sm font-semibold pt-1.5">{workspace.title}</span>
         </div>
       </AccordionTrigger>
-      <AccordionContent className="pt-1 text-neutral-700">
+      <AccordionContent className="text-neutral-700">
         {routers.map((route) => (
           <Button
             key={route.href}
             size="sm"
             onClick={() => onClick(route.href)}
             className={cn(
-              "w-full font-normal justify-start pl-10 mb-1",
+              "w-full text-xs justify-start",
               pathName === route.href && "bg-sky-500/10 text-sky-700"
             )}
             variant="ghost"

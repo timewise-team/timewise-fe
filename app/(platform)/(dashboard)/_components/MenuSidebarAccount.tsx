@@ -31,7 +31,7 @@ const MenuSidebarAccount = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="bg-white hover:bg-white text-black">
+        <Button className="bg-transparent hover:bg-white text-black p-0">
           <Info />
         </Button>
       </DropdownMenuTrigger>

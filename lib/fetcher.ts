@@ -24,13 +24,13 @@ export const getBoardColumns = async (params: any, session: any) => {
 };
 
 export const getSchedules = async (params: any, session: any) => {
-  console.log("params", params);
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedule/schedule?` +
       new URLSearchParams({
-        workspace_id: params.workspaceIds.join(","),
+        workspace_id: params.checkedWorkspaces.join(","),
         start_time: params.startTime,
         end_time: params.endTime,
+        is_deleted: params.isDeleted,
       }).toString(),
     {
       method: "GET",
@@ -40,9 +40,7 @@ export const getSchedules = async (params: any, session: any) => {
       },
     }
   );
-
-  const data = await response.json();
-  return data;
+  return await response.json();
 };
 
 export const getCardByID = async (params: any, session: any) => {
@@ -605,6 +603,52 @@ export const updateBoardOrder = async (params: any, session: any) => {
 
   const data = await response.json();
   return data;
+};
+
+export const fetchWorkspaces = async (params: any, session: any) => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/get-workspaces-by-email/${params}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${session?.user.access_token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch workspaces");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching workspaces:", error);
+    throw error;
+  }
+};
+
+export const fetchWorkspaceDetails = async (params: any, session: any) => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/get-workspace-by-id/${params}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${session?.user.access_token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch workspaces");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching workspaces:", error);
+    throw error;
+  }
 };
 
 // add reminder
