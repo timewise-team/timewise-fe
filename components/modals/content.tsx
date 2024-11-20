@@ -26,6 +26,7 @@ import AllReminder from "./all-reminder";
 import PersonalReminder from "./personal-reminder";
 import Document from "./document";
 import Visibility from "./Visibility";
+import Status from "./status";
 
 interface Props {
   data: any;
@@ -102,7 +103,7 @@ const Content = ({ data }: Props) => {
         <Visibility data={data} />
       </div>
       <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
-        {/* <Status data={data} /> */}
+        <Status />
       </div>
 
       <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
