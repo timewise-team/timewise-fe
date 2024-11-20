@@ -12,6 +12,7 @@ import { useParams } from "next/navigation";
 import { updateCardID } from "@/lib/fetcher";
 import { toast } from "sonner";
 import { Input } from "../ui/input";
+import { format } from "date-fns";
 
 interface Props {
   data: CardWithList;
@@ -37,14 +38,21 @@ const Description = ({ data }: Props) => {
       const response = await updateCardID(
         {
           cardId: data.id,
+          visibility: values.visibility,
           all_day: values.all_day,
           description: values.description,
-          end_time: values.end_time,
+          end_time: format(
+            new Date(values.end_time),
+            "yyyy-MM-dd HH:mm:ss.SSS"
+          ),
           extra_data: values.extra_data,
           location: values.location,
           priority: values.priority,
           recurrence_pattern: values.recurrence_pattern,
-          start_time: values.start_time,
+          start_time: format(
+            new Date(values.start_time),
+            "yyyy-MM-dd HH:mm:ss.SSS"
+          ),
           status: values.status,
           title: values.title,
           organizationId: params.organizationId || data.workspace_id,

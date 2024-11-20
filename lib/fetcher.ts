@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {UpdateCardOrder} from "@/actions/update-card-order/schema";
-import {UpdateCard} from "@/actions/update-card/schema";
-import {UpdateListOrder} from "@/actions/update-list-order/schema";
-import {Card} from "@/types/Board";
+import { UpdateCardOrder } from "@/actions/update-card-order/schema";
+import { UpdateCard } from "@/actions/update-card/schema";
+import { UpdateListOrder } from "@/actions/update-list-order/schema";
+import { Card } from "@/types/Board";
 
 export const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export const getBoardColumns = async (params: any, session: any) => {
@@ -24,7 +24,7 @@ export const getBoardColumns = async (params: any, session: any) => {
 };
 
 export const getSchedules = async (params: any, session: any) => {
-    const response = await fetch(
+  const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedule/schedule?` +
       new URLSearchParams({
         workspace_id: params.checkedWorkspaces.join(","),
@@ -521,7 +521,6 @@ export const updateCardID = async (
   return data;
 };
 
-//get document by schedule id
 export const getDocumentByScheduleID = async (params: any, session: any) => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/document/schedule/${params.cardId}`,
@@ -607,47 +606,275 @@ export const updateBoardOrder = async (params: any, session: any) => {
 };
 
 export const fetchWorkspaces = async (params: any, session: any) => {
-    try {
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/get-workspaces-by-email/${params}`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${session?.user.access_token}`,
-                },
-            }
-        );
-        if (!response.ok) {
-            throw new Error("Failed to fetch workspaces");
-        }
-
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error("Error fetching workspaces:", error);
-        throw error;
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/get-workspaces-by-email/${params}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${session?.user.access_token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch workspaces");
     }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching workspaces:", error);
+    throw error;
+  }
 };
 
 export const fetchWorkspaceDetails = async (params: any, session: any) => {
-    try {
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/get-workspace-by-id/${params}`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${session?.user.access_token}`,
-                },
-            }
-        );
-        if (!response.ok) {
-            throw new Error("Failed to fetch workspaces");
-        }
-
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error("Error fetching workspaces:", error);
-        throw error;
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/get-workspace-by-id/${params}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${session?.user.access_token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch workspaces");
     }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching workspaces:", error);
+    throw error;
+  }
+};
+
+// add reminder
+export const addReminderPersonal = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/reminder/only_me`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        schedule_id: params.schedule_id,
+        reminder_time: params.time,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to add reminder");
+  }
+
+  const data = await response.json();
+  return data;
+};
+
+//add reminder for all participants
+export const addReminderAllParticipants = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/reminder/all_participants`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        schedule_id: params.schedule_id,
+        reminder_time: params.time,
+      }),
+    }
+  );
+
+  console.log("response", response);
+};
+
+//get all reminder participant
+export const getReminderParticipant = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/reminder/schedule/${params.schedule_id}/all_participants`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+  return data;
+};
+
+//get personal reminder
+export const getReminderPersonal = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/reminder/schedule/${params.schedule_id}/only_me`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+  return data;
+};
+
+//update reminder participant
+export const updateReminderParticipant = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/reminder/all_participants/${params.reminder_id}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        reminder_time: params.reminder_time,
+        schedule_id: params.schedule_id,
+      }),
+    }
+  );
+
+  const data = await response.json();
+  return data;
+};
+
+//delete file document
+export const deleteDocument = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/document/delete?scheduleId=${params.scheduleId}&wspUserId=${params.wspUserId}&fileName=${params.fileName}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to delete document");
+  }
+
+  const data = await response.json();
+  return data;
+};
+
+//add docuemtn from device
+export const addDocument = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/document/upload`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.workspace_id}`,
+      },
+      body: params.body,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to upload document");
+  }
+
+  const data = await response.json();
+  return data;
+};
+
+//add personal reminder
+export const addPersonalReminder = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/reminder/only_me`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        schedule_id: params.schedule_id,
+      }),
+    }
+  );
+  const data = await response.json();
+  return data;
+};
+
+// Update reminder participant
+export const updateReminderPersonal = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/reminder/only_me/${params.reminder_id}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        time: params.time,
+        schedule_id: params.schedule_id,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to update reminder");
+  }
+
+  const data = await response.json();
+  return data;
+};
+
+//remove personal reminder
+export const removePersonalReminder = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/reminder/${params.reminder_id}/schedule/${params.schedule_id}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error("Reminder not found");
+    }
+    throw new Error("Failed to remove reminder");
+  }
+
+  const data = await response.json();
+  return data;
 };

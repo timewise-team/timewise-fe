@@ -31,8 +31,6 @@ const FormInvite = ({ children, data }: Props) => {
   const params = useParams();
   const [email, setEmail] = useState("");
 
-  console.log("data forminvite", data);
-
   const form = useForm<z.infer<typeof InviteMembers>>({
     resolver: zodResolver(InviteMembers),
     defaultValues: {

@@ -23,10 +23,10 @@ interface Props {
 
 export function DatePicker({ data }: Props) {
   const [startDate, setStartDate] = useState(
-    format(parseISO(data.start_time), "yyyy-MM-dd HH:mm:ss.SSS")
+    format(parseISO(data.start_time), "yyyy-MM-dd HH:mm")
   );
   const [endDate, setEndDate] = useState(
-    format(parseISO(data.end_time), "yyyy-MM-dd HH:mm:ss.SSS")
+    format(parseISO(data.end_time), "yyyy-MM-dd HH:mm")
   );
   const [isPending, startTransition] = useTransition();
   const [isEditing, setIsEditing] = useState(false);
@@ -49,6 +49,7 @@ export function DatePicker({ data }: Props) {
       const response = await updateCardID(
         {
           cardId: data.id,
+          visibility: values.visibility,
           all_day: values.all_day,
           description: values.description,
           end_time: format(
@@ -114,6 +115,7 @@ export function DatePicker({ data }: Props) {
     updateCardInformation(values);
   });
 
+  console.log("end date", endDate);
   return (
     <div className="flex flex-col space-y-1">
       <div className="flex flex-col">
@@ -138,11 +140,7 @@ export function DatePicker({ data }: Props) {
                     className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                   />
                 </div>
-                {errors.start_time && (
-                  <p className="text-red-500 text-sm items-start pb-1">
-                    {"Start Date must be higher than the current date"}
-                  </p>
-                )}
+
                 <div className="mb-4 flex flex-row items-center gap-x-1">
                   <div className="flex flex-row gap-x-2 items-start">
                     <ArchiveIcon className="w-6 h-6" />
@@ -162,7 +160,7 @@ export function DatePicker({ data }: Props) {
                 </div>
                 {errors.end_time && (
                   <p className="text-red-500 text-sm items-start pb-1">
-                    {"End Date must be higher than the current date"}
+                    {"Start date must be before end date"}
                   </p>
                 )}
                 <Button onClick={handleSubmission}>Save</Button>
@@ -181,7 +179,7 @@ export function DatePicker({ data }: Props) {
               <div className="flex flex-row gap-x-2 items-start">
                 <ArchiveIcon className="w-6 h-6" />
                 End Date:
-              </div>{" "}
+              </div>
               <Input type="datetime-local" value={endDate} />
             </div>
           )}

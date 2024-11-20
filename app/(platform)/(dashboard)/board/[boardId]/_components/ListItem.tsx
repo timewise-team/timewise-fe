@@ -15,8 +15,6 @@ export const ListItem = ({ index, data }: Props) => {
   const textareaRef = useRef<ElementRef<"textarea">>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  console.log("list item", data);
-
   const disableEditing = () => {
     setIsEditing(false);
   };

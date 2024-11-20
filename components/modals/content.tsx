@@ -16,29 +16,21 @@ import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import { Participant } from "@/types/Board";
-import { getScheduleByID } from "@/lib/fetcher";
+import {
+  getDocumentByScheduleID,
+  getReminderParticipant,
+  getReminderPersonal,
+  getScheduleByID,
+} from "@/lib/fetcher";
+import AllReminder from "./all-reminder";
+import PersonalReminder from "./personal-reminder";
+import Document from "./document";
+import Visibility from "./Visibility";
 import Status from "./status";
 
 interface Props {
   data: any;
 }
-
-export const getDocumentByScheduleID = async (params: any, session: any) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/document/schedule/${params.cardId}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
-        "X-Workspace-ID": `${params.organizationId}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  const data = await response.json();
-  return data;
-};
 
 const Content = ({ data }: Props) => {
   const { data: session } = useSession();
@@ -59,6 +51,37 @@ const Content = ({ data }: Props) => {
     enabled: !!data.id && !!session,
   });
 
+  const { data: allReminder } = useQuery({
+    queryKey: ["allReminder"],
+    queryFn: async () => {
+      const response = await getReminderParticipant(
+        {
+          schedule_id: data.id,
+          organizationId: params.organizationId,
+        },
+        session
+      );
+      return response;
+    },
+    enabled: !!data.id && !!session,
+  });
+
+  const { data: personalReminder } = useQuery({
+    queryKey: ["personalReminder"],
+    queryFn: async () => {
+      const response = await getReminderPersonal(
+        {
+          schedule_id: data.id,
+          organizationId: params.organizationId,
+        },
+        session
+      );
+
+      return response;
+    },
+    enabled: !!data.id && !!session,
+  });
+
   const { data: documents } = useQuery({
     queryKey: ["documents"],
     queryFn: async () => {
@@ -74,20 +97,27 @@ const Content = ({ data }: Props) => {
     enabled: !!data.id && !!session,
   });
 
-  console.log("documents", documents);
-
   return (
     <>
       <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
-        <Status data={data} />
+        <Visibility data={data} />
       </div>
+      <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
+        <Status />
+      </div>
+
       <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
         <DatePicker data={data} />
       </div>
-      {/* <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
-        <ArchiveIcon className="h-4 w-4 text-gray-500" />
-        Create By: {data.first_name} {data.last_name}
-      </div> */}
+      <div className="flex flex-col items-start space-y-1">
+        <p className="font-bold">Reminders</p>
+        <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
+          <AllReminder data={allReminder} />
+        </div>
+        <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
+          <PersonalReminder data={personalReminder} schedule={data} />
+        </div>
+      </div>
 
       <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
         <PersonStanding className="h-4 w-4 items-center" />
@@ -125,10 +155,13 @@ const Content = ({ data }: Props) => {
       </div>
 
       {/* attachment */}
-      <div className="flex flex-row gap-x-3 text-sm font-bold">
-        <ArchiveIcon className="h-4 w-4 text-gray-500" />
-        Attachment:
-        {/* <Document data={documents} /> */}
+      <div className="flex flex-col gap-x-3 text-sm font-bold space-y-2">
+        <div className="flex flex-row gap-x-2">
+          <ArchiveIcon className="h-4 w-4 text-gray-500" />
+          Attachment:
+        </div>
+
+        <Document data={data} document={documents} />
       </div>
       <FormInvite data={data}>
         {/* invite member to schedule */}
