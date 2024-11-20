@@ -89,7 +89,7 @@ const ManageWorkspaces = () => {
                                     {sortWorkspaces(filteredWorkspaces[email]).map((workspace) => (
                                         <Link
                                             key={workspace.ID}
-                                            href={`/manage-workspaces/${workspace.ID}`} // Redirect to workspace details page
+                                            href={`/organization/${workspace.ID}`} // Redirect to workspace details page
                                         >
                                             <div className="flex flex-col bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all cursor-pointer">
                                                 <h4 className="text-lg font-semibold text-gray-800">{workspace.title}</h4>

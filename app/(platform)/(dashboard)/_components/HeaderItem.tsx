@@ -15,11 +15,11 @@ import { cn } from "@/lib/utils";
 export const NAVIGATION_LIST = [
     {
         title: "Home",
-        href: `${process.env.NEXT_PUBLIC_AUTH_TRUST_HOST}/organization/calender`,
+        href: `/organization/calender`,
     },
     {
                 title: "Manage Workspaces",
-                href: `${process.env.NEXT_PUBLIC_AUTH_TRUST_HOST}/manage-workspaces/all`,
+                href: `/manage-workspaces/all`,
     },
 ];
 
