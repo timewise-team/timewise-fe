@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { ListItem } from "@components/header/list-item";
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -9,7 +8,6 @@ import {
     NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 
-import { cn } from "@/lib/utils";
 
 // Create a list of navigation lists with default items
 export const NAVIGATION_LIST = [

@@ -16,6 +16,7 @@ const ManageWorkspaces = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [sortOption, setSortOption] = useState<string>("name"); // Default sort by name
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { isLoading: isWorkspacesLoading } = useQuery({
         queryKey: ["workspaces", linkedEmails],
         queryFn: async () => {
