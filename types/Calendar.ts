@@ -4,6 +4,7 @@ export interface Schedule {
     start_time: string;
     end_time: string;
     location: string;
+    all_day: boolean;
 }
 
 export interface TransformedSchedule {

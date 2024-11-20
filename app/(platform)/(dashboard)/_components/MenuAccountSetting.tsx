@@ -1,19 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { User } from "lucide-react";
+import {User} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/Button";
+import {Button} from "@/components/ui/Button";
 import Image from "next/image";
-import { signOut } from "next-auth/react";
+import {signOut} from "next-auth/react";
 import Link from "next/link";
 
 interface Props {
@@ -35,7 +34,7 @@ const MenuAccountList = ({ session }: Props) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="bg-white hover:bg-white">
+        <Button className="bg-transparent hover:bg-white">
           <Image
             src={session?.user?.picture || "/images/icons/google.svg"}
             alt={session?.user?.name || ""}
@@ -46,8 +45,7 @@ const MenuAccountList = ({ session }: Props) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 space-y-2">
-        <DropdownMenuLabel>Account</DropdownMenuLabel>
-        <div className="flex flex-row space-x-2">
+        <div className="flex flex-row space-x-2 pt-2">
           <Image
             src={session?.user?.image || "/images/icons/google.svg"}
             alt={session?.user?.name || ""}

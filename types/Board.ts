@@ -165,3 +165,11 @@ export enum ENTITY_TYPE {
 export type ListWithCards = List & { cards: Card[] };
 
 export type CardWithList = Card & { list: List };
+
+export type NotificationItem = {
+    id: number;
+    title?: string;
+    description: string;
+    link?: string;
+    is_read?: boolean
+}
