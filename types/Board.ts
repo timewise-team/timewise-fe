@@ -135,6 +135,21 @@ export type Comment = {
   workspace_user_id: number;
 };
 
+export type Reminder = {
+  created_at: string;
+  deleted_at: string;
+  id: number;
+  is_sent: boolean;
+  method: string;
+  reminder_time: string;
+  schedule: Card;
+  schedule_id: number;
+  type: string;
+  updated_at: string;
+  workspaceUser: Member;
+  workspace_user_id: number;
+};
+
 export enum ACTION {
   CREATE,
   UPDATE,
