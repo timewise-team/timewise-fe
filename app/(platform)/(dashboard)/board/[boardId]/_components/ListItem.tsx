@@ -3,8 +3,8 @@ import { Draggable, Droppable } from "@hello-pangea/dnd";
 import React, { ElementRef, useRef, useState } from "react";
 import ListHeader from "./ListHeader";
 import CardItem from "./CardItem";
-import CardForm from "./CardForm";
 import { cn } from "@/lib/utils";
+import AddSchedule from "../../../organization/[organizationId]/_components/add-schedule";
 
 interface Props {
   data: ListWithCards;
@@ -69,8 +69,8 @@ export const ListItem = ({ index, data }: Props) => {
                 </ol>
               )}
             </Droppable>
-            <CardForm
-              ref={textareaRef}
+
+            <AddSchedule
               listId={data.id}
               isEditing={isEditing}
               enableEditing={enableEditing}
