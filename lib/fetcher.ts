@@ -88,24 +88,45 @@ export const deleteCardByCardID = async (
 };
 
 export const getMembersInWorkspace = async (params: any, session: any) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/workspace_user_list`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
-        "X-Workspace-ID": `${params.organizationId}`,
-      },
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/workspace_user_list`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${session?.user.access_token}`,
+                "X-User-Email": `${session?.user.email}`,
+                "X-Workspace-ID": `${params.organizationId}`,
+            },
+        }
+    );
+
+    if (response.status === 500) {
+        throw new Error("User does not exist");
     }
-  );
 
-  if (response.status === 500) {
-    throw new Error("User does not exist");
-  }
+    const data = await response.json();
+    return data;
+};
 
-  const data = await response.json();
-  return data;
+export const getMembersInWorkspaceByParams = async (params: any, session: any) => {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/workspace_user_list`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${session?.user.access_token}`,
+                "X-User-Email": `${params.userEmail}`,
+                "X-Workspace-ID": `${params.organizationId}`,
+            },
+        }
+    );
+
+    if (response.status === 500) {
+        throw new Error("User does not exist");
+    }
+
+    const data = await response.json();
+    return data;
 };
 
 export const getCommentByScheduleID = async (params: any, session: any) => {
