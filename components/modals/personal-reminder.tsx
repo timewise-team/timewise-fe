@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
-import { Pencil, PersonStanding, Trash } from "lucide-react";
+import { Pencil, PersonStanding, Plus, Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useState, useTransition } from "react";
@@ -157,7 +157,7 @@ const PersonalReminder = ({ data, schedule }: Props) => {
         {isEditing ? (
           <form>
             <div className="flex flex-row items-center gap-x-3">
-              <p className="text-sm font-medium">Personal: </p>
+              <p className="text-sm font-bold">Personal: </p>
               <Input
                 id="time"
                 value={reminderTime}
@@ -183,9 +183,15 @@ const PersonalReminder = ({ data, schedule }: Props) => {
                 </p>
               </div>
             ) : (
-              <Button className="bg-sky-700" onClick={handleAddReminder}>
-                Add personal Reminder
-              </Button>
+              <div className="flex flex-row items-center gap-x-2">
+                <Button
+                  className="bg-transparent hover:bg-transparent text-black"
+                  onClick={handleAddReminder}
+                >
+                  <Plus className={"w-4 h-4 mr-1 "} />
+                  Add personal reminder
+                </Button>
+              </div>
             )}
 
             {data && !data.message && (

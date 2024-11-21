@@ -2,18 +2,25 @@
 
 "use client";
 import React, { ElementRef, useRef, useState, useTransition } from "react";
-import { Button } from "../ui/Button";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { Form, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../ui/input";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import { useParams } from "next/navigation";
 import { AssigneeSchedules } from "@/lib/fetcher";
 import { AssigneeSchedule } from "@/actions/assignee/schema";
+import Image from "next/image";
+import { Form, FormControl, FormField, FormItem } from "../ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface Props {
   children: React.ReactNode;
@@ -21,15 +28,18 @@ interface Props {
   align?: "start" | "center" | "end";
   sideOffset?: number;
   data: any;
+  participant: any;
 }
 
-const Assignee = ({ children, data }: Props) => {
+const Assignee = ({ children, data, participant }: Props) => {
   const closeRef = useRef<ElementRef<"button">>(null);
   const { data: session } = useSession();
   const [isPending, startTransition] = useTransition();
   const [isEditing, setIsEditing] = useState(false);
   const params = useParams();
   const queryClient = useQueryClient();
+
+  const assignTo = participant?.filter((p: any) => p.status === "assign to")[0];
 
   const form = useForm<z.infer<typeof AssigneeSchedule>>({
     resolver: zodResolver(AssigneeSchedule),
@@ -64,6 +74,7 @@ const Assignee = ({ children, data }: Props) => {
       startTransition(() => {
         reset();
       });
+      disableEditing();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to assign member");
@@ -72,7 +83,6 @@ const Assignee = ({ children, data }: Props) => {
 
   const {
     register,
-    handleSubmit,
     reset,
     formState: { errors },
   } = form;
@@ -92,6 +102,11 @@ const Assignee = ({ children, data }: Props) => {
     }
   };
 
+  const handleSelectChange = (value: any) => {
+    form.setValue("email", value);
+    form.handleSubmit((values) => assigneeSchedule(values))();
+  };
+
   useEventListener("keydown", onKeyDown);
   useOnClickOutside(closeRef, () => {
     if (!isPending) {
@@ -104,13 +119,43 @@ const Assignee = ({ children, data }: Props) => {
         {isEditing ? (
           <form className="flex flex-row gap-x-1">
             <div className="flex items-center flex-col">
-              <Input
-                type="text"
-                id="email"
-                placeholder="Enter email to invite"
-                onFocus={enableEditing}
-                disabled={isPending}
-                {...register("email")}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      {...register("email")}
+                      disabled={isPending}
+                      defaultValue={field.value}
+                      onValueChange={(value) => handleSelectChange(value)}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select member to assign" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {participant
+                          .filter((p: any) => p.status !== "creator")
+                          .map((p: any) => (
+                            <SelectItem key={p.id} value={p.email}>
+                              <div className="flex flex-row gap-x-2">
+                                <Image
+                                  width={20}
+                                  height={20}
+                                  src={p.profile_picture}
+                                  alt={p.first_name}
+                                  className="w-10 h-10 rounded-full"
+                                />
+                                {p.first_name} {p.last_name}
+                              </div>
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
               />
               {errors.email && (
                 <p className="text-red-500 text-sm items-start">
@@ -118,18 +163,22 @@ const Assignee = ({ children, data }: Props) => {
                 </p>
               )}
             </div>
-            <Button
-              className="w-fit"
-              type="submit"
-              onClick={handleSubmit((values) => {
-                assigneeSchedule(values);
-              })}
-            >
-              Assign
-            </Button>
           </form>
         ) : (
-          <div onClick={enableEditing}>{children}</div>
+          <div
+            onClick={enableEditing}
+            className="flex flex-row items-center gap-x-2"
+          >
+            <Image
+              width={20}
+              height={20}
+              className="h-4 w-4 rounded-full"
+              src={assignTo?.profile_picture}
+              alt={assignTo?.first_name}
+            />
+            {assignTo?.first_name}
+            {children}
+          </div>
         )}
       </Form>
     </>

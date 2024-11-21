@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { Draggable } from "@hello-pangea/dnd";
 import { Link, MessageCircle, Tv } from "lucide-react";
+import { truncateText } from "@/utils";
 
 interface Props {
   data: Card;
@@ -55,14 +56,14 @@ const CardItem = ({ data, index, isBlurred }: Props) => {
                 </span>
               </span>
             )}
-
-            <div className="text-lg font-bold">{data.title}</div>
+            <div className="text-lg font-bold">
+              {truncateText(data.title, 20)}
+            </div>
             <div className="text-sm font-light text-gray-400">
               {data.description.length > 32
                 ? `${data.description.substring(0, 32)}...`
                 : data.description}
             </div>
-
             <Separator className="my-2" />
             <div className="text-black text-muted-foreground text-xs">
               <div className="flex flex-row justify-between">
@@ -85,7 +86,7 @@ const CardItem = ({ data, index, isBlurred }: Props) => {
                     ))}
                   {data.schedule_participants &&
                     data.schedule_participants?.length > 3 && (
-                      <span className="flex items-center justify-center h-4 w-4 rounded-full bg-gray-300 text-xs text-white -ml-2 border-2 border-white">
+                      <span className="flex items-center justify-center h-4 w-4 rounded-full bg-black text-xs text-white  border-2 border-white">
                         +{data.schedule_participants.length - 3}
                       </span>
                     )}
