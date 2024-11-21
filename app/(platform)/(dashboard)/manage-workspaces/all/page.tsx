@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -30,6 +31,7 @@ const ManageWorkspaces = () => {
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
     const [pagination, setPagination] = useState<Record<string, { currentPage: number; totalPages: number }>>({});
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { data: workspacesData, isLoading: isWorkspacesLoading } = useQuery({
         queryKey: ["workspaces", linkedEmails],
         queryFn: async () => {
