@@ -59,7 +59,7 @@ const Comments = ({ session, data, scheduleId }: Props) => {
         {
           content: values.content,
           schedule_id: id,
-          organizationId: params.organizationId ,
+          organizationId: params.organizationId,
         },
         session
       );
@@ -162,8 +162,8 @@ const Comments = ({ session, data, scheduleId }: Props) => {
   };
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-row items-center gap-x-2">
+    <div className="space-y-2 w-full">
+      <div className="flex flex-row items-center gap-x-2 w-full ">
         <Image
           src={session?.user?.picture}
           alt="avatar"
@@ -173,7 +173,7 @@ const Comments = ({ session, data, scheduleId }: Props) => {
         />
         <Form {...form}>
           <form className="flex flex-row gap-x-1">
-            <div className="flex items-center flex-col">
+            <div className="flex items-center flex-col ">
               <Input
                 type="text"
                 disabled={isPending}

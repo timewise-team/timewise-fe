@@ -79,6 +79,7 @@ const FormInvite = ({ children, data }: Props) => {
       return response;
     },
     onSuccess: () => {
+      disableEditing();
       toast.success(
         "Member invited successfully, please wait for their response"
       );
@@ -104,7 +105,7 @@ const FormInvite = ({ children, data }: Props) => {
     <>
       <Form {...form}>
         {isEditing ? (
-          <form className="flex flex-row items-center">
+          <form className="flex flex-row items-center gap-x-2">
             <Input
               className="w-full"
               type="text"
@@ -120,7 +121,9 @@ const FormInvite = ({ children, data }: Props) => {
             </Button>
           </form>
         ) : (
-          <div onClick={enableEditing}>{children}</div>
+          <div onClick={enableEditing} className="bg-transparent">
+            {children}
+          </div>
         )}
       </Form>
     </>

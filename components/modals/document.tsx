@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 "use client";
-import { Scroll, X } from "lucide-react";
+import { BookText, Plus, X } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "../ui/Button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { Input } from "../ui/input";
 
 interface Props {
   data: any;
@@ -119,14 +120,19 @@ const Document = ({ data, document }: Props) => {
 
   return (
     <>
-      <input type="file" onChange={handleFileChange} />
+      <Input
+        type="file"
+        onChange={handleFileChange}
+        className="border-none cursor-pointer"
+      />
       <Button
         onClick={(e) => {
           e.preventDefault();
           handleUpload();
         }}
-        className="p-2 text-white bg-sky-700 gap-x-1 rounded-md w-fit "
+        className="p-2 text-black bg-transparent hover:bg-transparent gap-x-1 rounded-md w-fit "
       >
+        <Plus className="h-4 w-4" />
         Add Document
       </Button>
       <div className="flex flex-row space-x-4 overflow-auto ">
@@ -135,7 +141,7 @@ const Document = ({ data, document }: Props) => {
             key={document.id}
             className="relative flex p-2 items-center bg-white shadow rounded-lg border-solid border-2 border-gray-200 h-[100px] "
           >
-            <Scroll className="h-6 w-6 text-gray-500" />
+            <BookText className="h-6 w-6 text-gray-500" />
             <div className="flex flex-col flex-grow ml-4">
               <a
                 href={document.download_url}
@@ -147,14 +153,14 @@ const Document = ({ data, document }: Props) => {
               </a>
               <span className="text-gray-500 text-sm">
                 {document.file_size > 1024
-                  ? `${(document.file_size / 1024).toFixed(2)} mb`
+                  ? `${(document.file_size / 1024).toFixed(2)} MB * Download`
                   : document.file_size}{" "}
               </span>
             </div>
 
             <Button
               onClick={() => deleteCommentMutation(document)}
-              className="top-[-10px] right-[-10px] ml-2 p-2 border-none border-gray-300 rounded text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-transparent hover:bg-transparent absolute"
+              className="top-[-8px] right-[-9px] ml-2 p-2 rounded-full border-gray-300 text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-transparent hover:bg-transparent absolute"
             >
               <X className="h-4 w-4" />
             </Button>

@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { format } from "date-fns";
-import { Pencil } from "lucide-react";
+import { Eye, Pencil } from "lucide-react";
 
 interface Props {
   data: any;
@@ -82,7 +82,6 @@ const Visibility = ({ data }: Props) => {
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newVisibility = e.target.value;
     setValue("visibility", newVisibility, { shouldValidate: true });
-    console.log("Select value updated to:", e.target.value);
     handleSubmit(onSubmit)();
   };
 
@@ -90,17 +89,24 @@ const Visibility = ({ data }: Props) => {
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
         {isEditing ? (
-          <select {...register("visibility")} onChange={handleSelectChange}>
-            <option value="private">Private</option>
-            <option value="public">Public</option>
-          </select>
+          <div className="flex flex-row items-center gap-x-2 font-medium">
+            <Eye className="w-6 h-6 text-gray-400" />
+
+            <select {...register("visibility")} onChange={handleSelectChange}>
+              <option value="private">Private</option>
+              <option value="public">Public</option>
+            </select>
+          </div>
         ) : (
           <div
-            className="flex flex-row items-center gap-x-1 cursor-pointer"
+            className="flex flex-row items-center gap-x-2 cursor-pointer"
             onClick={() => setIsEditing(true)}
           >
-            <p>Visibility: {data.visibility}</p>
-            <Pencil className="w-4 h-4" />
+            <Eye className="w-6 h-6 text-gray-400" />
+            <p className="font-medium text-lg text-gray-400">Visibility:</p>
+            <p className="font-medium text-lg text-black">{data.visibility}</p>
+
+            <Pencil className="w-6 h-6" />
           </div>
         )}
       </form>

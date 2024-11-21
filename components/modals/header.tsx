@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Input } from "../ui/input";
 import { updateCardID } from "@/lib/fetcher";
 import { format } from "date-fns";
+import { truncateText } from "@/utils";
 
 interface Props {
   data: CardWithList;
@@ -108,7 +109,7 @@ const Header = ({ data }: Props) => {
   return (
     <div className="flex items-start gap-x-3 mb-6 w-full">
       <Layout className="w-5 h-5 mt-1 text-neutral-700" />
-      <div className="w-full">
+      <div className="w-full space-y-2">
         <Form {...form}>
           {isEditing ? (
             <>
@@ -126,7 +127,7 @@ const Header = ({ data }: Props) => {
                   defaultValue={title}
                   onKeyDown={handleEnterPress}
                   {...register("title")}
-                  className="font-semibold text-xl px-1 text-neutral-700 bg-transparent border-transparent relative left-1.5 w-[95%] focus-visible:bg-white focus-visible:border-input mb-0.5 truncate"
+                  className=" font-semibold text-[24px] px-1 text-neutral-700 bg-transparent border-transparent relative left-1.5 w-[95%] focus-visible:bg-white focus-visible:border-input mb-0.5 truncate"
                 />
                 {errors.title && (
                   <p className="text-red-500 text-sm items-start">
@@ -139,14 +140,15 @@ const Header = ({ data }: Props) => {
           ) : (
             <div
               onClick={enableEditing}
-              className="flex flex-row items-center w-full text-sm px-2.5 py-1 h-7 font-bold border-transparent"
+              className=" flex flex-row items-center w-full text-[30px] px-2.5 py-1 h-7 font-bold border-transparent"
             >
-              {data.title}
+              {truncateText(data.title, 30)}
             </div>
           )}
         </Form>
-        <p className="text-sm text-muted-foreground">
-          In List <span className="underline">{data.title}</span>
+        <p className="ml-2 text-lg text-muted-foreground">
+          In List{" "}
+          <span className="underline"> {truncateText(data.title, 30)}</span>
         </p>
       </div>
     </div>

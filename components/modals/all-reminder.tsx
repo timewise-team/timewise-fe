@@ -40,6 +40,10 @@ const AllReminder = ({ data }: Props) => {
     },
   });
 
+  const disableEditing = () => {
+    setIsEditing(false);
+  };
+
   const { register } = form;
 
   const { mutate: updateReminderParticipants } = useMutation({
@@ -60,6 +64,7 @@ const AllReminder = ({ data }: Props) => {
       queryClient.invalidateQueries({
         queryKey: ["allReminder"],
       });
+      disableEditing();
 
       toast.success("Schedule updated successfully");
     },

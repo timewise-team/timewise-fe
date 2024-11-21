@@ -84,12 +84,17 @@ export function DatePicker({ data }: Props) {
       queryClient.invalidateQueries({
         queryKey: ["listBoardColumns"],
       });
+      disableEditing();
       toast.success("Schedule updated successfully");
     },
     onError: (error: any) => {
       toast.error(error.message || "An error occurred");
     },
   });
+
+  const disableEditing = () => {
+    setIsEditing(false);
+  };
 
   const enableEditing = () => {
     setIsEditing(true);
@@ -115,18 +120,17 @@ export function DatePicker({ data }: Props) {
     updateCardInformation(values);
   });
 
-  console.log("end date", endDate);
   return (
-    <div className="flex flex-col space-y-1">
-      <div className="flex flex-col">
+    <div className="flex space-y-1 w-full">
+      <div>
         <Form {...form}>
           {isEditing ? (
             <>
               <form>
                 <div className="mb-4 flex flex-row items-center gap-x-1">
-                  <div className="flex flex-row gap-x-2 items-start">
-                    <CalendarHeart className="w-6 h-6" />
-                    Start:
+                  <div className="flex flex-row gap-x-2 items-start font-medium">
+                    <CalendarHeart className="w-6 h-6 text-gray-400" />
+                    Start Date:
                   </div>
                   <Input
                     type="datetime-local"
@@ -137,14 +141,14 @@ export function DatePicker({ data }: Props) {
                     onKeyDown={handleEnterPress}
                     {...register("start_time")}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                    className=" shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                   />
                 </div>
 
-                <div className="mb-4 flex flex-row items-center gap-x-1">
-                  <div className="flex flex-row gap-x-2 items-start">
-                    <ArchiveIcon className="w-6 h-6" />
-                    End:
+                <div className="mb-4 flex flex-row items-center gap-x-1 ">
+                  <div className="flex flex-row gap-x-2 items-start font-medium">
+                    <ArchiveIcon className="w-6 h-6 text-gray-400" />
+                    End Date:
                   </div>{" "}
                   <Input
                     type="datetime-local"
@@ -155,7 +159,7 @@ export function DatePicker({ data }: Props) {
                     onKeyDown={handleEnterPress}
                     {...register("end_time")}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                    className=" shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                   />
                 </div>
                 {errors.end_time && (
@@ -171,16 +175,25 @@ export function DatePicker({ data }: Props) {
               onClick={enableEditing}
               className="flex flex-col items-start gap-x-1 space-y-2"
             >
-              <div className="flex flex-row gap-x-2 items-start">
-                <ArchiveIcon className="w-6 h-6" />
-                Start Date:
-              </div>{" "}
-              <Input type="datetime-local" value={startDate} />
-              <div className="flex flex-row gap-x-2 items-start">
-                <ArchiveIcon className="w-6 h-6" />
-                End Date:
+              <div className="flex flex-row gap-x-2 items-start font-medium">
+                <ArchiveIcon className="w-6 h-6 text-gray-400" />
+                <p className="text-gray-400">Start Date:</p>
+                <Input
+                  type="datetime-local"
+                  value={startDate}
+                  className="border-none"
+                />
               </div>
-              <Input type="datetime-local" value={endDate} />
+
+              <div className="flex flex-row gap-x-2 items-start font-medium">
+                <ArchiveIcon className="w-6 h-6 text-gray-400" />
+                <p className="text-gray-400">End Date:</p>
+                <Input
+                  type="datetime-local"
+                  value={endDate}
+                  className="border-none"
+                />
+              </div>
             </div>
           )}
         </Form>
