@@ -28,6 +28,8 @@ jobs:
         run: |
           IMAGE_TAG=${{ github.sha }}
           
+          echo ${{ secrets.ENV_PRODUCTION_FILE }} | base64 -d > .env
+          
           docker build -t ${{ secrets.DOCKER_USERNAME }}/timewise-frontend:latest -t ${{ secrets.DOCKER_USERNAME }}/timewise-frontend:${IMAGE_TAG} .
           
           docker push ${{ secrets.DOCKER_USERNAME }}/timewise-frontend:latest
