@@ -37,6 +37,8 @@ export const getSchedules = async (params: any, session: any) => {
       headers: {
         accept: "application/json",
         Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.organizationId}`,
       },
     }
   );
