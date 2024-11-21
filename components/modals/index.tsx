@@ -36,7 +36,7 @@ const CardModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-white lg:max-w-[800px]">
+      <DialogContent className="bg-white lg:max-w-[800px] max-h-[95vh] overflow-auto">
         {cardData ? <Header data={cardData} /> : <Header.Skeleton />}
         <div className="grid grid-cols-1 md:grid-cols-4 md:gap-4">
           <div className="col-span-3">

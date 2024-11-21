@@ -6,7 +6,7 @@ export const CreateCard = z.object({
       required_error: "Title is required!",
       invalid_type_error: "Title is required!",
     })
-    .min(1, {
+    .min(3, {
       message: "Title is too short!",
     }),
 
@@ -15,7 +15,7 @@ export const CreateCard = z.object({
       required_error: "Title is required!",
       invalid_type_error: "Title is required!",
     })
-    .min(1, {
-      message: "Title is too short!",
+    .min(3, {
+      message: "Description is too short!",
     }),
 });
