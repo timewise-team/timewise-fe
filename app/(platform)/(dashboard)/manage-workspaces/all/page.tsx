@@ -7,10 +7,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useLinkedEmails } from "@/hooks/useLinkedEmail";
 import { fetchWorkspaces, getMembersInWorkspaceByParams } from "@/lib/fetcher";
 import Link from "next/link";
-
-// Import SVG icons
 import ArrowLeftIcon from "@/assets/icons/arrow-left-icon.svg";
 import ArrowRightIcon from "@/assets/icons/arrow-right-icon.svg";
+import {ArrowDownIcon, ArrowUpIcon} from "lucide-react";
 
 type Member = {
     profile_picture: string;
@@ -25,12 +24,13 @@ const ManageWorkspaces = () => {
 
     const [workspacesFromApi, setWorkspacesFromApi] = useState<Record<string, Workspace[]>>({});
     const [memberAvatars, setMemberAvatars] = useState<Record<string, Member[]>>({});
-    const [searchTerm, setSearchTerm] = useState<string>("");
-    const [sortOption, setSortOption] = useState<string>("name"); // Default sort by name
+    const [filterOption, setFilterOption] = useState<string>("");
+    const [filterValue, setFilterValue] = useState<string>("");
+    const [sortOption, setSortOption] = useState<string>("");
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
     const [pagination, setPagination] = useState<Record<string, { currentPage: number; totalPages: number }>>({});
 
-    // Fetch workspaces
-    const { isLoading: isWorkspacesLoading } = useQuery({
+    const { data: workspacesData, isLoading: isWorkspacesLoading } = useQuery({
         queryKey: ["workspaces", linkedEmails],
         queryFn: async () => {
             if (!linkedEmails) return {};
@@ -40,13 +40,17 @@ const ManageWorkspaces = () => {
                     workspacesByEmail[email] = await fetchWorkspaces(email, session);
                 })
             );
-            setWorkspacesFromApi(workspacesByEmail);
             return workspacesByEmail;
         },
         enabled: !!session && !!linkedEmails,
     });
 
-    // Fetch members for each workspace
+    useEffect(() => {
+        if (workspacesData) {
+            setWorkspacesFromApi(workspacesData);
+        }
+    }, [workspacesData]);
+
     useEffect(() => {
         const fetchMembers = async () => {
             const avatars: Record<string, Member[]> = {};
@@ -66,10 +70,7 @@ const ManageWorkspaces = () => {
                             last_name: member.last_name,
                         }));
                     } catch (error) {
-                        console.error(
-                            `Failed to fetch members for workspace ID ${workspace.ID} and email ${email}`,
-                            error
-                        );
+                        console.error(`Failed to fetch members for workspace ID ${workspace.ID}`, error);
                     }
                 }
             }
@@ -79,52 +80,78 @@ const ManageWorkspaces = () => {
         if (Object.keys(workspacesFromApi).length > 0) {
             fetchMembers();
         }
-    }, [workspacesFromApi, session]);
+    }, [JSON.stringify(workspacesFromApi), session]);
 
-    // Filter workspaces
+    useEffect(() => {
+        // Reset filter value when the filter option changes
+        setFilterValue("");
+    }, [filterOption]);
+
     const filteredWorkspaces = Object.keys(workspacesFromApi).reduce((result, email) => {
-        result[email] = workspacesFromApi[email].filter((workspace) =>
-            workspace.title.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        result[email] = workspacesFromApi[email].filter((workspace) => {
+            if (filterOption === "") {
+                return workspace;
+            }
+            if (filterOption === "type") {
+                if (filterValue === "") {
+                    return workspace;
+                }
+                return workspace.type?.toLowerCase() === filterValue.toLowerCase();
+            }
+            if (filterOption === "email") {
+                return email.toLowerCase().includes(filterValue.toLowerCase());
+            }
+            if (filterOption === "name") {
+                return workspace.title.toLowerCase().includes(filterValue.toLowerCase());
+            }
+            return true;
+        });
         return result;
     }, {} as Record<string, Workspace[]>);
 
-    // Sort workspaces
     const sortWorkspaces = (workspaces: Workspace[]) => {
+        const sorted = [...workspaces];
+
         if (sortOption === "name") {
-            return workspaces.sort((a, b) => a.title.localeCompare(b.title));
-        }
-        if (sortOption === "created_at") {
-            return workspaces.sort(
-                (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            sorted.sort((a, b) =>
+                sortDirection === "asc"
+                    ? a.title.localeCompare(b.title)
+                    : b.title.localeCompare(a.title)
             );
         }
-        return workspaces; // Default: no sorting
+        if (sortOption === "created_at") {
+            sorted.sort((a, b) => {
+                const dateA = new Date(a.createdAt);
+                const dateB = new Date(b.createdAt);
+                if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) return 0;
+                return sortDirection === "asc"
+                    ? dateA.getTime() - dateB.getTime()
+                    : dateB.getTime() - dateA.getTime();
+            });
+        }
+        return sorted;
     };
 
-    // Initialize pagination for each email
     useEffect(() => {
         const newPagination: Record<string, { currentPage: number; totalPages: number }> = {};
         Object.keys(filteredWorkspaces).forEach((email) => {
             if (!newPagination[email]) {
                 newPagination[email] = {
                     currentPage: 1,
-                    totalPages: Math.ceil(filteredWorkspaces[email].length / 6),
+                    totalPages: Math.ceil(filteredWorkspaces[email].length / 3),
                 };
             }
         });
         setPagination(newPagination);
-    }, [filteredWorkspaces]);
+    }, [JSON.stringify(filteredWorkspaces)]);
 
-    // Get current workspaces for pagination
     const getCurrentWorkspaces = (email: string) => {
         const currentPage = pagination[email]?.currentPage || 1;
-        const indexOfLastWorkspace = currentPage * 6;
-        const indexOfFirstWorkspace = indexOfLastWorkspace - 6;
+        const indexOfLastWorkspace = currentPage * 3;
+        const indexOfFirstWorkspace = indexOfLastWorkspace - 3;
         return sortWorkspaces(filteredWorkspaces[email]).slice(indexOfFirstWorkspace, indexOfLastWorkspace);
     };
 
-    // Pagination controls
     const changePage = (email: string, direction: "prev" | "next") => {
         setPagination((prev) => {
             const currentPage = prev[email]?.currentPage || 1;
@@ -151,22 +178,81 @@ const ManageWorkspaces = () => {
                 <h1 className="text-3xl font-semibold text-gray-800 mb-6">Manage Workspaces</h1>
 
                 <div className="flex items-center justify-between mb-6 space-x-4">
-                    <select
-                        value={sortOption}
-                        onChange={(e) => setSortOption(e.target.value)}
-                        className="p-3 rounded-md border border-gray-300 w-1/3"
-                    >
-                        <option value="name">Sort by Name</option>
-                        <option value="created_at">Sort by Created At</option>
-                    </select>
+                    <div className="relative w-1/3">
+                        <select
+                            value={filterOption}
+                            onChange={(e) => setFilterOption(e.target.value)}
+                            className="p-3 rounded-md border border-gray-300 w-full"
+                        >
+                            <option value="">Filter</option>
+                            <option value="type">Filter by Type</option>
+                            <option value="email">Filter by Email</option>
+                            <option value="name">Filter by Name</option>
+                        </select>
 
-                    <input
-                        type="text"
-                        placeholder="Search workspaces..."
-                        className="p-3 rounded-md border border-gray-300 w-1/3"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                        {filterOption === "type" && (
+                            <select
+                                className="p-3 mt-2 rounded-md border border-gray-300 w-full"
+                                value={filterValue}
+                                onChange={(e) => setFilterValue(e.target.value)}
+                            >
+                                <option value="">All Types</option>
+                                <option value="workspace">Workspace</option>
+                                <option value="personal">Personal</option>
+                            </select>
+                        )}
+
+                        {filterOption === "email" && (
+                            <select
+                                className="p-3 mt-2 rounded-md border border-gray-300 w-full"
+                                value={filterValue}
+                                onChange={(e) => setFilterValue(e.target.value)}
+                            >
+                                <option value="">All Emails</option>
+                                {linkedEmails?.map((email) => (
+                                    <option key={email} value={email}>
+                                        {email}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+
+                        {filterOption === "name" && (
+                            <input
+                                type="text"
+                                placeholder="Search by name..."
+                                className="p-3 mt-2 rounded-md border border-gray-300 w-full"
+                                value={filterValue}
+                                onChange={(e) => setFilterValue(e.target.value)}
+                            />
+                        )}
+                    </div>
+
+                    <div className="flex items-center w-1/3">
+                        <select
+                            value={sortOption}
+                            onChange={(e) => setSortOption(e.target.value)}
+                            className="p-3 rounded-md border border-gray-300 w-full"
+                        >
+                            <option value="">Sort</option>
+                            <option value="name">Sort by Name</option>
+                            <option value="created_at">Sort by Created At</option>
+                        </select>
+
+                        {/* Arrow button positioned to the right */}
+                        {sortOption && (
+                            <button
+                                onClick={() => setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))}
+                                className="text-gray-500 p-2 ml-2"
+                            >
+                                {sortDirection === "asc" ? (
+                                    <ArrowDownIcon/>
+                                ) : (
+                                    <ArrowUpIcon/>
+                                )}
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {Object.keys(filteredWorkspaces).length > 0 ? (
@@ -177,31 +263,41 @@ const ManageWorkspaces = () => {
 
                                 <div className="flex items-center justify-between">
                                     {/* Left Pagination Button */}
-                                    {pagination[email]?.currentPage > 1 && (
-                                        <button
-                                            onClick={() => changePage(email, "prev")}
-                                            className="p-2 rounded-md hover:bg-gray-300 flex items-center justify-center"
-                                        >
-                                            <ArrowLeftIcon className="w-4 h-4" />
-                                        </button>
-                                    )}
+                                    <div className="w-8 h-8 flex items-center justify-center">
+                                        {pagination[email]?.currentPage > 1 ? (
+                                            <button
+                                                onClick={() => changePage(email, "prev")}
+                                                className="p-2 rounded-md hover:bg-gray-300 flex items-center justify-center"
+                                            >
+                                                <ArrowLeftIcon className="w-4 h-4"/>
+                                            </button>
+                                        ) : (
+                                            <div className="w-4 h-4"></div>
+                                            )}
+                                    </div>
 
                                     {/* Workspaces */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-1 mx-4">
                                         {getCurrentWorkspaces(email).map((workspace) => (
                                             <Link key={workspace.ID} href={`/organization/${workspace.ID}`}>
                                                 <div
-                                                    className="flex flex-col bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all cursor-pointer relative">
+                                                    className="flex flex-col bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all cursor-pointer relative min-h-full">
                                                     <h4 className="text-lg font-semibold text-gray-800">{workspace.title}</h4>
                                                     <p className="text-sm text-gray-500 mt-2">{workspace.description}</p>
-
+                                                    {workspace.extraData && (
+                                                        <div className="mt-4">
+                                                        <span className="px-2 py-1 text-sm font-medium text-white bg-blue-500 rounded-md">
+                                                            {workspace.extraData}
+                                                        </span>
+                                                        </div>
+                                                    )}
                                                     {/* Badge example */}
                                                     <div className="mt-4 flex items-center space-x-2">
                                                         {workspace.type && (
                                                             <span
-                                                                className="px-2 py-1 text-sm font-medium text-white bg-green-500 rounded-md">
-                                {workspace.type}
-                              </span>
+                                                                className="px-2 py-1 text-sm font-medium text-white bg-[#6750a4] rounded-md">
+                                                                {workspace.type}
+                                                            </span>
                                                         )}
                                                     </div>
 
