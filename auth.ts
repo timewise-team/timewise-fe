@@ -20,7 +20,7 @@ export const config = {
       },
     }),
   ],
-
+  trustHost: true,
   callbacks: {
     authorized({ request, auth }) {
       return !!auth;
