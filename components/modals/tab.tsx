@@ -8,9 +8,11 @@ import { useSession } from "next-auth/react";
 import { getActivitiesLogs, getCommentByScheduleID } from "@/lib/fetcher";
 import Comments from "./comments";
 import Activities from "./activities";
+import Meetting from "./meeting";
 
 interface Props {
   id: string | undefined;
+  data: any;
 }
 
 const TAB_DATA = [
@@ -31,7 +33,7 @@ const TAB_DATA = [
   },
 ];
 
-const Tab = ({ id }: Props) => {
+const Tab = ({ id, data }: Props) => {
   const [activeTab, setActiveTab] = useState(TAB_DATA[0].label);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0);
@@ -125,7 +127,9 @@ const Tab = ({ id }: Props) => {
           {activeTab === "Activities" && (
             <Activities session={session} activities={activities} />
           )}
-          {activeTab === "Meet" && <div>{/* Render meet content */}</div>}
+          {activeTab === "Meet" && (
+            <Meetting session={session} data={data} scheduleId={id} />
+          )}
         </div>
       </div>
     </div>

@@ -1,13 +1,13 @@
 "use client";
-import {cn} from "@/lib/utils";
-import {AccordionItem, AccordionTrigger} from "@radix-ui/react-accordion";
+import { cn } from "@/lib/utils";
+import { AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion";
 import React from "react";
-import {usePathname, useRouter} from "next/navigation";
-import {CalendarHeart, Layout, Settings, Users} from "lucide-react";
-import {AccordionContent} from "@/components/ui/accordion";
-import {Button} from "@/components/ui/Button";
-import {Skeleton} from "@/components/ui/skeleton";
-import {Workspace} from "@/types/Board";
+import { usePathname, useRouter } from "next/navigation";
+import { CalendarHeart, Layout, Settings, Users } from "lucide-react";
+import { AccordionContent } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/Button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Workspace } from "@/types/Board";
 
 interface Props {
   isExpanded: boolean;
@@ -52,7 +52,7 @@ const NavItem = ({ workspace, onExpand }: Props) => {
       <AccordionTrigger
         onClick={() => onExpand(String(workspace.ID))}
         className={cn(
-          "w-full flex items-center gap-x-2 text-neutral-700 rounded-md transition text-start no-underline hover:no-underline",
+          "w-full flex items-center gap-x-2 text-neutral-700 rounded-md transition text-start no-underline hover:no-underline"
           // isActive && !isExpanded && "bg-sky-500/10 text-sky-700"
         )}
       >
@@ -65,7 +65,9 @@ const NavItem = ({ workspace, onExpand }: Props) => {
           {/*    className="rounded-sm object-cover"*/}
           {/*  />*/}
           {/*</div>*/}
-          <span className="text-sm font-semibold pt-1.5">{workspace.title}</span>
+          <span className="text-sm font-semibold pt-1.5">
+            {workspace.title}
+          </span>
         </div>
       </AccordionTrigger>
       <AccordionContent className="text-neutral-700">
