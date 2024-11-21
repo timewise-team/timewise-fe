@@ -880,3 +880,30 @@ export const removePersonalReminder = async (params: any, session: any) => {
   const data = await response.json();
   return data;
 };
+
+//trigger the meeting
+export const triggerMeeting = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/meeting_bot/start`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.workspace_id}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        meet_link: params.meet_link,
+        schedule_id: params.schedule_id,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to trigger meeting");
+  }
+
+  const data = await response.json();
+  return data;
+};
