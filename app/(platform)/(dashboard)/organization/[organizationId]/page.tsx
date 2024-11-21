@@ -37,7 +37,7 @@ const OrganizationIdPage = () => {
   }
 
   return (
-    <div className="w-full mb-5">
+    <div className="px-2 w-full mb-5">
       <div className=" relative bg-no-repeat bg-cover bg-center">
         <main className="relative space-y-1 h-full ">
           <InviteMember />
