@@ -6,12 +6,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { format } from "date-fns";
 import { Eye, Pencil } from "lucide-react";
+import { Form, FormControl, FormField, FormItem } from "../ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface Props {
   data: any;
@@ -22,15 +30,16 @@ const Visibility = ({ data }: Props) => {
   const queryClient = useQueryClient();
   const params = useParams();
   const [isEditing, setIsEditing] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof UpdateCard>>({
     resolver: zodResolver(UpdateCard),
     defaultValues: {
-      visibility: data.visibility || "private",
+      visibility: data.visibility,
     },
   });
 
-  const { setValue, register, handleSubmit } = form;
+  const { setValue, register, reset } = form;
 
   const { mutate: updateCardInformation } = useMutation({
     mutationFn: async (values: z.infer<typeof UpdateCard>) => {
@@ -67,6 +76,9 @@ const Visibility = ({ data }: Props) => {
       queryClient.invalidateQueries({
         queryKey: ["listBoardColumns"],
       });
+      startTransition(() => {
+        reset();
+      });
       toast.success("Status updated successfully");
       setIsEditing(false);
     },
@@ -75,41 +87,57 @@ const Visibility = ({ data }: Props) => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof UpdateCard>) => {
-    updateCardInformation(values);
-  };
-
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newVisibility = e.target.value;
-    setValue("visibility", newVisibility, { shouldValidate: true });
-    handleSubmit(onSubmit)();
+  const handleSelectChange = (value: string) => {
+    setValue("visibility", value);
+    form.handleSubmit((values) => updateCardInformation(values))();
   };
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <Form {...form}>
         {isEditing ? (
-          <div className="flex flex-row items-center gap-x-2 font-medium">
-            <Eye className="w-6 h-6 text-gray-400" />
-
-            <select {...register("visibility")} onChange={handleSelectChange}>
-              <option value="private">Private</option>
-              <option value="public">Public</option>
-            </select>
-          </div>
+          <form>
+            <FormField
+              control={form.control}
+              name="visibility"
+              render={({ field }) => (
+                <FormItem>
+                  <Select
+                    {...register("visibility")}
+                    disabled={isPending}
+                    defaultValue={field.value}
+                    onValueChange={handleSelectChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select visibility" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="public">Public</SelectItem>
+                      <SelectItem value="private">Private</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+          </form>
         ) : (
-          <div
-            className="flex flex-row items-center gap-x-2 cursor-pointer"
-            onClick={() => setIsEditing(true)}
-          >
+          <div className="flex items-center space-x-2 cursor-pointer w-full">
             <Eye className="w-6 h-6 text-gray-400" />
-            <p className="font-bold text-lg text-gray-400">Visibility:</p>
-            <p className="font-bold text-lg text-black">{data.visibility}</p>
-
-            <Pencil className="w-6 h-6" />
+            <p className="text-gray-400 font-bold">Visibility</p>
+            <div className="pl-8 flex flex-row items-center">
+              <span className="">{data.visibility}</span>
+              <button
+                className="ml-2 text-primary-500"
+                onClick={() => setIsEditing(true)}
+              >
+                <Pencil className="w-6 h-6 text-gray-400" />
+              </button>
+            </div>
           </div>
         )}
-      </form>
+      </Form>
     </>
   );
 };
