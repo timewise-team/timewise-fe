@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import React from "react";
 import {User} from "lucide-react";
 import {
@@ -73,15 +74,8 @@ const MenuAccountList = ({ session }: Props) => {
             </Link>
           ))}
         </DropdownMenuGroup>
-        <DropdownMenuItem>
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/" });
-            }}
-          >
+        <DropdownMenuItem onClick={() => signOut({ redirectTo: 'https://timewise.space/' })}>
             Sign Out
-          </form>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
       </DropdownMenuContent>

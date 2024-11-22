@@ -13,11 +13,11 @@ const Navbar = async () => {
     const session = await auth();
     return (
         <>
-            <nav className="px-4 w-full border-b shadow-sm bg-gray-50 flex items-center">
+            <nav className="px-4 py-2 w-full border-b shadow-sm bg-gray-50 flex items-center">
                 <MobileSidebar/>
                 <div className="flex items-center gap-x-4">
                     <div className="hidden md:flex">
-                        <Logo/>
+                        <Logo hasText={false}/>
                     </div>
                     <HeaderItem/>
 
