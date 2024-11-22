@@ -99,18 +99,11 @@ const Content = ({ data }: Props) => {
 
   return (
     <>
-      <div className="w-full">
+      <div className="space-y-1 flex items-start flex-col justify-between w-full">
         <Visibility data={data} />
-      </div>
-      <div className="w-full">
         <Status />
-      </div>
-
-      <div className="w-full">
         <DatePicker data={data} />
-      </div>
-      <div className="flex flex-col items-start space-y-1">
-        <p className="font-medium text-gray-400">Reminders</p>
+        <p className="font-bold text-gray-400">Reminders</p>
         <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
           <AllReminder data={allReminder} />
         </div>
@@ -119,7 +112,7 @@ const Content = ({ data }: Props) => {
         </div>
       </div>
 
-      <div className="flex flex-row items-center gap-x-3 text-sm font-medium text-gray-400">
+      <div className="flex flex-row items-center gap-x-3 text-sm font-bold text-gray-400">
         <PersonStanding className="h-6 w-6" />
         Assignee:
         <p className="text-yellow-500">{scheduleParticipant?.email}</p>
@@ -156,9 +149,9 @@ const Content = ({ data }: Props) => {
       </div>
 
       {/* attachment */}
-      <div className="font-medium text-gray-400 space-y-2">
+      <div className="font-bold text-gray-400 space-y-2">
         <div className="flex flex-row gap-x-2">
-          <ArchiveIcon className="h-6 w-6 text-gray-500" />
+          <ArchiveIcon className="h-6 w-6 text-gray-400" />
           Attachment:
         </div>
         <Document data={data} document={documents} />

@@ -126,11 +126,11 @@ export function DatePicker({ data }: Props) {
         <Form {...form}>
           {isEditing ? (
             <>
-              <form>
-                <div className="mb-4 flex flex-row items-center gap-x-1">
-                  <div className="flex flex-row gap-x-2 items-start font-medium">
+              <form className="space-y-2">
+                <div className="flex flex-row items-center gap-x-1">
+                  <div className="flex flex-row gap-x-2 w-full items-start font-medium">
                     <CalendarHeart className="w-6 h-6 text-gray-400" />
-                    Start Date:
+                    <p className="max-w-[100px]">Start Date:</p>
                   </div>
                   <Input
                     type="datetime-local"
@@ -145,8 +145,8 @@ export function DatePicker({ data }: Props) {
                   />
                 </div>
 
-                <div className="mb-4 flex flex-row items-center gap-x-1 ">
-                  <div className="flex flex-row gap-x-2 items-start font-medium">
+                <div className=" flex flex-row  items-center gap-x-1 ">
+                  <div className="flex flex-row w-full gap-x-2 items-start font-medium">
                     <ArchiveIcon className="w-6 h-6 text-gray-400" />
                     End Date:
                   </div>{" "}
@@ -175,9 +175,11 @@ export function DatePicker({ data }: Props) {
               onClick={enableEditing}
               className="flex flex-col items-start gap-x-1 space-y-2"
             >
-              <div className="flex flex-row gap-x-2 items-start font-medium">
-                <ArchiveIcon className="w-6 h-6 text-gray-400" />
-                <p className="text-gray-400">Start Date:</p>
+              <div className="flex flex-row gap-x-2 items-center font-medium w-[100%] ">
+                <div className="flex flex-row gap-x-2 w-full items-start font-medium">
+                  <ArchiveIcon className="w-6 h-6 text-gray-400" />
+                  <p className="text-gray-400 font-bold">Start Date:</p>
+                </div>
                 <Input
                   type="datetime-local"
                   value={startDate}
@@ -185,13 +187,17 @@ export function DatePicker({ data }: Props) {
                 />
               </div>
 
-              <div className="flex flex-row gap-x-2 items-start font-medium">
-                <ArchiveIcon className="w-6 h-6 text-gray-400" />
-                <p className="text-gray-400">End Date:</p>
+              <div className="flex flex-row gap-x-2 items-center font-medium w-[100%] ">
+                <div className="flex flex-row gap-x-2 w-full items-center font-medium">
+                  <ArchiveIcon className="w-6 h-6 text-gray-400" />
+                  <p className="text-gray-400 text-sm font-semibold">
+                    End Date:
+                  </p>
+                </div>
                 <Input
                   type="datetime-local"
                   value={endDate}
-                  className="border-none"
+                  className="ml-2 border-none"
                 />
               </div>
             </div>

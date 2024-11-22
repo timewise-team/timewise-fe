@@ -162,7 +162,7 @@ const Comments = ({ session, data, scheduleId }: Props) => {
   };
 
   return (
-    <div className="space-y-2 w-full">
+    <div className="space-y-2 w-full ">
       <div className="flex flex-row items-center gap-x-2 w-full ">
         <Image
           src={session?.user?.picture}
@@ -171,9 +171,9 @@ const Comments = ({ session, data, scheduleId }: Props) => {
           height={40}
           className="h-6 w-6 rounded-full object-cover"
         />
-        <Form {...form}>
-          <form className="flex flex-row gap-x-1">
-            <div className="flex items-center flex-col ">
+        <Form {...form} className="flex-grow">
+          <form className="flex flex-row gap-x-1 w-full">
+            <div className="flex items-center flex-col w-full">
               <Input
                 type="text"
                 disabled={isPending}

@@ -103,8 +103,8 @@ const Visibility = ({ data }: Props) => {
             onClick={() => setIsEditing(true)}
           >
             <Eye className="w-6 h-6 text-gray-400" />
-            <p className="font-medium text-lg text-gray-400">Visibility:</p>
-            <p className="font-medium text-lg text-black">{data.visibility}</p>
+            <p className="font-bold text-lg text-gray-400">Visibility:</p>
+            <p className="font-bold text-lg text-black">{data.visibility}</p>
 
             <Pencil className="w-6 h-6" />
           </div>
