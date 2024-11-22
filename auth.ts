@@ -16,6 +16,10 @@ export const config = {
           prompt: "consent",
           access_type: "offline",
           response_type: "code",
+          redirect_uri:
+            process.env.NODE_ENV === "production"
+              ? "https://api.timewise.space/api/auth/callback/google"
+              : "http://localhost:3000/api/auth/callback/google",
         },
       },
     }),
