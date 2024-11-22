@@ -98,7 +98,7 @@ const AllReminder = ({ data }: Props) => {
             <div className="flex items-center gap-x-2">
               <div className="flex flex-row items-center gap-x-1">
                 <Gauge className="h-4 w-4 mr-2  " />
-                <p className="text-sm font-bold">Participant: </p>
+                <p className="text-sm font-bold text-gray-400">Participant: </p>
                 <p className="text-sm text-neutral-500">
                   {reminderTime
                     ? format(new Date(), "yyyy-MM-dd HH:mm")

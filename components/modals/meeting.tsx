@@ -121,7 +121,7 @@ const Meetting = ({ session, data, scheduleId }: Props) => {
 
   return (
     <>
-      <div className="space-y-2 bg-neutral-200 p-2 rounded-md">
+      <div className="space-y-2 bg-white p-2 rounded-md">
         <div className="flex flex-row items-center gap-x-2">
           <Image
             src={"/images/icons/gg-meet.svg"}
@@ -137,14 +137,14 @@ const Meetting = ({ session, data, scheduleId }: Props) => {
                   e.preventDefault();
                   handleSubmission();
                 }}
-                className="space-y-2"
+                className="space-y-2 bg-white"
               >
                 <Input
                   id={"location"}
                   disabled={isPending}
                   onFocus={enableEditing}
                   onKeyDown={handleEnterPress}
-                  className="min-h-[78px] w-full bg-white"
+                  className="min-h-[78px] w-full bg-white "
                   placeholder="Add a meeting link"
                   defaultValue={mettingLocation}
                   {...register("location")}
@@ -159,7 +159,7 @@ const Meetting = ({ session, data, scheduleId }: Props) => {
                   className="min-h-[78px] flex flex-row gap-x-1 font-medium py-3 px-3.5 rounded-md"
                 >
                   {mettingLocation}
-                  <Pencil className="w-4 h-4 ml-2" />
+                  {data?.location && <Pencil className="w-4 h-4 ml-2" />}
                 </div>
               </>
             )}
