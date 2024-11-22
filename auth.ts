@@ -7,6 +7,7 @@ export const config = {
   theme: {
     logo: "/images/icons/timewise-logo.svg",
   },
+  debug: process.env.NODE_ENV === "development" || process.env.DEBUG === "true",
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
@@ -18,7 +19,7 @@ export const config = {
           response_type: "code",
           redirect_uri:
             process.env.NODE_ENV === "production"
-              ? "https://api.timewise.space/api/auth/callback/google"
+              ? "https://timewise.space/api/auth/callback/google"
               : "http://localhost:3000/api/auth/callback/google",
         },
       },
@@ -47,19 +48,14 @@ export const config = {
 
           if (!response.ok) {
             const errorData = await response.json();
-            console.error("Error saving token:", errorData);
             throw new Error("Error saving token");
           }
           const data = await response.json();
           token.accessToken = data.access_token;
           console.log("account_accesstoken", account.access_token);
-          console.log("data_acc_tk", data.access_token);
         } catch (error) {
           console.error("Failed to save token:", error);
         }
-        console.log("token", token.accessToken);
-        console.log("account", account.access_token);
-        console.log("user", user.access_token);
 
         return {
           ...token,
