@@ -27,9 +27,6 @@ export const config = {
   ],
   trustHost: true,
   callbacks: {
-    authorized({ request, auth }) {
-      return !!auth;
-    },
     async jwt({ token, user, account }) {
       if (account && user) {
         try {
