@@ -169,13 +169,19 @@ const Assignee = ({ children, data, participant }: Props) => {
             onClick={enableEditing}
             className="flex flex-row items-center gap-x-2"
           >
-            <Image
-              width={20}
-              height={20}
-              className="h-4 w-4 rounded-full"
-              src={assignTo?.profile_picture}
-              alt={assignTo?.first_name}
-            />
+            {assignTo ? (
+              <>
+                <Image
+                  width={20}
+                  height={20}
+                  className="h-4 w-4 rounded-full"
+                  src={assignTo.profile_picture}
+                  alt={assignTo.first_name}
+                />
+              </>
+            ) : (
+              <span>Not assigned yet</span>
+            )}
             {assignTo?.first_name}
             {children}
           </div>

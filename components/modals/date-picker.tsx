@@ -190,9 +190,7 @@ export function DatePicker({ data }: Props) {
               <div className="flex flex-row gap-x-2 items-center font-medium w-[100%] ">
                 <div className="flex flex-row gap-x-2 w-full items-center font-medium">
                   <ArchiveIcon className="w-6 h-6 text-gray-400" />
-                  <p className="text-gray-400 text-sm font-semibold">
-                    End Date:
-                  </p>
+                  <p className="text-gray-400 font-semibold">End Date:</p>
                 </div>
                 <Input
                   type="datetime-local"

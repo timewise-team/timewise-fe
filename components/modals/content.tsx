@@ -99,9 +99,9 @@ const Content = ({ data }: Props) => {
 
   return (
     <>
-      <div className="space-y-1 flex items-start flex-col justify-between w-full">
+      <div className="space-y-3 flex items-start flex-col justify-between w-full">
         <Visibility data={data} />
-        <Status />
+        <Status data={data} />
         <DatePicker data={data} />
         <p className="font-bold text-gray-400">Reminders</p>
         <div className="flex flex-row items-center gap-x-3 text-sm font-bold">
