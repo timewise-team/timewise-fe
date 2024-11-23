@@ -42,7 +42,6 @@ export const PersonReminder = z.object({
 });
 
 const PersonalReminder = ({ data, schedule }: Props) => {
-  console.log("personal reminder", data);
   const [isPending, startTransition] = useTransition();
   const [isEditing, setIsEditing] = useState(false);
   const params = useParams();

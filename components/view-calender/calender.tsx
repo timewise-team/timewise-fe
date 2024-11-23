@@ -100,8 +100,8 @@ function CalendarApp({scheduleData}: CalendarAppProps) {
             const eventId = target.closest(".sx__time-grid-event")?.getAttribute("data-event-id")
                 || target.closest(".sx__month-grid-event")?.getAttribute("data-event-id");
             if (eventId) {
-                console.log("Event ID:", eventId);
-                cardModal.onOpen(eventId.toString(), "38");
+                const workspaceId = calendarApp.eventsService.get(eventId.toString()).workspaceId;
+                cardModal.onOpen(eventId.toString(), workspaceId.toString());
             }
         };
 

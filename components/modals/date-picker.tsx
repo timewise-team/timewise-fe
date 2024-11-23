@@ -183,6 +183,7 @@ export function DatePicker({ data }: Props) {
                 <Input
                   type="datetime-local"
                   value={startDate}
+                  readOnly
                   className="border-none"
                 />
               </div>
@@ -195,6 +196,7 @@ export function DatePicker({ data }: Props) {
                 <Input
                   type="datetime-local"
                   value={endDate}
+                  readOnly
                   className="ml-2 border-none"
                 />
               </div>

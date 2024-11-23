@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
-import { Form, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input } from "../ui/input";
@@ -171,25 +171,23 @@ const Comments = ({ session, data, scheduleId }: Props) => {
           height={40}
           className="h-6 w-6 rounded-full object-cover"
         />
-        <Form {...form} className="flex-grow">
-          <form className="flex flex-row gap-x-1 w-full">
-            <div className="flex items-center flex-col w-full">
-              <Input
-                type="text"
-                disabled={isPending}
-                placeholder="Add a comment..."
-                className="w-full p-2 border border-gray-300 rounded-md"
-                {...register("content")}
-              />
-              {errors.content && (
-                <p className="text-red-500 text-sm">{errors.content.message}</p>
-              )}
-            </div>
-            <Button className="w-fit" type="submit" onClick={handleSubmission}>
-              Comment
-            </Button>{" "}
-          </form>
-        </Form>
+        <form onSubmit={handleSubmission} className="flex-grow flex flex-row gap-x-1 w-full">
+          <div className="flex items-center flex-col w-full">
+            <Input
+              type="text"
+              disabled={isPending}
+              placeholder="Add a comment..."
+              className="w-full p-2 border border-gray-300 rounded-md"
+              {...register("content")}
+            />
+            {errors.content && (
+              <p className="text-red-500 text-sm">{errors.content.message}</p>
+            )}
+          </div>
+          <Button className="w-fit" type="submit">
+            Comment
+          </Button>
+        </form>
       </div>
       <div className="max-h-[130px] h-auto overflow-auto space-y-2">
         {data && data.length > 0 ? (

@@ -5,6 +5,7 @@ export interface Schedule {
     end_time: string;
     location: string;
     all_day: boolean;
+    workspace_id: number;
 }
 
 export interface TransformedSchedule {
@@ -17,4 +18,5 @@ export interface TransformedSchedule {
     isEditable: boolean;
     location: string;
     topic: string;
+    workspaceId: string;
 }

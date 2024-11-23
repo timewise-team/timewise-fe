@@ -27,6 +27,7 @@ export const transformScheduleData = (data: any): TransformedSchedule[] => {
             isEditable: false,
             location: schedule.location,
             topic: "",
+            workspaceId: schedule.workspace_id,
         };
     });
 };

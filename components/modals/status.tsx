@@ -35,8 +35,6 @@ const Status = ({ data }: Props) => {
   const params = useParams();
   const queryClient = useQueryClient();
 
-  console.log("data status", data);
-
   const form = useForm<z.infer<typeof UpdateCard>>({
     resolver: zodResolver(UpdateCard),
     defaultValues: {
