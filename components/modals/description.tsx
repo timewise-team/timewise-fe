@@ -16,9 +16,10 @@ import { format } from "date-fns";
 
 interface Props {
   data: CardWithList;
+    disabled: boolean;
 }
 
-const Description = ({ data }: Props) => {
+const Description = ({ data, disabled }: Props) => {
   const [isPending, startTransition] = useTransition();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
@@ -123,7 +124,7 @@ const Description = ({ data }: Props) => {
             >
               <Input
                 id={"description"}
-                disabled={isPending}
+                disabled={isPending || disabled}
                 onFocus={enableEditing}
                 onKeyDown={handleEnterPress}
                 className="min-h-[78px] w-full "

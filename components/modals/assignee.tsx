@@ -29,9 +29,10 @@ interface Props {
   sideOffset?: number;
   data: any;
   participant: any;
+  disabled?: boolean;
 }
 
-const Assignee = ({ children, data, participant }: Props) => {
+const Assignee = ({ children, data, participant, disabled }: Props) => {
   const closeRef = useRef<ElementRef<"button">>(null);
   const { data: session } = useSession();
   const [isPending, startTransition] = useTransition();
@@ -88,6 +89,7 @@ const Assignee = ({ children, data, participant }: Props) => {
   } = form;
 
   const enableEditing = () => {
+    if (disabled) return;
     setIsEditing(true);
     setTimeout(() => {});
   };

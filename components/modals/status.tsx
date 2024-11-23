@@ -25,9 +25,10 @@ import { Annoyed, CircleSlash } from "lucide-react";
 
 interface Props {
   data: any;
+  disabled?: boolean;
 }
 
-const Status = ({ data }: Props) => {
+const Status = ({ data, disabled }: Props) => {
   const closeRef = useRef<ElementRef<"button">>(null);
   const { data: session } = useSession();
   const [isPending, startTransition] = useTransition();
@@ -95,6 +96,7 @@ const Status = ({ data }: Props) => {
   } = form;
 
   const enableEditing = () => {
+    if (disabled) return;
     setIsEditing(true);
     setTimeout(() => {});
   };

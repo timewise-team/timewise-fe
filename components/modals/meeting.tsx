@@ -19,10 +19,10 @@ interface Props {
   session: any;
   data: any;
   scheduleId: string | undefined;
+  disabled?: boolean;
 }
 
-const Meetting = ({ session, data, scheduleId }: Props) => {
-  console.log("meeting", data);
+const Meetting = ({ session, data, scheduleId, disabled }: Props) => {
   const [mettingLocation, setMettingLocation] = useState(data?.location);
   const queryClient = useQueryClient();
   const [isPending, startTransition] = useTransition();
@@ -113,6 +113,7 @@ const Meetting = ({ session, data, scheduleId }: Props) => {
   };
 
   const enableEditing = () => {
+    if (disabled) return;
     setIsEditing(true);
     setTimeout(() => {
       textareaRef.current?.focus();

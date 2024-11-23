@@ -22,6 +22,7 @@ import {
 interface Props {
   data: any;
   schedule: any;
+  disabled?: boolean;
 }
 
 export const PersonReminder = z.object({
@@ -41,7 +42,7 @@ export const PersonReminder = z.object({
   ),
 });
 
-const PersonalReminder = ({ data, schedule }: Props) => {
+const PersonalReminder = ({ data, schedule, disabled }: Props) => {
   const [isPending, startTransition] = useTransition();
   const [isEditing, setIsEditing] = useState(false);
   const params = useParams();
@@ -197,7 +198,10 @@ const PersonalReminder = ({ data, schedule }: Props) => {
               <div className="flex flex-row items-center gap-x-1 cursor-pointer">
                 <Pencil
                   className="w-4 h-4"
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => {
+                    if (disabled) return;
+                    setIsEditing(true);
+                  }}
                 />
                 <Trash
                   className="w-4 h-4"

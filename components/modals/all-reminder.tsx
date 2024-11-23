@@ -14,13 +14,14 @@ import { Form } from "../ui/form";
 import { updateReminderParticipant } from "@/lib/fetcher";
 interface Props {
   data: any;
+  disabled?: boolean;
 }
 
 export const Reminder = z.object({
   reminder_time: z.string(),
 });
 
-const AllReminder = ({ data }: Props) => {
+const AllReminder = ({ data, disabled }: Props) => {
   const reminderTime = useState(
     data?.reminder_time
       ? format(parseISO(data.reminder_time), "yyyy-MM-dd HH:mm")
@@ -109,7 +110,10 @@ const AllReminder = ({ data }: Props) => {
               <div className="flex flex-row items-center gap-x-1 cursor-pointer">
                 <Pencil
                   className="w-4 h-4"
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => {
+                    if (disabled) return;
+                    setIsEditing(true);
+                  }}
                 />
               </div>
             </div>

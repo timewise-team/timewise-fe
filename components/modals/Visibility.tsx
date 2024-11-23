@@ -23,9 +23,10 @@ import {
 
 interface Props {
   data: any;
+  disabled?: boolean;
 }
 
-const Visibility = ({ data }: Props) => {
+const Visibility = ({ data, disabled }: Props) => {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
   const params = useParams();
@@ -130,6 +131,7 @@ const Visibility = ({ data }: Props) => {
               <span className="">{data.visibility}</span>
               <button
                 className="ml-2 text-primary-500"
+                disabled={disabled}
                 onClick={() => setIsEditing(true)}
               >
                 <Pencil className="w-6 h-6 text-gray-400" />

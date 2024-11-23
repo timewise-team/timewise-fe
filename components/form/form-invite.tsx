@@ -21,9 +21,10 @@ interface Props {
   align?: "start" | "center" | "end";
   sideOffset?: number;
   data: any;
+  disabled?: boolean;
 }
 
-const FormInvite = ({ children, data }: Props) => {
+const FormInvite = ({ children, data, disabled }: Props) => {
   const closeRef = useRef<ElementRef<"button">>(null);
   const { data: session } = useSession();
   const [isPending, startTransition] = useTransition();
@@ -46,6 +47,7 @@ const FormInvite = ({ children, data }: Props) => {
   const { setValue, handleSubmit } = form;
 
   const enableEditing = () => {
+    if (disabled) return;
     setIsEditing(true);
     setTimeout(() => {});
   };

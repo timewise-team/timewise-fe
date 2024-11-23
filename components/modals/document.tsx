@@ -12,6 +12,7 @@ import { Input } from "../ui/input";
 interface Props {
   data: any;
   document: any;
+  disabled?: boolean;
 }
 
 //delete file document
@@ -33,7 +34,7 @@ export const deleteDocument = async (params: any, session: any) => {
   return data;
 };
 
-const Document = ({ data, document }: Props) => {
+const Document = ({ data, document, disabled }: Props) => {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
   const [file, setFile] = useState<File | null>(null);
@@ -115,6 +116,7 @@ const Document = ({ data, document }: Props) => {
   };
 
   const handleUpload = () => {
+    if (disabled) return;
     uploadDocumentMutation();
   };
 

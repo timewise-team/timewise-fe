@@ -19,9 +19,10 @@ import { updateCardID } from "@/lib/fetcher";
 
 interface Props {
   data: any;
+  disabled?: boolean;
 }
 
-export function DatePicker({ data }: Props) {
+export function DatePicker({ data, disabled }: Props) {
   const [startDate, setStartDate] = useState(
     format(parseISO(data.start_time), "yyyy-MM-dd HH:mm")
   );
@@ -97,6 +98,7 @@ export function DatePicker({ data }: Props) {
   };
 
   const enableEditing = () => {
+    if (disabled) return;
     setIsEditing(true);
     setTimeout(() => {
       inputRef.current?.focus();
