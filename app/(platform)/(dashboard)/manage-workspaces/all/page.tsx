@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -122,14 +124,9 @@ const ManageWorkspaces = () => {
             );
         }
         if (sortOption === "created_at") {
-            sorted.sort((a, b) => {
-                const dateA = new Date(a.createdAt);
-                const dateB = new Date(b.createdAt);
-                if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) return 0;
-                return sortDirection === "asc"
-                    ? dateA.getTime() - dateB.getTime()
-                    : dateB.getTime() - dateA.getTime();
-            });
+            sorted.sort((a, b) =>
+                sortDirection === "asc" ? a.ID - b.ID : b.ID - a.ID
+            );
         }
         return sorted;
     };
@@ -347,4 +344,5 @@ const ManageWorkspaces = () => {
     );
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 export default ManageWorkspaces;

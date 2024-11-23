@@ -129,6 +129,27 @@ export const getMembersInWorkspaceByParams = async (params: any, session: any) =
     return data;
 };
 
+export const getMembersInWorkspaceForManage = async (params: any, session: any) => {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/manage/wsp_user_list`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${session?.user.access_token}`,
+                "X-User-Email": `${session?.user.email}`,
+                "X-Workspace-ID": `${params.organizationId}`,
+            },
+        }
+    );
+
+    if (response.status === 500) {
+        throw new Error("User does not exist");
+    }
+
+    const data = await response.json();
+    return data;
+};
+
 export const getCommentByScheduleID = async (params: any, session: any) => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/comment/schedule/${params.cardId}`,
@@ -927,4 +948,23 @@ export const triggerMeeting = async (params: any, session: any) => {
 
   const data = await response.json();
   return data;
+};
+
+export const getCurrentWorkspaceUserInfo = async (params: any, session: any) => {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/get-workspace_user/email/${session.user.email}/workspace_id/${params.organizationId}`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${session?.user.access_token}`,
+            },
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to get current workspace user");
+    }
+
+    const data = await response.json();
+    return data;
 };
