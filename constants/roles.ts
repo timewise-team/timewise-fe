@@ -1,3 +1,5 @@
+import content from "@components/modals/content";
+
 export const ParticipantRole = {
     creator: 'creator',
     assignTo: 'assign to',
@@ -20,7 +22,7 @@ export const ScheduleAction = {
     comment: 'comment',
     document: 'document',
     assign: 'assign',
-};
+} as const;
 
 const actionPermissions = {
     visibility: [ParticipantRole.creator, ParticipantRole.assignTo],
@@ -38,11 +40,13 @@ const actionPermissions = {
     document: [ParticipantRole.creator, ParticipantRole.assignTo, ParticipantRole.participant, ParticipantRole.fullAccess]
 };
 
-export const checkSchedulePermission = (role: string, action: string) => {
+type Action = keyof typeof actionPermissions;
+
+
+export const checkSchedulePermission = (role: string, action: Action) => {
     if (role === ParticipantRole.fullAccess) {
         return true;
     }
     const allowedRoles = actionPermissions[action];
-    console.log('check', allowedRoles ? allowedRoles.includes(role) : false);
     return allowedRoles ? allowedRoles.includes(role) : false;
 };
