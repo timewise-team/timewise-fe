@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/Button";
 import { Workspace } from "@/types/Board";
+import AddSchedule from "@/app/(platform)/(dashboard)/organization/[organizationId]/_components/add-schedule";
 
 interface CalendarFilterProps {
   workspaceData: Record<string, Workspace[]>;
@@ -28,11 +28,21 @@ const useDebounce = (callback: (args: string[]) => void, delay: number) => {
   };
 };
 
-function CalendarFilter({ workspaceData, onCheckedWorkspacesChange }: CalendarFilterProps) {
-  const [checkedEmails, setCheckedEmails] = useState<Record<string, boolean>>({});
-  const [checkedWorkspaces, setCheckedWorkspaces] = useState<Record<number, boolean>>({});
+function CalendarFilter({
+  workspaceData,
+  onCheckedWorkspacesChange,
+}: CalendarFilterProps) {
+  const [checkedEmails, setCheckedEmails] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [checkedWorkspaces, setCheckedWorkspaces] = useState<
+    Record<number, boolean>
+  >({});
 
-  const debouncedCheckedWorkspacesChange = useDebounce(onCheckedWorkspacesChange, 300);
+  const debouncedCheckedWorkspacesChange = useDebounce(
+    onCheckedWorkspacesChange,
+    300
+  );
 
   useEffect(() => {
     const initialCheckedEmails: Record<string, boolean> = {};
@@ -63,7 +73,12 @@ function CalendarFilter({ workspaceData, onCheckedWorkspacesChange }: CalendarFi
       setCheckedWorkspaces(updatedWorkspaces);
       debouncedCheckedWorkspacesChange(getWorkspaceId(updatedWorkspaces));
     },
-    [checkedEmails, checkedWorkspaces, workspaceData, debouncedCheckedWorkspacesChange]
+    [
+      checkedEmails,
+      checkedWorkspaces,
+      workspaceData,
+      debouncedCheckedWorkspacesChange,
+    ]
   );
 
   const handleWorkspaceChange = useCallback(
@@ -86,7 +101,10 @@ function CalendarFilter({ workspaceData, onCheckedWorkspacesChange }: CalendarFi
               (workspace) => updatedWorkspaces[workspace.ID]
             );
             if (allWorkspacesChecked) {
-              setCheckedEmails((prevEmails) => ({ ...prevEmails, [email]: true }));
+              setCheckedEmails((prevEmails) => ({
+                ...prevEmails,
+                [email]: true,
+              }));
             }
           }
         }
@@ -100,7 +118,19 @@ function CalendarFilter({ workspaceData, onCheckedWorkspacesChange }: CalendarFi
 
   return (
     <div className="p-1.5 pt-0 w-80 flex flex-col gap-1.5">
-      <Button>Create</Button>
+      <div className="w-fit flex items-center bg-black text-white rounded">
+        <AddSchedule
+          listId={""}
+          enableEditing={function (): void {
+            throw new Error("Function not implemented.");
+          }}
+          disableEditing={function (): void {
+            throw new Error("Function not implemented.");
+          }}
+          isEditing={false}
+          isGlobalCalendar={true}
+        />
+      </div>
       <div>
         <h3>My Calendar</h3>
         <div>
