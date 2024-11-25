@@ -75,6 +75,7 @@ export const ListItem = ({ index, data }: Props) => {
               isEditing={isEditing}
               enableEditing={enableEditing}
               disableEditing={disableEditing}
+              isGlobalCalendar={false}
             />
           </div>
         </li>
