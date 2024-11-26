@@ -12,6 +12,7 @@ import ScheduleDetailsDrawer from "@components/view-calender/custom-event-modal"
 import {useCardModal} from "@/hooks/useCardModal";
 import {TransformedSchedule} from "@/types/Calendar";
 import {Calendars} from "@/utils/calendar/calendarUtils";
+import {createDragAndDropPlugin} from "@schedule-x/drag-and-drop";
 
 interface CalendarAppProps {
     scheduleData: TransformedSchedule[];
@@ -28,11 +29,27 @@ function CalendarApp({scheduleData, workspaceData}: CalendarAppProps) {
         defaultView: viewMonthGrid.name,
         events: scheduleData,
         plugins: [
+            createDragAndDropPlugin(15),
             createEventsServicePlugin(),
             createCalendarControlsPlugin()
         ],
         selectedDate: format(new Date(), 'yyyy-MM-dd'),
         calendars: workspaceData,
+        callbacks: {
+            onEventClick: (event) => {
+                console.log('Event clicked:', event);
+                cardModal.onOpen(event.id.toString(), event.workspaceId);
+            },
+            onClickDate(date) {
+                console.log('onClickDate', date) // e.g. 2024-01-01
+            },
+            onClickDateTime(dateTime) {
+                console.log('onClickDateTime', dateTime) // e.g. 2024-01-01T12:00:00
+            },
+            onEventUpdate(event) {
+                console.log('onEventUpdate', event)
+            }
+        }
     }) as any;
 
     useEffect(() => {
@@ -40,45 +57,6 @@ function CalendarApp({scheduleData, workspaceData}: CalendarAppProps) {
             calendarApp.eventsService.set(scheduleData);
         }
     }, [scheduleData, calendarApp]);
-
-    useEffect(() => {
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement;
-            const eventId = target.closest(".sx__time-grid-event")?.getAttribute("data-event-id")
-                || target.closest(".sx__month-grid-event")?.getAttribute("data-event-id");
-            if (eventId) {
-                const workspaceId = calendarApp.eventsService.get(eventId.toString()).workspaceId;
-                cardModal.onOpen(eventId.toString(), workspaceId.toString());
-            }
-        };
-
-        const attachEventListeners = () => {
-            const eventElements = document.querySelectorAll(".sx__time-grid-event")
-                && document.querySelectorAll(".sx__month-grid-event");
-            eventElements.forEach((element) => {
-                element.addEventListener("click", handleClick);
-            });
-        };
-
-        // Initial attachment of event listeners
-        attachEventListeners();
-
-        // Observe changes in the DOM to re-attach event listeners
-        const observer = new MutationObserver(() => {
-            attachEventListeners();
-        });
-
-        observer.observe(document.body, {childList: true, subtree: true});
-
-        return () => {
-            observer.disconnect();
-            const eventElements = document.querySelectorAll(".sx__time-grid-event")
-                || document.querySelectorAll(".sx__month-grid-event");
-            eventElements.forEach((element) => {
-                element.removeEventListener("click", handleClick);
-            });
-        };
-    }, [calendarApp, cardModal]);
 
     return (
         <div className="w-full max-w-[100vw] h-full">

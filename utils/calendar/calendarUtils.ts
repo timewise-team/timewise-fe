@@ -15,7 +15,7 @@ export const transformScheduleData = (data: any): TransformedSchedule[] => {
             start = format(parseISO(schedule.start_time), "yyyy-MM-dd");
             end = format(parseISO(schedule.end_time), "yyyy-MM-dd");
         } else {
-            start = format(parseISO(schedule.end_time), "yyyy-MM-dd HH:mm");
+            start = format(parseISO(schedule.start_time), "yyyy-MM-dd HH:mm");
             end = format(parseISO(schedule.end_time), "yyyy-MM-dd HH:mm");
         }
         return {
