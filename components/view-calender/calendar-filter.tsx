@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Workspace } from "@/types/Board";
 import AddSchedule from "@/app/(platform)/(dashboard)/organization/[organizationId]/_components/add-schedule";
 import { Calendars } from "@/utils/calendar/calendarUtils";
+import { Checkbox } from "../ui/checkbox";
 
 interface CalendarFilterProps {
   workspaceData: Record<string, Workspace[]>;
