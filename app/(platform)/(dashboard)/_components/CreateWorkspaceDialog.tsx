@@ -71,7 +71,16 @@ const CreateDialog = () => {
       if (result.error) {
         throw new Error(result.error);
       }
+      if (!response.ok) {
+        throw new Error("Failed to create workspace");
+      }
       return result;
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onSuccess: () => {
+      toast.success("Workspace created successfully");
     },
   });
 

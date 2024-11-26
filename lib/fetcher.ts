@@ -5,21 +5,42 @@ import { UpdateListOrder } from "@/actions/update-list-order/schema";
 import { Card } from "@/types/Board";
 
 export const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+const buildUrlWithParams = (baseUrl: string, params: any) => {
+  const queryParams = new URLSearchParams();
+
+  if (params.search) queryParams.append("search", params.search);
+
+  if (params.member) {
+    const uniqueMembers = Array.from(new Set(params.member.split(",")));
+    queryParams.append("member", uniqueMembers.join(","));
+  }
+
+  if (params.due) queryParams.append("due", params.due);
+  if (typeof params.dueComplete === "boolean")
+    queryParams.append("dueComplete", params.dueComplete.toString());
+  if (typeof params.overdue === "boolean")
+    queryParams.append("overdue", params.overdue.toString());
+  if (typeof params.notDue === "boolean")
+    queryParams.append("notDue", params.notDue.toString());
+
+  return `${baseUrl}?${queryParams.toString()}`;
+};
+
 export const getBoardColumns = async (params: any, session: any) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/workspace/${params.organizationId}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
-        "X-Workspace-ID": `${params.organizationId}`,
-      },
-    }
-  );
+  const baseUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/workspace/${params.organizationId}`;
+  const url = buildUrlWithParams(baseUrl, params);
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${session?.user.access_token}`,
+      "X-User-Email": `${session?.user.email}`,
+      "X-Workspace-ID": `${params.organizationId}`,
+    },
+  });
 
   const data = await response.json();
-
   return data;
 };
 
@@ -246,6 +267,10 @@ export const updateRole = async (params: any, session: any) => {
       }),
     }
   );
+
+  if (!response.ok) {
+    throw new Error("Failed to update role");
+  }
 
   const data = await response.json();
   return data;
