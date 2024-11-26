@@ -8,14 +8,15 @@ import {getSchedules} from "@/lib/fetcher";
 import {TransformedSchedule} from "@/types/Calendar";
 import {useStateContext} from "@/stores/StateContext";
 import CalendarFilter from "@components/view-calender/calendar-filter";
-import {transformScheduleData} from "@/utils/calendar/calendarUtils";
-
+import {Calendars, getWorkspaceData, transformScheduleData} from "@/utils/calendar/calendarUtils";
 
 const CalenderPage = () => {
     const {data: session} = useSession();
-    const [scheduleData, setScheduleData] = useState<TransformedSchedule[]>([]);
     const [checkedWorkspaces, setCheckedWorkspaces] = useState<string[]>([]);
     const {stateWorkspacesByEmail} = useStateContext();
+
+    const [scheduleData, setScheduleData] = useState<TransformedSchedule[]>([]);
+    const [workspaceData, setWorkspaceData] = useState<Calendars>({});
 
     const handleCheckedWorkspacesChange = (checkedWorkspaces: string[]) => {
         setCheckedWorkspaces(checkedWorkspaces);
@@ -41,24 +42,30 @@ const CalenderPage = () => {
     });
 
     useEffect(() => {
+        const transformedWorkspaceData = getWorkspaceData(stateWorkspacesByEmail);
+        setWorkspaceData(transformedWorkspaceData);
+    }, [stateWorkspacesByEmail]);
+
+    useEffect(() => {
         if (!isLoading && data) {
             setScheduleData(transformScheduleData(data));
         }
     }, [isLoading, data]);
 
-    if (!scheduleData) {
+    if (!scheduleData || Object.keys(workspaceData).length === 0) {
         return <div className="w-full h-full">Loading...</div>;
     }
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center p-2">
-            {stateWorkspacesByEmail && (
+            {workspaceData && (
                 <div className="w-full max-w-[100vw] h-full flex gap-1">
                     <CalendarFilter
                         workspaceData={stateWorkspacesByEmail}
+                        workspaceDataTransformed={workspaceData}
                         onCheckedWorkspacesChange={handleCheckedWorkspacesChange}
                     />
-                    <CalendarApp scheduleData={scheduleData}/>
+                    <CalendarApp scheduleData={scheduleData} workspaceData={workspaceData}/>
                 </div>
             )}
         </div>

@@ -72,6 +72,15 @@ const ListHeader = ({ data, onAddCard }: Props) => {
     setTimeout(() => {
       inputRef.current?.focus();
     });
+    document.addEventListener('click', handleClickOutside, true);
+  };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    const inputElement = document.getElementById("title");
+    if (event.target !== inputElement) {
+      disableEditing();
+      document.removeEventListener('click', handleClickOutside, true);
+    }
   };
 
   const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
