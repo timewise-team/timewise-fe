@@ -14,7 +14,7 @@ export const CreateWorkspace = z.object({
       required_error: "Description is required!",
       invalid_type_error: "Description is required!",
     })
-    .min(5, {
+    .min(3, {
       message: "Description is too short!",
     }),
   email: z.string({

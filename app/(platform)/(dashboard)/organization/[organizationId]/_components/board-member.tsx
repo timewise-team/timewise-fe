@@ -162,7 +162,6 @@ const BoardMember = ({ data }: Props) => {
                                 )}
                               </>
                             )}
-                            {session?.user.email === member.email && <></>}
                           </SelectGroup>
                         </SelectContent>
                       </Select>
