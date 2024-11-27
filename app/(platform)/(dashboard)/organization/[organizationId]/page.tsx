@@ -52,6 +52,7 @@ const OrganizationIdPage = () => {
         notDue,
       },
     ],
+    //check
     queryFn: async () => {
       const data = await getBoardColumns(
         {
@@ -114,16 +115,19 @@ const OrganizationIdPage = () => {
             <p className="font-bold text-white">{workspace?.title}</p>
             <div className="flex flex-row p-2 justify-end w-[75%] text-white items-center">
               <InviteMember />
-              {Array.isArray(listMembers) && listMembers?.slice(0, 3).map((participant: any, index: any) => (
-                <Image
-                  key={index}
-                  src={participant.profile_picture}
-                  alt={"avatar"}
-                  width={20}
-                  height={20}
-                  className="h-6 w-6 rounded-full object-cover"
-                />
-              ))}
+              {Array.isArray(listMembers) &&
+                listMembers
+                  ?.slice(0, 3)
+                  .map((participant: any, index: any) => (
+                    <Image
+                      key={index}
+                      src={participant.profile_picture}
+                      alt={"avatar"}
+                      width={20}
+                      height={20}
+                      className="h-6 w-6 rounded-full object-cover"
+                    />
+                  ))}
               {listMembers && data?.length > 3 && (
                 <span className="flex items-center justify-center h-4 w-4 rounded-full bg-black text-xs text-white  border-2 border-white">
                   +{data.length - 3}
