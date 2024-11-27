@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { UpdateCardOrder } from "@/actions/update-card-order/schema";
-import { UpdateCard } from "@/actions/update-card/schema";
 import { UpdateListOrder } from "@/actions/update-list-order/schema";
 import { Card } from "@/types/Board";
 

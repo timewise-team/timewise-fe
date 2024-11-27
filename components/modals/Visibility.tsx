@@ -20,9 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Input } from "../ui/input";
-import { Button } from "../ui/Button";
-import FormSubmit from "../form/form-submit";
 
 interface Props {
   data: any;
@@ -112,30 +109,27 @@ const Visibility = ({ data, disabled }: Props) => {
     form.handleSubmit((values) => updateCardInformation(values))();
   };
 
-  const handleSubmit = (values: z.infer<typeof UpdateCard>) => {
-    console.log("values submit", values);
-    updateCardInformation(values);
-  };
-
   return (
     <>
       <Form {...form}>
         {isEditing ? (
-          <form ref={formRef} className="flex flex-row items-center gap-x-2">
-            <Eye className="w-6 h-6 text-gray-400" />
-            <p>Visibility: </p>
+          <form ref={formRef}>
             <FormField
               control={form.control}
               name="visibility"
               render={({ field }) => (
                 <FormItem>
                   <Select
-                    value={field.value}
+                    {...register("visibility")}
+                    disabled={isPending}
+                    defaultValue={field.value}
                     onValueChange={handleSelectChange}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select visibility" />
-                    </SelectTrigger>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select visibility" />
+                      </SelectTrigger>
+                    </FormControl>
                     <SelectContent>
                       <SelectItem value="public">Public</SelectItem>
                       <SelectItem value="private">Private</SelectItem>
