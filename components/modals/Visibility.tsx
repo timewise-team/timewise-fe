@@ -20,6 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Input } from "../ui/input";
+import { Button } from "../ui/Button";
+import FormSubmit from "../form/form-submit";
 
 interface Props {
   data: any;
@@ -70,22 +73,21 @@ const Visibility = ({ data, disabled }: Props) => {
         },
         session
       );
-      console.log("Update response:", response);
 
       return response;
     },
     onSuccess: () => {
+      toast.success("Status updated successfully");
+      startTransition(() => {
+        reset();
+      });
+      setIsEditing(false);
       queryClient.invalidateQueries({
         queryKey: ["detailCard"],
       });
       queryClient.invalidateQueries({
         queryKey: ["listBoardColumns"],
       });
-      startTransition(() => {
-        reset();
-      });
-      toast.success("Status updated successfully");
-      setIsEditing(false);
     },
     onError: (error) => {
       toast.error(error.message);
@@ -108,31 +110,32 @@ const Visibility = ({ data, disabled }: Props) => {
   const handleSelectChange = (value: string) => {
     setValue("visibility", value);
     form.handleSubmit((values) => updateCardInformation(values))();
-    //log
-    console.log("Visibility:", value);
+  };
+
+  const handleSubmit = (values: z.infer<typeof UpdateCard>) => {
+    console.log("values submit", values);
+    updateCardInformation(values);
   };
 
   return (
     <>
       <Form {...form}>
         {isEditing ? (
-          <form ref={formRef}>
+          <form ref={formRef} className="flex flex-row items-center gap-x-2">
+            <Eye className="w-6 h-6 text-gray-400" />
+            <p>Visibility: </p>
             <FormField
               control={form.control}
               name="visibility"
               render={({ field }) => (
                 <FormItem>
                   <Select
-                    {...register("visibility")}
-                    disabled={isPending}
-                    defaultValue={field.value}
+                    value={field.value}
                     onValueChange={handleSelectChange}
                   >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select visibility" />
-                      </SelectTrigger>
-                    </FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select visibility" />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="public">Public</SelectItem>
                       <SelectItem value="private">Private</SelectItem>
@@ -146,8 +149,8 @@ const Visibility = ({ data, disabled }: Props) => {
           <div className="flex items-center space-x-2 cursor-pointer w-full">
             <Eye className="w-6 h-6 text-gray-400" />
             <p className="text-gray-400 font-bold">Visibility</p>
-            <div className="pl-8 flex flex-row items-center">
-              <span className="">{data.visibility}</span>
+            <div className=" flex flex-row items-center">
+              <span>{data.visibility}</span>
               <button
                 className="ml-2 text-primary-500"
                 disabled={disabled}

@@ -1,4 +1,10 @@
-import React, { ElementRef, useRef, useState, useTransition } from "react";
+import React, {
+  ElementRef,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { CardWithList } from "@/types/Board";
 import { AlignLeft } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
@@ -16,7 +22,7 @@ import { format } from "date-fns";
 
 interface Props {
   data: CardWithList;
-    disabled: boolean;
+  disabled: boolean;
 }
 
 const Description = ({ data, disabled }: Props) => {
@@ -106,6 +112,19 @@ const Description = ({ data, disabled }: Props) => {
       form.handleSubmit((values) => updateCardInformation(values))();
     }
   };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (formRef.current && !formRef.current.contains(event.target as Node)) {
+      setIsEditing(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="flex items-start gap-x-3 w-full">
