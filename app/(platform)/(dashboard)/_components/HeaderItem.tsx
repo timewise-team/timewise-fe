@@ -12,12 +12,8 @@ import {
 // Create a list of navigation lists with default items
 export const NAVIGATION_LIST = [
     {
-        title: "Home",
-        href: `/organization/calender`,
-    },
-    {
-                title: "Manage Workspaces",
-                href: `/manage-workspaces/all`,
+        title: "Manage Workspaces",
+        href: `/manage-workspaces/all`,
     },
 ];
 
@@ -34,19 +30,6 @@ const MenuNavbar = () => {
                             className="block text-text font-heading text-md font-bold p-3 hover:bg-accent hover:rounded-md"
                         >
                             {NAVIGATION_LIST[0].title}
-                        </a>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                {/* Render the Workspaces section */}
-                <NavigationMenuItem>
-                    {/* Render "Manage Workspaces" directly as an anchor link */}
-                    <NavigationMenuLink asChild>
-                        <a
-                            href={NAVIGATION_LIST[1].href}
-                            className="block text-text font-heading text-md font-bold p-3 hover:bg-accent hover:rounded-md"
-                        >
-                            {NAVIGATION_LIST[1].title}
                         </a>
                     </NavigationMenuLink>
                 </NavigationMenuItem>

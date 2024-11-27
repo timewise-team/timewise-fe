@@ -16,7 +16,7 @@ const Logo = ({hasText}: LogoProps) => {
         height = 45;
     }
     return (
-        <Link href="/">
+        <Link href="/organization/calender">
             <div className="hover:opacity-75 transition-none items-center gap-x-2 hidden md:flex">
                 <Image src={logoSrc} alt="logo"
                        width={width} height={height} quality={100} className="cursor-pointer"
