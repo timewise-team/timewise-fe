@@ -33,7 +33,7 @@ const Visibility = ({ data, disabled }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
-  const [visibility, setVisibility] = useState(data.visibility);
+  // const [visibility, setVisibility] = useStates(data.visibility);
 
   const form = useForm<z.infer<typeof UpdateCard>>({
     resolver: zodResolver(UpdateCard),
