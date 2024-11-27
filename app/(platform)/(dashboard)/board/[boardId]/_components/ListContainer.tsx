@@ -44,14 +44,6 @@ const ListContainer = ({ data }: Props) => {
         throw new Error("Invalid fields");
       }
 
-      console.log('aaa', {
-        position: values.position,
-        board_column_id: boardColumnsId.find(
-            (item) => item === orderedData[values.position].id
-        ),
-        organizationId: params.organizationId,
-      })
-
       const response = await updateBoardOrder(
         {
           position: values.position,

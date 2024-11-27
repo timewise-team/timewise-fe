@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { ChangeEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,10 +19,10 @@ import {
 interface Props {
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
-  member: string;
-  setMember: React.Dispatch<React.SetStateAction<string>>;
-  due: boolean;
-  setDue: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedMembers: string[];
+  setSelectedMember: React.Dispatch<React.SetStateAction<string[]>>;
+  due: string;
+  setDue: React.Dispatch<React.SetStateAction<string>>;
   dueComplete: boolean;
   setDueComplete: React.Dispatch<React.SetStateAction<boolean>>;
   overdue: boolean;
@@ -37,8 +37,8 @@ interface Props {
 const FilterPopover = ({
   search,
   setSearch,
-  member,
-  setMember,
+  selectedMembers,
+  setSelectedMember,
   due,
   setDue,
   dueComplete,
@@ -55,8 +55,8 @@ const FilterPopover = ({
     setOverdue((prev) => !prev);
   };
 
-  const handleDueChange = () => {
-    setDue((prev) => !prev);
+  const handleDueChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setDue(event.target.value);
   };
 
   const handleDueCompleteChange = () => {
@@ -64,16 +64,21 @@ const FilterPopover = ({
   };
 
   const handleMemberChange = (email: string) => {
-    setMember((prev) => (prev === email ? "" : email));
+    setSelectedMember((prev) => {
+      if (prev.includes(email)) {
+        return prev.filter((member) => member !== email);
+      }
+      return [...prev, email];
+    });
   };
 
   const handleClearFilters = () => {
     setSearch("");
-    setDue(false);
+    setDue("");
     setDueComplete(false);
     setOverdue(false);
     setNotDue(false);
-    setMember("");
+    setSelectedMember([]);
   };
 
   return (
@@ -120,7 +125,7 @@ const FilterPopover = ({
                       <Input
                         className="w-4 h-4"
                         type="checkbox"
-                        checked={members.email === member}
+                        checked={selectedMembers.includes(members.email)}
                         id={members.id}
                         onChange={() => handleMemberChange(members.email)}
                       />
@@ -171,21 +176,57 @@ const FilterPopover = ({
                   Overdue
                 </label>
               </div>
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="checkbox"
-                  id="due"
-                  onChange={handleDueChange}
-                  checked={due}
-                  className="w-4 h-4"
-                />
+              <div className="flex flex-col items-center">
                 <UserRoundSearch size={16} />
                 <label
                   htmlFor="due"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  Due Date
+                  Date/Week/Month
                 </label>
+                <div className="flex space-x-2 items-start justify-start">
+                  <div className="flex flex-col items-start justify-start">
+                    <label className="flex items-center space-x-2">
+                      <Input
+                        type="checkbox"
+                        id="day"
+                        name="due"
+                        value="day"
+                        checked={due === "day"}
+                        onChange={handleDueChange}
+                        className="w-4 h-4"
+                      />
+                      <Clock className="text-blue-500 w-4 h-4" />
+                      <span>Day</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <Input
+                        type="checkbox"
+                        id="week"
+                        name="due"
+                        value="week"
+                        checked={due === "week"}
+                        onChange={handleDueChange}
+                        className="w-4 h-4"
+                      />
+                      <Clock className="text-yellow-500 w-4 h-4" />
+                      <span>Week</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <Input
+                        type="checkbox"
+                        id="month"
+                        name="due"
+                        value="month"
+                        checked={due === "month"}
+                        onChange={handleDueChange}
+                        className="w-4 h-4"
+                      />
+                      <Clock className="text-green-500 w-4 h-4" />
+                      <span>Month</span>
+                    </label>
+                  </div>
+                </div>
               </div>
               <div className="flex items-center space-x-2">
                 <Input

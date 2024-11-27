@@ -16,7 +16,13 @@ const buildUrlWithParams = (baseUrl: string, params: any) => {
     queryParams.append("member", uniqueMembers.join(","));
   }
 
-  if (params.due) queryParams.append("due", params.due);
+  if (params.due) {
+    const validDueValues = ["day", "week", "month"];
+    if (validDueValues.includes(params.due)) {
+      queryParams.append("due", params.due);
+    }
+  }
+
   if (typeof params.dueComplete === "boolean")
     queryParams.append("dueComplete", params.dueComplete.toString());
   if (typeof params.overdue === "boolean")
