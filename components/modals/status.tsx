@@ -21,7 +21,7 @@ import {
 } from "../ui/select";
 import { UpdateCard } from "@/actions/update-card/schema";
 import { format } from "date-fns";
-import { Annoyed, CircleSlash } from "lucide-react";
+import { Annoyed, Pencil } from "lucide-react";
 
 interface Props {
   data: any;
@@ -141,7 +141,7 @@ const Status = ({ data, disabled }: Props) => {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select member to assign" />
+                          <SelectValue placeholder="Update status" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -167,8 +167,10 @@ const Status = ({ data, disabled }: Props) => {
           >
             <Annoyed className="w-6 h-6 text-gray-400" />
             <p className="text-gray-400 font-bold">Status: </p>
-            <CircleSlash className="w-6 h-6 text-green-500 ml-10" />
-            {data.status}
+            <p className="text-gray-400 font-bold">
+              {data.status ? data.status : "Not yet"}
+            </p>
+            <Pencil className="w-6 h-6  text-gray-400" />
           </div>
         )}
       </Form>

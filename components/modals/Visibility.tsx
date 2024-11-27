@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import React, { useState, useTransition } from "react";
+import React, { useEffect, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -32,6 +32,8 @@ const Visibility = ({ data, disabled }: Props) => {
   const params = useParams();
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const formRef = useRef<HTMLFormElement>(null);
+  // const [visibility, setVisibility] = useStates(data.visibility);
 
   const form = useForm<z.infer<typeof UpdateCard>>({
     resolver: zodResolver(UpdateCard),
@@ -68,6 +70,8 @@ const Visibility = ({ data, disabled }: Props) => {
         },
         session
       );
+      console.log("Update response:", response);
+
       return response;
     },
     onSuccess: () => {
@@ -88,16 +92,31 @@ const Visibility = ({ data, disabled }: Props) => {
     },
   });
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (formRef.current && !formRef.current.contains(event.target as Node)) {
+      setIsEditing(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleSelectChange = (value: string) => {
     setValue("visibility", value);
     form.handleSubmit((values) => updateCardInformation(values))();
+    //log
+    console.log("Visibility:", value);
   };
 
   return (
     <>
       <Form {...form}>
         {isEditing ? (
-          <form>
+          <form ref={formRef}>
             <FormField
               control={form.control}
               name="visibility"
