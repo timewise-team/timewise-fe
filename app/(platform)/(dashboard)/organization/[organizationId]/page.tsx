@@ -114,7 +114,7 @@ const OrganizationIdPage = () => {
             <p className="font-bold text-white">{workspace?.title}</p>
             <div className="flex flex-row p-2 justify-end w-[75%] text-white items-center">
               <InviteMember />
-              {listMembers?.slice(0, 3).map((participant: any, index: any) => (
+              {Array.isArray(listMembers) && listMembers?.slice(0, 3).map((participant: any, index: any) => (
                 <Image
                   key={index}
                   src={participant.profile_picture}

@@ -46,14 +46,15 @@ const ViewMember = () => {
     });
 
     useEffect(() => {
-        let filtered = membersData?.filter((member: any) => {
+        let filtered = Array.isArray(membersData)
+            ? membersData?.filter((member: any) => {
             const term = searchTerm.toLowerCase();
             return (
                 member.first_name.toLowerCase().includes(term) ||
                 member.last_name.toLowerCase().includes(term) ||
                 member.email.toLowerCase().includes(term)
             );
-        });
+        }) : [];
 
         filtered = filtered?.sort((a: any, b: any) => {
             const fieldA = a[sortBy]?.toLowerCase?.() || "";
