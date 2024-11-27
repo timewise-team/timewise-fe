@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 "use client";
-import React, { ElementRef, useRef, useState, useTransition } from "react";
+import React, {
+  ElementRef,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -11,16 +17,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import { useParams } from "next/navigation";
 import { updateCardID } from "@/lib/fetcher";
-import { Form, FormControl, FormField, FormItem } from "../ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import { Form } from "../ui/form";
 import { UpdateCard } from "@/actions/update-card/schema";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { Annoyed, Pencil } from "lucide-react";
 
 interface Props {
@@ -35,11 +34,15 @@ const Status = ({ data, disabled }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const params = useParams();
   const queryClient = useQueryClient();
+  const [status, setStatus] = useState(data.status);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const form = useForm<z.infer<typeof UpdateCard>>({
     resolver: zodResolver(UpdateCard),
     defaultValues: {
       status: data.status,
+      start_time: format(parseISO(data.start_time), "yyyy-MM-dd HH:mm:ss.SSS"),
+      end_time: format(parseISO(data.end_time), "yyyy-MM-dd HH:mm:ss.SSS"),
     },
   });
 
@@ -89,11 +92,7 @@ const Status = ({ data, disabled }: Props) => {
     },
   });
 
-  const {
-    register,
-    reset,
-    formState: { errors },
-  } = form;
+  const { register, reset, setValue } = form;
 
   const enableEditing = () => {
     if (disabled) return;
@@ -111,9 +110,15 @@ const Status = ({ data, disabled }: Props) => {
     }
   };
 
-  const handleSelectChange = (value: any) => {
-    form.setValue("status", value);
-    form.handleSubmit((values) => updateCardInformation(values))();
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newStatus = e.target.value;
+    setStatus(newStatus);
+    setValue("status", newStatus);
+
+    updateCardInformation({
+      ...form.getValues(),
+      visibility: newStatus,
+    });
   };
 
   useEventListener("keydown", onKeyDown);
@@ -122,42 +127,37 @@ const Status = ({ data, disabled }: Props) => {
       disableEditing();
     }
   });
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (formRef.current && !formRef.current.contains(event.target as Node)) {
+      setIsEditing(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
       <Form {...form}>
         {isEditing ? (
-          <form className="flex flex-row gap-x-1">
-            <div className="flex items-center flex-col">
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <Select
-                      {...register("status")}
-                      disabled={isPending}
-                      defaultValue={field.value}
-                      onValueChange={(value) => handleSelectChange(value)}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Update status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="not yet">Not Yet</SelectItem>
-                        <SelectItem value="in progress">In Progress</SelectItem>
-                        <SelectItem value="done">Done</SelectItem>
-                      </SelectContent>{" "}
-                    </Select>
-                  </FormItem>
-                )}
-              />
-              {errors.status && (
-                <p className="text-red-500 text-sm items-start">
-                  {errors.status.message}
-                </p>
-              )}
+          <form ref={formRef} className="flex flex-row gap-x-1">
+            <div className="flex items-center flex-row gap-x-2">
+              <Annoyed className="w-6 h-6 text-gray-400" />
+              <select
+                {...register("status")}
+                onChange={handleSelectChange}
+                value={data.status}
+                disabled={isPending}
+              >
+                <option value="not yet">Not Yet</option>
+                <option value="in progress">In Progress</option>
+                <option value="done">Done</option>
+              </select>
             </div>
           </form>
         ) : (
@@ -167,9 +167,7 @@ const Status = ({ data, disabled }: Props) => {
           >
             <Annoyed className="w-6 h-6 text-gray-400" />
             <p className="text-gray-400 font-bold">Status: </p>
-            <p className="text-gray-400 font-bold">
-              {data.status ? data.status : "Not yet"}
-            </p>
+            <p className=" font-medium">{status ? status : "Not yet"}</p>
             <Pencil className="w-6 h-6  text-gray-400" />
           </div>
         )}

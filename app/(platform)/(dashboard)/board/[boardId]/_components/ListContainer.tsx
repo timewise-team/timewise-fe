@@ -218,24 +218,26 @@ const ListContainer = ({ data }: Props) => {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="lists" type="list" direction="horizontal">
-        {(provided) => (
-          <ol
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            className=" flex flex-col sm:flex-row gap-y-3 sm:gap-x-3 h-auto sm:h-full w-full"
-          >
-            {orderedData.map((list, index) => {
-              return <ListItem key={list.id} index={index} data={list} />;
-            })}
-            {provided.placeholder}
-            <ListForm />
-            <div className="flex-shrink-0 w-1" />
-          </ol>
-        )}
-      </Droppable>
-    </DragDropContext>
+    <div className="pt-[60px]">
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="lists" type="list" direction="horizontal">
+          {(provided) => (
+            <ol
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className=" flex flex-col sm:flex-row gap-y-3 sm:gap-x-3 h-auto sm:h-full w-full"
+            >
+              {orderedData.map((list, index) => {
+                return <ListItem key={list.id} index={index} data={list} />;
+              })}
+              {provided.placeholder}
+              <ListForm />
+              <div className="flex-shrink-0 w-1" />
+            </ol>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </div>
   );
 };
 
