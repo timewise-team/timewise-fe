@@ -4,7 +4,7 @@
 import * as React from "react";
 import { ArchiveIcon, CalendarHeart } from "lucide-react";
 import { format, parseISO } from "date-fns";
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useSession } from "next-auth/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -34,7 +34,8 @@ export function DatePicker({ data, disabled }: Props) {
   const params = useParams();
   const { data: session } = useSession();
   const queryClient = useQueryClient();
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const form = useForm<z.infer<typeof UpdateCard>>({
     resolver: zodResolver(UpdateCard),
@@ -122,13 +123,26 @@ export function DatePicker({ data, disabled }: Props) {
     updateCardInformation(values);
   });
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (formRef.current && !formRef.current.contains(event.target as Node)) {
+      setIsEditing(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="flex space-y-1 w-full">
       <div>
         <Form {...form}>
           {isEditing ? (
             <>
-              <form className="space-y-2">
+              <form ref={formRef} className="space-y-2">
                 <div className="flex flex-row items-center gap-x-1">
                   <div className="flex flex-row gap-x-2 w-full items-start font-medium">
                     <CalendarHeart className="w-6 h-6 text-gray-400" />

@@ -138,7 +138,6 @@ const AddSchedule = ({ listId, isGlobalCalendar }: Props) => {
       toast.success(`Schedule created successfully`);
 
       queryClient.invalidateQueries({
-        exact: true,
         queryKey: ["listBoardColumns", params.organizationId],
       });
     },

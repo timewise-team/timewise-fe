@@ -110,9 +110,9 @@ const OrganizationIdPage = () => {
     <div className="px-2 w-full mb-5">
       <div className=" relative bg-no-repeat bg-cover bg-center">
         <main className="relative space-y-1 h-full ">
-          <div className="flex flex-row items-center px-2 w-full bg-black bg-opacity-40 fixed backdrop-blur justify-start">
+          <div className="flex flex-row items-center px-1 w-full bg-black bg-opacity-40 fixed backdrop-blur justify-start">
             <p className="font-bold text-white">{workspace?.title}</p>
-            <div className="flex flex-row p-2 gap-x-2 justify-end w-[80%]">
+            <div className="flex flex-row p-2 justify-end w-[75%]">
               {listMembers?.slice(0, 3).map((participant: any, index: any) => (
                 <Image
                   key={index}
