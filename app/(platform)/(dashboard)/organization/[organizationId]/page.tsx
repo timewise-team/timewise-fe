@@ -5,12 +5,18 @@ import ListContainer from "../../board/[boardId]/_components/ListContainer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { getBoardColumns, getMembersInWorkspace } from "@/lib/fetcher";
+import {
+  fetchWorkspaceDetails,
+  getBoardColumns,
+  getMembersInWorkspace,
+} from "@/lib/fetcher";
 import InviteMember from "./_components/InviteMember";
 import FilterPopover from "./_components/filter-popover";
 import { useState } from "react";
 import useDebounce from "@/hooks/useDebounce";
 import Image from "next/image";
+import { Workspace } from "@/types/Board";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const OrganizationIdPage = () => {
   const { data: session } = useSession();
@@ -18,26 +24,40 @@ const OrganizationIdPage = () => {
   const queryClient = useQueryClient();
 
   const [search, setSearch] = useState("");
-  const [member, setMember] = useState("");
-  const [due, setDue] = useState(false);
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const [due, setDue] = useState<string>("");
   const [dueComplete, setDueComplete] = useState(false);
   const [overdue, setOverdue] = useState(false);
   const [notDue, setNotDue] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const debouncedSearch = useDebounce(search, 1000);
 
+  const { data: workspace } = useQuery<Workspace>({
+    queryKey: ["workspaceDetails", params.organizationId],
+    queryFn: () =>
+      fetchWorkspaceDetails(params.organizationId as string, session),
+    enabled: !!params.organizationId,
+  });
+
   const { data, isLoading } = useQuery({
     queryKey: [
       "listBoardColumns",
       params.organizationId,
-      { search: debouncedSearch, member, due, dueComplete, overdue, notDue },
+      {
+        search: debouncedSearch,
+        selectedMembers,
+        due,
+        dueComplete,
+        overdue,
+        notDue,
+      },
     ],
     queryFn: async () => {
       const data = await getBoardColumns(
         {
           ...params,
           search: debouncedSearch,
-          member,
+          selectedMembers,
           due,
           dueComplete,
           overdue,
@@ -62,7 +82,6 @@ const OrganizationIdPage = () => {
     enabled: !!session,
   });
 
-  //get members in workspace
   const { data: listMembers } = useQuery({
     queryKey: ["listMembers", params.organizationId],
     queryFn: async () => {
@@ -73,17 +92,27 @@ const OrganizationIdPage = () => {
   });
 
   if (isLoading) {
-    return <div className="w-full h-full">Loading...</div>;
+    return (
+      <div className="w-full h-full p-4 space-y-4">
+        <Skeleton className="h-6 rounded-md w-full" />
+        <div className="flex">
+          <Skeleton className="mr-4 w-10 h-10 rounded-full" />
+          <div className="flex-1 space-y-4">
+            <Skeleton className="h-4 rounded-md w-full" />
+            <Skeleton className="h-4 rounded-md w-3/4" />
+          </div>
+        </div>
+      </div>
+    );
   }
-
-  console.log("list mem", listMembers);
 
   return (
     <div className="px-2 w-full mb-5">
       <div className=" relative bg-no-repeat bg-cover bg-center">
         <main className="relative space-y-1 h-full ">
-          <div className="flex flex-row  w-full bg-black bg-opacity-40 fixed backdrop-blur justify-start">
-            <div className="flex flex-row p-2">
+          <div className="flex flex-row items-center px-2 w-full bg-black bg-opacity-40 fixed backdrop-blur justify-start">
+            <p className="font-bold text-white">{workspace?.title}</p>
+            <div className="flex flex-row p-2 gap-x-2 justify-end w-[80%]">
               {listMembers?.slice(0, 3).map((participant: any, index: any) => (
                 <Image
                   key={index}
@@ -106,8 +135,8 @@ const OrganizationIdPage = () => {
               listMembers={listMembers}
               search={search}
               setSearch={setSearch}
-              member={member}
-              setMember={setMember}
+              selectedMembers={selectedMembers}
+              setSelectedMember={setSelectedMembers}
               due={due}
               setDue={setDue}
               dueComplete={dueComplete}

@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion";
 import React from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { CalendarHeart, Layout, Settings, Users } from "lucide-react";
+import { CalendarHeart, Layout, Users } from "lucide-react";
 import { AccordionContent } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -35,11 +35,6 @@ const NavItem = ({ workspace, onExpand }: Props) => {
       label: "Members",
       icon: <Users className="h-3 w-3 mr-1" />,
       href: `/organization/${workspace.ID}/members`,
-    },
-    {
-      label: "Settings",
-      icon: <Settings className="h-3 w-3 mr-1" />,
-      href: `/organization/${workspace.ID}/settings`,
     },
   ];
 
