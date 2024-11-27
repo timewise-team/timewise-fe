@@ -10,16 +10,9 @@ import React, { useEffect, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { Eye, Pencil } from "lucide-react";
-import { Form, FormControl, FormField, FormItem } from "../ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import { Form } from "../ui/form";
 
 interface Props {
   data: any;
@@ -33,12 +26,14 @@ const Visibility = ({ data, disabled }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
-  // const [visibility, setVisibility] = useStates(data.visibility);
+  const [visibility, setVisibility] = useState(data.visibility);
 
   const form = useForm<z.infer<typeof UpdateCard>>({
     resolver: zodResolver(UpdateCard),
     defaultValues: {
       visibility: data.visibility,
+      start_time: format(parseISO(data.start_time), "yyyy-MM-dd HH:mm:ss.SSS"),
+      end_time: format(parseISO(data.end_time), "yyyy-MM-dd HH:mm:ss.SSS"),
     },
   });
 
@@ -70,6 +65,7 @@ const Visibility = ({ data, disabled }: Props) => {
         },
         session
       );
+      console.log("response", response);
 
       return response;
     },
@@ -104,47 +100,39 @@ const Visibility = ({ data, disabled }: Props) => {
     };
   }, []);
 
-  const handleSelectChange = (value: string) => {
-    setValue("visibility", value);
-    form.handleSubmit((values) => updateCardInformation(values))();
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newVisibility = e.target.value;
+    setVisibility(newVisibility);
+    setValue("visibility", newVisibility);
+
+    updateCardInformation({
+      ...form.getValues(),
+      visibility: newVisibility,
+    });
   };
 
   return (
     <>
       <Form {...form}>
         {isEditing ? (
-          <form ref={formRef}>
-            <FormField
-              control={form.control}
-              name="visibility"
-              render={({ field }) => (
-                <FormItem>
-                  <Select
-                    {...register("visibility")}
-                    disabled={isPending}
-                    defaultValue={field.value}
-                    onValueChange={handleSelectChange}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select visibility" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="public">Public</SelectItem>
-                      <SelectItem value="private">Private</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
+          <form ref={formRef} className="flex flex-row items-center">
+            <Eye className="w-6 h-6 text-gray-400" />
+            <select
+              {...register("visibility")}
+              onChange={handleSelectChange}
+              value={data.visibility}
+              disabled={isPending}
+            >
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+            </select>
           </form>
         ) : (
           <div className="flex items-center space-x-2 cursor-pointer w-full">
             <Eye className="w-6 h-6 text-gray-400" />
             <p className="text-gray-400 font-bold">Visibility</p>
             <div className=" flex flex-row items-center">
-              <span>{data.visibility}</span>
+              <span>{visibility}</span>
               <button
                 className="ml-2 text-primary-500"
                 disabled={disabled}
