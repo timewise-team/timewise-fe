@@ -112,7 +112,8 @@ const OrganizationIdPage = () => {
         <main className="relative space-y-1 h-full ">
           <div className="flex flex-row items-center px-1 w-full bg-black bg-opacity-40 fixed backdrop-blur justify-start">
             <p className="font-bold text-white">{workspace?.title}</p>
-            <div className="flex flex-row p-2 justify-end w-[75%]">
+            <div className="flex flex-row p-2 justify-end w-[75%] text-white items-center">
+              <InviteMember />
               {listMembers?.slice(0, 3).map((participant: any, index: any) => (
                 <Image
                   key={index}
@@ -146,10 +147,9 @@ const OrganizationIdPage = () => {
               notDue={notDue}
               setNotDue={setNotDue}
               isPopoverOpen={isPopoverOpen}
-              setIsPopoverOpen={setIsPopoverOpen} //
+              setIsPopoverOpen={setIsPopoverOpen}
             />
           </div>
-          <InviteMember />
           <ListContainer
             data={Array.isArray(data) ? data : []}
             boardId={params.organizationId.toString()}

@@ -6,7 +6,7 @@ import { format, parseISO } from "date-fns";
 import { Gauge, Pencil } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -27,7 +27,7 @@ const AllReminder = ({ data, disabled }: Props) => {
       ? format(parseISO(data.reminder_time), "yyyy-MM-dd HH:mm")
       : ""
   );
-
+  const formRef = useRef<HTMLFormElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const params = useParams();
   const { data: session } = useSession();
@@ -44,6 +44,19 @@ const AllReminder = ({ data, disabled }: Props) => {
   const disableEditing = () => {
     setIsEditing(false);
   };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (formRef.current && !formRef.current.contains(event.target as Node)) {
+      setIsEditing(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const { register } = form;
 
@@ -82,13 +95,14 @@ const AllReminder = ({ data, disabled }: Props) => {
     <>
       <Form {...form}>
         {isEditing ? (
-          <form>
+          <form ref={formRef}>
             <div className="flex flex-row items-center gap-x-3">
               <p className="text-sm font-medium">Set Reminder:</p>
               <select
                 {...register("reminder_time")}
                 onChange={handleSelectChange}
               >
+                <option value={"0"}>Until start</option>
                 <option value={"60"}>1 hour before </option>
                 <option value={"120"}>2 hours before</option>
               </select>

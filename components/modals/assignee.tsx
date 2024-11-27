@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 "use client";
-import React, { ElementRef, useRef, useState, useTransition } from "react";
+import React, {
+  ElementRef,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -39,6 +45,7 @@ const Assignee = ({ children, data, participant, disabled }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const params = useParams();
   const queryClient = useQueryClient();
+  const formRef = useRef<HTMLFormElement>(null);
 
   const assignTo = participant?.filter((p: any) => p.status === "assign to")[0];
 
@@ -115,11 +122,25 @@ const Assignee = ({ children, data, participant, disabled }: Props) => {
       disableEditing();
     }
   });
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (formRef.current && !formRef.current.contains(event.target as Node)) {
+      setIsEditing(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
       <Form {...form}>
         {isEditing ? (
-          <form className="flex flex-row gap-x-1">
+          <form ref={formRef} className="flex flex-row gap-x-1">
             <div className="flex items-center flex-col">
               <FormField
                 control={form.control}

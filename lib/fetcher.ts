@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { UpdateCardOrder } from "@/actions/update-card-order/schema";
-import { UpdateCard } from "@/actions/update-card/schema";
 import { UpdateListOrder } from "@/actions/update-list-order/schema";
 import { Card } from "@/types/Board";
 
@@ -554,14 +553,6 @@ export const updateCardID = async (
   params: any,
   session: any
 ): Promise<Card> => {
-  const validatedFields = UpdateCard.safeParse(params);
-  if (!validatedFields.success) {
-    throw new Error("Invalid fields");
-  }
-
-  console.log("API call");
-  console.log("params", params);
-
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedules/${params.cardId}`,
     {
@@ -591,11 +582,8 @@ export const updateCardID = async (
   );
 
   if (!response.ok) {
-    if (response.status === 500) {
-      throw new Error("You do not have permission to update this schedule !");
-    } else {
-      throw new Error("");
-    }
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to update card");
   }
 
   const data: Card = await response.json();
@@ -1022,6 +1010,32 @@ export const getBoardByWsId = async (params: any, session: any) => {
       },
     }
   );
+
+  const data = await response.json();
+  return data;
+};
+
+//update visibility
+export const updateVisibility = async (params: any, session: any) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedules/visibility/${params.schedule_id}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${session?.user.access_token}`,
+        "X-User-Email": `${session?.user.email}`,
+        "X-Workspace-ID": `${params.workspace_id}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        visibility: params.visibility,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to update visibility");
+  }
 
   const data = await response.json();
   return data;
