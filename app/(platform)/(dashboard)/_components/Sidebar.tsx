@@ -14,6 +14,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Workspace } from "@/types/Board";
 import { useLinkedEmails } from "@/hooks/useLinkedEmail";
 import { useStateContext } from "@/stores/StateContext";
+import {useLinkedEmailsForManage} from "@/hooks/useLinkedEmailForManage";
+import {getAccountInformationForSchedule} from "@/lib/fetcher";
+import {useEffect, useState} from "react";
 
 interface Props {
   storageKey?: string;
@@ -21,13 +24,32 @@ interface Props {
 
 const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
   const { data: session } = useSession();
-  const { linkedEmails, isLoading: isEmailsLoading } = useLinkedEmails();
   const { setStateWorkspacesByEmail } = useStateContext();
   const [expanded, setExpanded] = useLocalStorage<Record<string, any>>(
     storageKey,
     {}
   );
-
+  const [status, setStatus] = useState<string>("linked");
+  const { data: accountInfo, isLoading: isAccountLoading } = useQuery({
+    queryKey: ["accountInformationForSchedule"],
+    queryFn: async () => {
+      if (!session) return null;
+      return await getAccountInformationForSchedule(session);
+    },
+    enabled: !!session,
+  });
+  useEffect(() => {
+    if (accountInfo?.email?.length > 0) {
+      const emailStatus = accountInfo.email[0]?.status || "linked";
+      setStatus(emailStatus);
+    } else {
+      console.log("AccountInfo or email is undefined or empty:", accountInfo);
+    }
+  }, [accountInfo]);
+  if (status === "") {
+    setStatus("linked");
+  }
+  const { linkedEmails, isLoading: isEmailsLoading } = useLinkedEmailsForManage(status);
   const fetchWorkspaces = async (email: string) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/get-workspaces-by-email/${email}`,

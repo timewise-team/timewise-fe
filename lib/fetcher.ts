@@ -509,6 +509,21 @@ export const getAccountInformation = async (session: any) => {
   return data;
 };
 
+export const getAccountInformationForSchedule = async (session: any) => {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/user`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${session?.user.access_token}`,
+                "Content-Type": "application/json",
+            },
+        }
+    );
+    const data = await response.json();
+    return data;
+};
+
 //detele board column by id
 export const deleteListBoardColumns = async (params: any, session: any) => {
   const response = await fetch(
