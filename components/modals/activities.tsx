@@ -25,7 +25,7 @@ const Activities = ({ session, activities }: Props) => {
               height={40}
               className="h-4 w-4 rounded-full object-cover"
             />
-            <div>
+            <div className="flex flex-col items-start">
               <p>{format(new Date(activity?.created_at), "dd/MM/yyyy")}</p>
               <p className="font-bold">{activity?.first_name}</p>
               <p>{activity?.action}</p>

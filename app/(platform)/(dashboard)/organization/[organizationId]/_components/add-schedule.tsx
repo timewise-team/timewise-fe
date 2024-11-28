@@ -141,6 +141,7 @@ const AddSchedule = ({ listId, isGlobalCalendar }: Props) => {
         queryKey: ["listBoardColumns", params.organizationId],
       });
     },
+    //check
     onError: (error) => {
       toast.error(
         error.message || "Failed to create schedule. Please try again."
