@@ -143,6 +143,7 @@ function CalendarFilter({
                 <Checkbox
                   checked={checkedEmails[email] || false}
                   onCheckedChange={() => handleEmailChange(email)}
+                  color={"transparent"}
                 />
                 {email}
               </label>
