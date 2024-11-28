@@ -200,14 +200,7 @@ const ViewMember = () => {
                     {sortOrder === "asc" ? "Sort ASC" : "Sort DESC"}
                 </button>
             </div>
-
-            <Separator className="my-2" style={{borderTop: "1px solid #e0e0e0"}}/>
             <div className="p-6 bg-white rounded-lg shadow-md w-full max-w-4xl mx-auto">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-semibold text-gray-800">Team</h2>
-                    {currentUserInfo?.role === "owner" && <InviteMember/>}
-                </div>
-                <Separator className="my-2" style={{borderTop: "1px solid #e0e0e0"}}/>
                 <div className="overflow-y-auto max-h-[70vh]">
                     {(Array.isArray(filteredMembers) ? filteredMembers : []).map((member) => (
                         <div
