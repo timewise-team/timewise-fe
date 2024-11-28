@@ -52,7 +52,6 @@ const OrganizationIdPage = () => {
         notDue,
       },
     ],
-    //check
     queryFn: async () => {
       const data = await getBoardColumns(
         {

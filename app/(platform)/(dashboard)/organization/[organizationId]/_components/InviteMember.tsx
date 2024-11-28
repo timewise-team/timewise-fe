@@ -19,7 +19,6 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandItem,
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
@@ -57,11 +56,14 @@ const InviteMember = () => {
   const handleEmailChange = (value: string) => {
     setEmail(value);
     setValue("email", value);
-    if (value !== "") {
-      setIsCommandListOpen(true);
-    } else {
-      setIsCommandListOpen(false);
-    }
+    setIsCommandListOpen(value.length > 0);
+  };
+
+  const selectEmail = (email: string) => {
+    setEmail(email);
+    setValue("email", email, { shouldValidate: true });
+    setIsCommandListOpen(false);
+    console.log("email", email);
   };
 
   const { data: userInvite } = useQuery({
@@ -130,16 +132,13 @@ const InviteMember = () => {
                   <CommandGroup heading="Suggestions">
                     {Array.isArray(userInvite) && userInvite.length > 0 ? (
                       userInvite.map((user) => (
-                        <CommandItem
+                        <button
                           key={user.id}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEmailChange(user.email);
-                          }}
-                          className="cursor-pointer"
+                          onClick={() => selectEmail(user.email)}
+                          className="bg-transparent text-black cursor-pointer hover:bg-gray-100 focus:outline-none focus:bg-gray-200 p-2 w-full text-start text-sm"
                         >
-                          <span>{user.email}</span>
-                        </CommandItem>
+                          {user.email}
+                        </button>
                       ))
                     ) : (
                       <CommandEmpty>No user found</CommandEmpty>
