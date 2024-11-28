@@ -496,7 +496,7 @@ export const getScheduleByID = async (params: any, session: any) => {
 //get user information
 export const getAccountInformation = async (session: any) => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/user`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/user?status=linked`,
     {
       method: "GET",
       headers: {

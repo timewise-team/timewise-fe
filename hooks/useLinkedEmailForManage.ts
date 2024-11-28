@@ -2,15 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import {useStateContext} from "@/stores/StateContext";
 
-export const useLinkedEmails = () => {
+export const useLinkedEmailsForManage = (params: any) => {
   const { data: session } = useSession();
   const { setStateLinkedEmails } = useStateContext();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["linked-email"],
+    queryKey: ["linked-email", params],
     queryFn: async () => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/user/emails?status=linked`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/user/emails?status=${params}`,
         {
           method: "GET",
           headers: {
