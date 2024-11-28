@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import React, {useEffect, useState} from "react";
-import { Separator } from "@/components/ui/separator";
 import { useParams } from "next/navigation";
 import InviteMember from "../../_components/InviteMember";
 import { useSession } from "next-auth/react";
