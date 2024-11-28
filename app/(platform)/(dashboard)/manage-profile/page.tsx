@@ -30,7 +30,7 @@ const ManageAccountPage = () => {
         <AccountInformation accountInformation={accountInformation} />
       </TabsContent>
       <TabsContent value="linked-email">
-        <LinkedEmail accountInformation={accountInformation} />
+        <LinkedEmail />
       </TabsContent>
     </Tabs>
   );
