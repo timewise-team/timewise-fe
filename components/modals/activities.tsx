@@ -25,9 +25,13 @@ const Activities = ({ session, activities }: Props) => {
               height={40}
               className="h-4 w-4 rounded-full object-cover"
             />
-            <p>{format(new Date(activity?.created_at), "dd/MM/yyyy")}</p>
-            <p className="font-bold">{activity?.first_name}</p>
-            <p>{activity?.action}</p>
+            <div>
+              <p>{format(new Date(activity?.created_at), "dd/MM/yyyy")}</p>
+              <p className="font-bold">{activity?.first_name}</p>
+              <p>{activity?.action}</p>
+              <p>{activity?.old_value}</p>
+              <p>{activity?.new_value}</p>
+            </div>
           </div>
         ))
       ) : (
