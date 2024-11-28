@@ -10,7 +10,7 @@ export const useLinkedEmails = () => {
     queryKey: ["linked-email"],
     queryFn: async () => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/user/emails?status=linked`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/account/user/emails`,
         {
           method: "GET",
           headers: {
