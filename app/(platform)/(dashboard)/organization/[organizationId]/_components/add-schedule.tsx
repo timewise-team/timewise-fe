@@ -15,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { CreateCard } from "@/actions/create-card/schema";
 import { ListWithCards, Workspace } from "@/types/Board";
 import { Label } from "@/components/ui/label";
+import {useStateContext} from "@/stores/StateContext";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
 
 interface Props {
   listId: string;
@@ -32,7 +34,7 @@ export const getBoardByWsId = async (params: any, session: any) => {
       method: "GET",
       headers: {
         Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
+        "X-User-Email": `${params.userEmail}`,
         "X-Workspace-ID": `${params.workspace_id}`,
       },
     }
@@ -54,6 +56,10 @@ const AddSchedule = ({ listId, isGlobalCalendar }: Props) => {
   const [selectedBoardColumnId, setSelectedBoardColumnId] = useState<
     string | undefined
   >(undefined);
+  const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
+
+  const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
+
 
   const handleWorkspaceChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -119,7 +125,7 @@ const AddSchedule = ({ listId, isGlobalCalendar }: Props) => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session?.user.access_token}`,
-            "X-User-Email": `${session?.user.email}`,
+            "X-User-Email": `${userEmail?.email}`,
             "X-Workspace-ID": `${selectedWorkspaceId || params.organizationId}`,
           },
           body: JSON.stringify({
@@ -178,7 +184,7 @@ const AddSchedule = ({ listId, isGlobalCalendar }: Props) => {
     queryFn: async () => {
       if (selectedWorkspaceId) {
         return await getBoardByWsId(
-          { workspace_id: selectedWorkspaceId },
+          { workspace_id: selectedWorkspaceId, userEmail: userEmail?.email },
           session
         );
       }

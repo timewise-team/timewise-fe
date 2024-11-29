@@ -1,24 +1,20 @@
-import React, {
-  ElementRef,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
-import { CardWithList } from "@/types/Board";
-import { AlignLeft } from "lucide-react";
-import { Skeleton } from "../ui/skeleton";
-import { Form, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { UpdateCard } from "@/actions/update-card/schema";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
-import { updateCardID } from "@/lib/fetcher";
-import { toast } from "sonner";
-import { Input } from "../ui/input";
-import { format } from "date-fns";
+import React, {ElementRef, useEffect, useRef, useState, useTransition,} from "react";
+import {CardWithList} from "@/types/Board";
+import {AlignLeft} from "lucide-react";
+import {Skeleton} from "../ui/skeleton";
+import {Form, useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {z} from "zod";
+import {UpdateCard} from "@/actions/update-card/schema";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useSession} from "next-auth/react";
+import {useParams} from "next/navigation";
+import {updateCardID} from "@/lib/fetcher";
+import {toast} from "sonner";
+import {Input} from "../ui/input";
+import {format} from "date-fns";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
   data: CardWithList;
@@ -32,6 +28,7 @@ const Description = ({ data, disabled }: Props) => {
   const { data: session } = useSession();
   const params = useParams();
   const [description, setDescription] = useState(data.description);
+    const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
 
   const form = useForm<z.infer<typeof UpdateCard>>({
     resolver: zodResolver(UpdateCard),
@@ -42,6 +39,8 @@ const Description = ({ data, disabled }: Props) => {
 
   const { mutate: updateCardInformation } = useMutation({
     mutationFn: async (values: z.infer<typeof UpdateCard>) => {
+      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId || data.workspace_id));
+
       const response = await updateCardID(
         {
           cardId: data.id,
@@ -63,6 +62,7 @@ const Description = ({ data, disabled }: Props) => {
           status: values.status,
           title: values.title,
           organizationId: params.organizationId || data.workspace_id,
+          userEmail: userEmail?.email
         },
         session
       );

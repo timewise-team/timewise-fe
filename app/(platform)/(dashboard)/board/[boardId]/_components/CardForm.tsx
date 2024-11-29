@@ -17,6 +17,8 @@ import React, {
 import { toast } from "sonner";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import { z } from "zod";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
   listId: string;
@@ -32,6 +34,9 @@ export const CardForm = forwardRef<HTMLTextAreaElement, Props>(
     const formRef = useRef<ElementRef<"form">>(null);
     const queryClient = useQueryClient();
     const { data: session } = useSession();
+    const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
+
+      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
 
     const { mutate } = useMutation({
       mutationFn: async (values: z.infer<typeof CreateCard>) => {
@@ -47,7 +52,7 @@ export const CardForm = forwardRef<HTMLTextAreaElement, Props>(
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${session?.user.access_token}`,
-              "X-User-Email": `${session?.user.email}`,
+              "X-User-Email": `${userEmail?.email}`,
               "X-Workspace-ID": `${params.organizationId}`,
             },
             body: JSON.stringify({

@@ -8,6 +8,8 @@ import { toast } from "sonner";
 
 import { useParams } from "next/navigation";
 import { Member } from "@/types/Board";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
   data: Member[];
@@ -20,7 +22,7 @@ export const acceptMemberRequest = async (params: any, session: any) => {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
+        "X-User-Email": `${params.userEmail}`,
         "X-Workspace-ID": `${params.organizationId}`,
         "Content-Type": "application/json",
       },
@@ -38,7 +40,7 @@ export const declineMemberRequest = async (params: any, session: any) => {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
+        "X-User-Email": `${params.userEmail}`,
         "X-Workspace-ID": `${params.organizationId}`,
         "Content-Type": "application/json",
       },
@@ -53,12 +55,18 @@ const JoinRequest = ({ data }: Props) => {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
   const params = useParams();
+    const { stateWorkspacesByEmail, stateUserEmails } = useStateContext();
   const { mutate: acceptMemberRequestMutation } = useMutation({
     mutationFn: async (email: string) => {
+      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
+      if (!userEmail) {
+        return null;
+      }
       const response = await acceptMemberRequest(
         {
           email,
           organizationId: params.organizationId,
+          userEmail: userEmail.email
         },
         session
       );
@@ -75,6 +83,10 @@ const JoinRequest = ({ data }: Props) => {
 
   const { mutate: declineMemberRequestMutation } = useMutation({
     mutationFn: async (email: string) => {
+      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
+      if (!userEmail) {
+        return null;
+      }
       const response = await declineMemberRequest(
         {
           email,

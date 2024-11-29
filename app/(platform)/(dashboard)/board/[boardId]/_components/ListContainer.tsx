@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { UpdateListOrder } from "@/actions/update-list-order/schema";
 import { updateBoardOrder, updateCardPosition } from "@/lib/fetcher";
 import { UpdateCardOrder } from "@/actions/update-card-order/schema";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
   data: ListWithCards[];
@@ -34,6 +36,7 @@ const ListContainer = ({ data }: Props) => {
   const params = useParams();
   const [orderedData, setOrderedData] = useState(data);
   const queryClient = useQueryClient();
+    const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
 
   const boardColumnsId = data.map((item) => item.id);
 
@@ -44,6 +47,8 @@ const ListContainer = ({ data }: Props) => {
         throw new Error("Invalid fields");
       }
 
+      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
+
       const response = await updateBoardOrder(
         {
           position: values.position + 1,
@@ -51,6 +56,7 @@ const ListContainer = ({ data }: Props) => {
             (item) => item === orderedData[values.position].id
           ),
           organizationId: params.organizationId,
+          userEmail: userEmail?.email
         },
         session
       );
@@ -71,12 +77,15 @@ const ListContainer = ({ data }: Props) => {
       if (!validatedFields.success) {
         throw new Error("Invalid fields");
       }
+      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
+
       const response = await updateCardPosition(
         {
           cardId: values.cardId,
           board_column_id: values.board_column_id,
           position: values.position,
           organizationId: params.organizationId,
+            userEmail: userEmail?.email
         },
         session
       );

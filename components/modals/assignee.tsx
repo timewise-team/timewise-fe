@@ -27,6 +27,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
   children: React.ReactNode;
@@ -46,6 +48,7 @@ const Assignee = ({ children, data, participant, disabled }: Props) => {
   const params = useParams();
   const queryClient = useQueryClient();
   const formRef = useRef<HTMLFormElement>(null);
+    const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
 
   const assignTo = participant?.filter((p: any) => p.status === "assign to")[0];
 
@@ -63,11 +66,17 @@ const Assignee = ({ children, data, participant, disabled }: Props) => {
         throw new Error("Invalid fields");
       }
 
+      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, data.workspace_id);
+      if (!userEmail) {
+        return null;
+      }
+
       const response = await AssigneeSchedules(
         {
           email: values.email,
           schedule_id: data.id,
           organizationId: params.organizationId,
+          userEmail: userEmail.email
         },
         session
       );

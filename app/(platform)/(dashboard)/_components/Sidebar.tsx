@@ -42,8 +42,6 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
     if (accountInfo?.email?.length > 0) {
       const emailStatus = accountInfo.email[0]?.status || "linked";
       setStatus(emailStatus);
-    } else {
-      console.log("AccountInfo or email is undefined or empty:", accountInfo);
     }
   }, [accountInfo]);
   if (status === "") {
