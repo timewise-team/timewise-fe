@@ -179,7 +179,7 @@ const ListContainer = ({ data }: Props) => {
         // User moves the cards to another list
       } else {
         // Remove card from the source list
-        const [movedCard] = sourceList.cards.splice(source.index, 1);
+        const [movedCard] = sourceList.schedules.splice(source.index, 1);
 
         if (!movedCard) {
           console.error("Moved card not found");
