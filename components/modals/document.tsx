@@ -60,6 +60,9 @@ const Document = ({ data, document, disabled }: Props) => {
       queryClient.invalidateQueries({
         queryKey: ["listBoardColumns"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["detailCard"],
+      });
       toast.success("Document removed successfully");
     },
     onError: (error) => {
@@ -87,14 +90,9 @@ const Document = ({ data, document, disabled }: Props) => {
           body: formData,
         }
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to upload document");
-      }
-
-      const data = await response.json();
-      return data;
+      return response.text();
     },
+
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["documents"],
@@ -102,10 +100,13 @@ const Document = ({ data, document, disabled }: Props) => {
       queryClient.invalidateQueries({
         queryKey: ["listBoardColumns"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["detailCard"],
+      });
       toast.success("Document uploaded successfully");
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to upload document");
+      toast.error(error.message);
     },
   });
 
