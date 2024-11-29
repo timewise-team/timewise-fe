@@ -1,16 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import React, {useEffect, useState} from "react";
-import { useParams } from "next/navigation";
+import {useParams} from "next/navigation";
 import InviteMember from "../../_components/InviteMember";
-import { useSession } from "next-auth/react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import {useSession} from "next-auth/react";
+import {useMutation, useQuery} from "@tanstack/react-query";
 import Image from "next/image";
-import { getCurrentWorkspaceUserInfo, getMembersInWorkspace, getMembersInWorkspaceForManage, updateRole, removeMember } from "@/lib/fetcher";
-import { Delete } from "lucide-react";
+import {
+    getCurrentWorkspaceUserInfo,
+    getMembersInWorkspace,
+    getMembersInWorkspaceForManage,
+    removeMember,
+    updateRole
+} from "@/lib/fetcher";
+import {Delete} from "lucide-react";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 const ViewMember = () => {
-    const { data: session } = useSession();
+    const {data: session} = useSession();
     const params = useParams();
     const organizationId = params.organizationId;
     const [isModalOpen, setModalOpen] = useState(false);
@@ -20,26 +28,37 @@ const ViewMember = () => {
     const [sortBy, setSortBy] = useState("first_name");
     const [sortOrder, setSortOrder] = useState("asc");
     const [filteredMembers, setFilteredMembers] = useState<any[]>([]);
+    const {stateUserEmails, stateWorkspacesByEmail} = useStateContext();
 
     // Fetch current user's workspace info
-    const { data: currentUserInfo, isLoading: isLoadingUserInfo } = useQuery({
+    const {data: currentUserInfo, isLoading: isLoadingUserInfo} = useQuery({
         queryKey: ["currentUserInfo", organizationId],
-        queryFn: async ({ queryKey }) => {
+        queryFn: async ({queryKey}) => {
             const [, orgId] = queryKey;
             if (!session?.user?.email || !orgId) return null;
-            return await getCurrentWorkspaceUserInfo({ organizationId: orgId }, session);
+
+            const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
+            if (!userEmail) {
+                return null;
+            }
+
+            return await getCurrentWorkspaceUserInfo({organizationId: orgId, userEmail: userEmail.email}, session);
         },
         enabled: !!organizationId,
     });
 
-    const { data: membersData, isLoading, refetch } = useQuery({
+    const {data: membersData, isLoading, refetch} = useQuery({
         queryKey: ["listMembers", organizationId],
         queryFn: async () => {
+            const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
+            if (!userEmail) {
+                return null;
+            }
             const fetcher =
                 currentUserInfo?.role === "admin" || currentUserInfo?.role === "owner"
                     ? getMembersInWorkspaceForManage
                     : getMembersInWorkspace;
-            return await fetcher(params, session);
+            return await fetcher({...params, userEmail: userEmail.email}, session);
         },
         enabled: !!currentUserInfo?.role,
     });
@@ -47,13 +66,13 @@ const ViewMember = () => {
     useEffect(() => {
         let filtered = Array.isArray(membersData)
             ? membersData?.filter((member: any) => {
-            const term = searchTerm.toLowerCase();
-            return (
-                member.first_name.toLowerCase().includes(term) ||
-                member.last_name.toLowerCase().includes(term) ||
-                member.email.toLowerCase().includes(term)
-            );
-        }) : [];
+                const term = searchTerm.toLowerCase();
+                return (
+                    member.first_name.toLowerCase().includes(term) ||
+                    member.last_name.toLowerCase().includes(term) ||
+                    member.email.toLowerCase().includes(term)
+                );
+            }) : [];
 
         filtered = filtered?.sort((a: any, b: any) => {
             const fieldA = a[sortBy]?.toLowerCase?.() || "";
@@ -68,15 +87,25 @@ const ViewMember = () => {
     }, [searchTerm, sortBy, sortOrder, membersData]);
 
     const mutationRoleChange = useMutation({
-        mutationFn: async ({ organizationId, email, role }: { organizationId: any; email: any; role: any }) => {
-            return updateRole({ organizationId, email, role }, session);
+        mutationFn: async ({organizationId, email, role}: { organizationId: any; email: any; role: any }) => {
+            const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(organizationId));
+            if (!userEmail) {
+                return null;
+            }
+            return updateRole({organizationId, email, role, userEmail: userEmail.email}, session);
         },
         onSuccess: () => refetch(),
     });
 
     const mutationRemoveMember = useMutation({
-        mutationFn: async (workspaceUserId) =>
-            removeMember({ organizationId, workspaceUserId }, session),
+        mutationFn: async (workspaceUserId) => {
+            const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(organizationId));
+            if (!userEmail) {
+                return null;
+            }
+            return removeMember({organizationId, workspaceUserId, userEmail: userEmail.email}, session);
+        },
+
         onSuccess: () => refetch(),
     });
 
@@ -88,20 +117,20 @@ const ViewMember = () => {
             (member: { email: string | null | undefined }) => member.email === session?.user?.email
         );
         if (currentUser?.role === "owner" && role === "owner" && email !== session?.user?.email) {
-            await mutationRoleChange.mutateAsync({ organizationId, email, role });
-            await mutationRoleChange.mutateAsync({ organizationId, email: session?.user?.email, role: "member" });
+            await mutationRoleChange.mutateAsync({organizationId, email, role});
+            await mutationRoleChange.mutateAsync({organizationId, email: session?.user?.email, role: "member"});
         } else if (currentUser?.role === "owner") {
-            await mutationRoleChange.mutateAsync({ organizationId, email, role });
+            await mutationRoleChange.mutateAsync({organizationId, email, role});
 
             if (email === session?.user?.email) {
-                await mutationRoleChange.mutateAsync({ organizationId, email: session?.user?.email, role: "member" });
+                await mutationRoleChange.mutateAsync({organizationId, email: session?.user?.email, role: "member"});
             }
         } else {
-            await mutationRoleChange.mutateAsync({ organizationId, email, role });
+            await mutationRoleChange.mutateAsync({organizationId, email, role});
         }
         setMembers((prevMembers: any[]) =>
             prevMembers.map((member) =>
-                member.email === email ? { ...member, role: role } : member
+                member.email === email ? {...member, role: role} : member
             )
         );
         refetch();
@@ -119,17 +148,17 @@ const ViewMember = () => {
         if (modalAction === "changeRole") {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
-            const { email, role } = modalData;
+            const {email, role} = modalData;
             await handleRoleChange(organizationId, email, role);
         } else if (modalAction === "removeMember") {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
-            const { memberId } = modalData;
+            const {memberId} = modalData;
             await handleRemoveMember(memberId);
         } else if (modalAction === "leaveWorkspace") {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
-            const { wspUserId } = modalData;
+            const {wspUserId} = modalData;
             await handleLeaveWorkspace(wspUserId);
         }
         setModalOpen(false);

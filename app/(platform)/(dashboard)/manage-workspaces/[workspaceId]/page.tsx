@@ -1,33 +1,38 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Workspace } from "@/types/Board";
-import { useQuery } from "@tanstack/react-query";
-import { fetchWorkspaceDetails, getBoardColumns } from "@/lib/fetcher";
+import {Workspace} from "@/types/Board";
+import {useQuery} from "@tanstack/react-query";
+import {fetchWorkspaceDetails, getBoardColumns} from "@/lib/fetcher";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import {useSession} from "next-auth/react";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 interface WorkspaceDetailsProps {
     params: { workspaceId: string };
 }
 
 // Workspace details page
-const WorkspaceDetails = ({ params }: WorkspaceDetailsProps) => {
-    const { data: session } = useSession();
-    const { workspaceId } = params;
+const WorkspaceDetails = ({params}: WorkspaceDetailsProps) => {
+    const {data: session} = useSession();
+    const {workspaceId} = params;
+    const {stateUserEmails, stateWorkspacesByEmail} = useStateContext();
 
     // Fetch workspace details
-    const { data: workspace, isLoading: isWorkspaceLoading, error: workspaceError } = useQuery<Workspace>({
+    const {data: workspace, isLoading: isWorkspaceLoading, error: workspaceError} = useQuery<Workspace>({
         queryKey: ["workspaceDetails", workspaceId],
         queryFn: () => fetchWorkspaceDetails(workspaceId as string, session),
         enabled: !!workspaceId,
     });
 
+    const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(workspaceId));
+
     // Fetch board columns
-    const { data: boardColumns = [], isLoading: isBoardColumnsLoading, error: boardColumnsError } = useQuery<any[]>({
+    const {data: boardColumns = [], isLoading: isBoardColumnsLoading, error: boardColumnsError} = useQuery<any[]>({
         queryKey: ["boardColumns", workspaceId],
         queryFn: () =>
-            getBoardColumns({ organizationId: workspaceId as string }, session),
+            getBoardColumns({organizationId: workspaceId as string, userEmail: userEmail?.email}, session),
         enabled: !!workspaceId && !!session,
     });
 

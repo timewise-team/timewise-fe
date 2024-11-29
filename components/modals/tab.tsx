@@ -10,6 +10,8 @@ import Comments from "./comments";
 import Activities from "./activities";
 import Meetting from "./meeting";
 import {checkSchedulePermission, ScheduleAction} from "@/constants/roles";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
     id: string | undefined;
@@ -42,6 +44,7 @@ const Tab = ({id, data}: Props) => {
     const tabsRef = useRef<(HTMLElement | null)[]>([]);
     const {data: session} = useSession();
     const params = useParams();
+    const {stateWorkspacesByEmail, stateUserEmails} = useStateContext();
 
     const handleChangeTab = (tab: string, index: number) => {
         setActiveTab(tab);
@@ -54,13 +57,14 @@ const Tab = ({id, data}: Props) => {
             {cardId: id, organizationId: params.organizationId},
         ],
         queryFn: async () => {
-            const data = await getCommentByScheduleID(
-                {cardId: id, organizationId: params.organizationId},
+            const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(data.workspace_id));
+
+            return await getCommentByScheduleID(
+                {cardId: id, organizationId: params.organizationId || data.workspace_id, userEmail: userEmail?.email},
                 session
             );
-            return data;
         },
-        enabled: !!id && !!session && activeTab === "Comments",
+        enabled: !!id && !!session && activeTab === "Comments" && !!data,
     });
 
     const {data: activities} = useQuery({
@@ -69,12 +73,12 @@ const Tab = ({id, data}: Props) => {
             {cardId: id, organizationId: params.organizationId},
         ],
         queryFn: async () => {
-            if (!id || !session) return null;
-            const data = await getActivitiesLogs(
-                {cardId: id, organizationId: params.organizationId},
+            const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(data.workspace_id));
+            const logsData = await getActivitiesLogs(
+                {cardId: id, organizationId: params.organizationId, userEmail: userEmail?.email},
                 session
             );
-            return data;
+            return logsData;
         },
         enabled: !!id && !!session && activeTab === "Activities",
     });
@@ -123,7 +127,7 @@ const Tab = ({id, data}: Props) => {
                 <Separator/>
                 <div className="p-4">
                     {activeTab === "Comments" && (
-                        <Comments session={session} data={comments} scheduleId={id}/>
+                        <Comments session={session} data={comments} scheduleId={id} workspaceId={data?.workspace_id}/>
                     )}
                     {activeTab === "Activities" && (
                         <Activities session={session} activities={activities}/>

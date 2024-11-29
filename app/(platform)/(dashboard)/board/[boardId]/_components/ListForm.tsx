@@ -11,6 +11,8 @@ import { useSession } from "next-auth/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CreateList } from "@/actions/create-list/schema";
 import { z } from "zod";
+import {useStateContext} from "@/stores/StateContext";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
 
 const ListForm = () => {
   const { data: session } = useSession();
@@ -23,6 +25,7 @@ const ListForm = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
+  const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
 
   const maxPosition = queryClient.getQueryData([
     "maxPosition",
@@ -51,6 +54,11 @@ const ListForm = () => {
 
       const { name } = values;
 
+      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
+      if (!userEmail) {
+        return null;
+      }
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns`,
         {
@@ -58,7 +66,7 @@ const ListForm = () => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session?.user.access_token}`,
-            "X-User-Email": `${session?.user.email}`,
+            "X-User-Email": `${userEmail.email}`,
             "X-Workspace-ID": `${params.organizationId}`,
           },
           body: JSON.stringify({

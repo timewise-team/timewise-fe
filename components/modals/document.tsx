@@ -8,6 +8,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { Input } from "../ui/input";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
   data: any;
@@ -23,7 +25,7 @@ export const deleteDocument = async (params: any, session: any) => {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${session?.user.access_token}`,
-        "X-User-Email": `${session?.user.email}`,
+        "X-User-Email": `${params.userEmail}`,
         "X-Workspace-ID": `${params.organizationId}`,
         "Content-Type": "application/json",
       },
@@ -40,14 +42,18 @@ const Document = ({ data, document, disabled }: Props) => {
   const [file, setFile] = useState<File | null>(null);
   const scheduleId = data.id;
   const wsId = data.workspace_id;
+    const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
 
   const { mutate: deleteCommentMutation } = useMutation({
     mutationFn: async (document: any) => {
+      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(data.workspace_id));
+
       const response = await deleteDocument(
         {
           scheduleId: document.schedule_id,
           fileName: document.file_name,
           organizationId: wsId,
+            userEmail: userEmail?.email,
         },
         session
       );
@@ -74,6 +80,9 @@ const Document = ({ data, document, disabled }: Props) => {
     mutationFn: async () => {
       if (!file) return;
 
+      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(data.workspace_id));
+
+
       const formData = new FormData();
       formData.append("file", file);
       formData.append("scheduleId", scheduleId);
@@ -84,7 +93,7 @@ const Document = ({ data, document, disabled }: Props) => {
           method: "POST",
           headers: {
             Authorization: `Bearer ${session?.user.access_token}`,
-            "X-User-Email": `${session?.user.email}`,
+            "X-User-Email": `${userEmail?.email}`,
             "X-Workspace-ID": `${wsId}`,
           },
           body: formData,

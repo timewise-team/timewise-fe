@@ -12,6 +12,8 @@ import Content from "./content";
 import Tab from "./tab";
 import * as React from "react";
 import {checkSchedulePermission, ScheduleAction} from "@/constants/roles";
+import {useStateContext} from "@/stores/StateContext";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
 
 const CardModal = () => {
     const {id, isOpen, onClose, workspaceId} = useCardModal((state) => ({
@@ -23,12 +25,21 @@ const CardModal = () => {
 
     const {data: session} = useSession();
     const params = useParams();
+    const {stateWorkspacesByEmail, stateUserEmails} = useStateContext();
 
     const {data: cardData} = useQuery<CardWithList>({
         queryKey: ["detailCard", id],
         queryFn: async () => {
+            const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId || workspaceId));
+            if (!userEmail) {
+                return null;
+            }
             return await getCardByID(
-                {cardId: id, organizationId: params.organizationId || workspaceId},
+                {
+                    cardId: id,
+                    organizationId: params.organizationId || workspaceId,
+                    userEmail: userEmail.email,
+                },
                 session
             );
         },

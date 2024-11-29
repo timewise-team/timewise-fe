@@ -133,6 +133,7 @@ export type Comment = {
   updated_at: string;
   user_id: number;
   workspace_user_id: number;
+  workspace_id: number;
 };
 
 export type Reminder = {
