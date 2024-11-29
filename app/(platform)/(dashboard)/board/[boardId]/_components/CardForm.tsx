@@ -76,7 +76,6 @@ export const CardForm = forwardRef<HTMLTextAreaElement, Props>(
 
       onMutate: async (newListData) => {
         await queryClient.cancelQueries({
-          exact: true,
           queryKey: ["listBoardColumns", params.organizationId],
         });
 
