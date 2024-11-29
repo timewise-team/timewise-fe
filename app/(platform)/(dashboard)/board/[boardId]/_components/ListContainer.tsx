@@ -191,7 +191,7 @@ const ListContainer = ({ data }: Props) => {
 
         // ADD card to the destination list
         destList.cards.splice(destination.index, 0, movedCard);
-
+        //update the card position
         // Update the position of each card in the source list
         sourceList.cards.forEach((card, idx) => {
           card.position = idx + 1; // Ensure position starts from 1
