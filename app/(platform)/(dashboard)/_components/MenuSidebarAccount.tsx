@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -14,11 +14,35 @@ import {
 import { Button } from "@/components/ui/Button";
 import Info from "../organization/[organizationId]/_components/Info";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useLinkedEmails } from "@/hooks/useLinkedEmail";
+import {useLinkedEmailsForManage} from "@/hooks/useLinkedEmailForManage";
+import {getAccountInformationForSchedule} from "@/lib/fetcher";
+import {useQuery} from "@tanstack/react-query";
+import {useSession} from "next-auth/react";
 
 const MenuSidebarAccount = () => {
-  const { linkedEmails, isLoading } = useLinkedEmails();
-  if (isLoading) {
+    const { data: session } = useSession();
+    const [status, setStatus] = useState<string>("linked");
+    const { data: accountInfo } = useQuery({
+        queryKey: ["accountInformationForSchedule"],
+        queryFn: async () => {
+            if (!session) return null;
+            return await getAccountInformationForSchedule(session);
+        },
+        enabled: !!session,
+    });
+    useEffect(() => {
+        if (accountInfo?.email?.length > 0) {
+            const emailStatus = accountInfo.email[0]?.status || "linked";
+            setStatus(emailStatus);
+        } else {
+            console.log("AccountInfo or email is undefined or empty:", accountInfo);
+        }
+    }, [accountInfo]);
+    if (status === "") {
+        setStatus("linked");
+    }
+    const { linkedEmails, isLoading: isEmailsLoading } = useLinkedEmailsForManage(status);
+  if (isEmailsLoading) {
     return (
       <>
         <Skeleton className="h-10 w-full" />
