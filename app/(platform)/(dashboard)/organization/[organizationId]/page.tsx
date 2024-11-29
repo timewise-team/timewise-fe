@@ -65,7 +65,7 @@ const OrganizationIdPage = () => {
         },
         session
       );
-      if (Array.isArray(data)) {
+      if (Array.isArray(data) && data.length > 0) {
         const maxPosition = data.reduce(
           (max, item) => (item.position > max ? item.position : max),
           1

@@ -46,7 +46,7 @@ const ListContainer = ({ data }: Props) => {
 
       const response = await updateBoardOrder(
         {
-          position: values.position,
+          position: values.position + 1,
           board_column_id: boardColumnsId.find(
             (item) => item === orderedData[values.position].id
           ),
@@ -99,17 +99,12 @@ const ListContainer = ({ data }: Props) => {
   const onDragEnd = (result: any) => {
     const { destination, source, type } = result;
 
-    if (!result.destination) {
+    if (!destination) {
       return;
     }
 
     if (typeof result.draggableId === "number") {
       result.draggableId = result.draggableId.toString();
-    }
-
-    // Check if destination is valid
-    if (!destination) {
-      return;
     }
 
     // If Dropped in the same position
@@ -128,7 +123,7 @@ const ListContainer = ({ data }: Props) => {
 
       setOrderedData(items);
       updateBoardColumns({
-        position: destination.index,
+        position: destination.index + 1,
       });
     }
 
@@ -168,7 +163,7 @@ const ListContainer = ({ data }: Props) => {
         // Update the position of each card in the reordered list
         reorderedCards.forEach((card, idx) => {
           if (card) {
-            card.position = idx + 1; // Changed line: position starts from 1
+            card.position = idx + 1; // Ensure position starts from 1
           }
         });
 
@@ -177,14 +172,14 @@ const ListContainer = ({ data }: Props) => {
         setOrderedData(newOrderedData);
         updateCardOrder({
           board_column_id: parseInt(destination.droppableId),
-          position: destination.index,
+          position: destination.index + 1,
           cardId: parseInt(result.draggableId),
         });
 
         // User moves the cards to another list
       } else {
         // Remove card from the source list
-        const [movedCard] = sourceList.schedules.splice(source.index, 1);
+        const [movedCard] = sourceList.cards.splice(source.index, 1);
 
         if (!movedCard) {
           console.error("Moved card not found");
@@ -199,18 +194,18 @@ const ListContainer = ({ data }: Props) => {
 
         // Update the position of each card in the source list
         sourceList.cards.forEach((card, idx) => {
-          card.position = idx + 1; // Changed line: position starts from 1
+          card.position = idx + 1; // Ensure position starts from 1
         });
 
         // Update the order for each card in the destination list
         destList.cards.forEach((card, idx) => {
-          card.position = idx + 1; // Changed line: position starts from 1
+          card.position = idx + 1; // Ensure position starts from 1
         });
 
         setOrderedData(newOrderedData);
         updateCardOrder({
           board_column_id: parseInt(destination.droppableId),
-          position: destination.index,
+          position: destination.index + 1,
           cardId: parseInt(result.draggableId),
         });
       }

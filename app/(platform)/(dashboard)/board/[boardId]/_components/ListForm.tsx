@@ -24,11 +24,12 @@ const ListForm = () => {
   const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
 
-  const position =
-    (queryClient.getQueryData([
-      "maxPosition",
-      params.organizationId,
-    ]) as number) || 1;
+  const maxPosition = queryClient.getQueryData([
+    "maxPosition",
+    params.organizationId,
+  ]) as number | undefined;
+
+  const position = maxPosition !== undefined ? maxPosition + 1 : 1;
 
   const enableEditing = () => {
     setIsEditing(true);
@@ -75,7 +76,6 @@ const ListForm = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        exact: true,
         queryKey: ["listBoardColumns", params.organizationId],
       });
     },

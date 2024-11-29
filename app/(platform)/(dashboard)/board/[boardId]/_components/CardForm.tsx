@@ -65,7 +65,6 @@ export const CardForm = forwardRef<HTMLTextAreaElement, Props>(
         toast.success(`Card created successfully`);
 
         queryClient.invalidateQueries({
-          exact: true,
           queryKey: ["listBoardColumns", params.organizationId],
         });
       },

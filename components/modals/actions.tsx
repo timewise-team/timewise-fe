@@ -34,7 +34,6 @@ const Actions = ({ organizationId, data }: Props) => {
       toast.success(`Card deleted!`);
       cardModal.onClose();
       queryClient.invalidateQueries({
-        exact: true,
         queryKey: ["listBoardColumns", organizationId],
       });
     },
