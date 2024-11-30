@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import React, {ElementRef, useRef, useState, useTransition} from "react";
+import React, {ElementRef, useEffect, useRef, useState, useTransition} from "react";
 import Image from "next/image";
 import {format} from "date-fns";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {toast} from "sonner";
 import {useParams} from "next/navigation";
-import {Form, useForm} from "react-hook-form";
+import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import {Input} from "../ui/input";
@@ -24,6 +24,13 @@ interface Props {
     disabled?: boolean;
 }
 
+interface RawTranscriptDTO {
+    raw_transcript: {
+        raw_transcript: string;
+        summary: string;
+    };
+}
+
 const Meetting = ({session, data, scheduleId, disabled}: Props) => {
     const [mettingLocation, setMettingLocation] = useState(data?.location);
     const queryClient = useQueryClient();
@@ -33,6 +40,7 @@ const Meetting = ({session, data, scheduleId, disabled}: Props) => {
     const [isEditing, setIsEditing] = useState(false);
     const textareaRef = useRef<ElementRef<"textarea">>(null);
     const {stateUserEmails, stateWorkspacesByEmail} = useStateContext();
+    const [summary, setSummary] = useState<string | null>(null);
 
     const form = useForm<z.infer<typeof UpdateCard>>({
         resolver: zodResolver(UpdateCard),
@@ -43,9 +51,18 @@ const Meetting = ({session, data, scheduleId, disabled}: Props) => {
 
     const {register} = form;
 
+
+    useEffect(() => {
+        if (data?.video_transcript) {
+            const transcriptData: RawTranscriptDTO = JSON.parse(data.video_transcript);
+            setSummary(transcriptData?.raw_transcript?.summary || null);
+        }
+    }, [data]);
+
     const {mutate: triggerMeetingMutation} = useMutation({
         mutationFn: async () => {
-            const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.workspace_id));
+            console.log("triggerMeetingMutation", data.workspace_id);
+            const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(data.workspace_id));
             if (!userEmail) {
                 return null;
             }
@@ -53,7 +70,7 @@ const Meetting = ({session, data, scheduleId, disabled}: Props) => {
                 {
                     meet_link: data.location,
                     schedule_id: id,
-                    workspace_id: params.workspace_id,
+                    workspace_id: data.workspace_id,
                     userEmail: userEmail.email
                 },
                 session
@@ -131,56 +148,68 @@ const Meetting = ({session, data, scheduleId, disabled}: Props) => {
     };
 
     return (
-        <>
-            <div className="space-y-2 bg-white p-2 rounded-md">
-                <div className="flex flex-row items-center gap-x-2">
+        <div className="space-y-4 bg-gray-50 p-4 rounded-lg shadow-md">
+            {/* Meeting Link Section */}
+            <div className="space-y-2">
+                <div className="flex items-center gap-x-2">
                     <Image
                         src={"/images/icons/gg-meet.svg"}
-                        alt="avatar"
+                        alt="Google Meet Icon"
                         width={40}
                         height={40}
                         className="h-6 w-6 rounded-full object-cover"
                     />
-                    <Form {...form}>
-                        {isEditing ? (
-                            <form
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    handleSubmission();
-                                }}
-                                className="space-y-2 bg-white"
-                            >
-                                <Input
-                                    id={"location"}
-                                    disabled={isPending}
-                                    onFocus={enableEditing}
-                                    onKeyDown={handleEnterPress}
-                                    className="min-h-[78px] w-full bg-white "
-                                    placeholder="Add a meeting link"
-                                    defaultValue={mettingLocation}
-                                    {...register("location")}
-                                />
-                                <button type="submit"/>
-                            </form>
-                        ) : (
-                            <>
-                                <div
-                                    onClick={enableEditing}
-                                    role="button"
-                                    className="min-h-[78px] flex flex-row gap-x-1 font-medium py-3 px-3.5 rounded-md"
-                                >
-                                    {mettingLocation}
-                                    {data?.location && <Pencil className="w-4 h-4 ml-2"/>}
-                                </div>
-                            </>
-                        )}
-                    </Form>
+                    <span className="font-semibold text-lg">Meeting Link</span>
                 </div>
+                {isEditing ? (
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSubmission();
+                        }}
+                        className="flex items-center gap-x-2"
+                    >
+                        <Input
+                            id="location"
+                            disabled={isPending}
+                            onKeyDown={handleEnterPress}
+                            className="flex-grow min-h-[42px] bg-white border-gray-300 focus:ring focus:ring-blue-300 rounded-md"
+                            placeholder="Add or edit the meeting link"
+                            defaultValue={mettingLocation}
+                            {...register("location")}
+                        />
+                        <Button type="submit" className="bg-blue-600 text-white">
+                            Save
+                        </Button>
+                    </form>
+                ) : (
+                    <div
+                        onClick={enableEditing}
+                        role="button"
+                        className="min-h-[42px] flex items-center gap-x-1 font-medium py-2 px-3 rounded-md bg-white border border-gray-300 cursor-pointer hover:shadow-sm"
+                    >
+                        {mettingLocation || "Click to add a meeting link"}
+                        {data?.location && <Pencil className="w-4 h-4 ml-2 text-gray-600"/>}
+                    </div>
+                )}
             </div>
-            <Button onClick={() => triggerMeetingMutation()} className="w-full mt-2">
+
+            {/* Video Transcript Section */}
+            {summary && (
+                <div className="space-y-2 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+                    <h2 className="text-lg font-semibold">Meeting Summary</h2>
+                    <p className="text-gray-700 leading-relaxed">{summary}</p>
+                </div>
+            )}
+
+            {/* Start Meeting Button */}
+            <Button
+                onClick={() => triggerMeetingMutation()}
+                className="w-full bg-green-600 text-white hover:bg-green-700 transition-all"
+            >
                 Start Meeting
             </Button>
-        </>
+        </div>
     );
 };
 
