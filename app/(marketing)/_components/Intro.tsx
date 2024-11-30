@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 import React from "react";
 
 const Intro = () => {
@@ -29,7 +30,12 @@ const Intro = () => {
         </div>
       </div>
       <div>
-        <img src="/images/header-banner.webp" alt="hero" />
+        <Image
+          width={500}
+          height={500}
+          src="/images/header-banner.webp"
+          alt="hero"
+        />
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 
 export const productivityList = [
   {
@@ -54,9 +55,12 @@ const Banner = () => {
             </div>
           ))}
         </div>
-        <img
-          src={`/images//banner/${itemIndex + 1}.webp`}
+        <Image
+          src={`/images/banner/${itemIndex + 1}.webp`}
           alt=""
+          width={1000}
+          height={1000}
+          quality={100}
           className="object-cover w-full rounded-t-lg h-auto"
         />
       </div>

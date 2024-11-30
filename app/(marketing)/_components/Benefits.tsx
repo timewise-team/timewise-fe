@@ -3,6 +3,7 @@ import useDeviceDetect from "@/utils/DeviceDetect";
 import { useEffect } from "react";
 import { createMarkup } from "./Overview";
 import style from "@/styles/landingpage/feature-benefit.module.scss";
+import Image from "next/image";
 
 const DESCRIPTION_BLOCK_HEIGHT_DESKTOP = 400;
 const DESCRIPTION_BLOCK_HEIGHT_TABLET = 330;
@@ -129,12 +130,16 @@ const Benefit = () => {
                   <h2 className={style.userBenefit}>AI Benefits</h2>
 
                   <div className={style.frameWrapper}>
-                    <img
+                    <Image
+                      width={400}
+                      height={400}
                       src="/images/banner/4.webp"
                       alt="device-frame"
                       className={style.smartWatch}
                     />
-                    <img
+                    <Image
+                      width={400}
+                      height={400}
                       className={style.iphone}
                       src="/images/banner/5.webp"
                       alt="device-frame"
@@ -146,7 +151,9 @@ const Benefit = () => {
                       className={style.imageWrapper}
                       id={`image-${index}`}
                     >
-                      <img
+                      <Image
+                        width={400}
+                        height={400}
                         key={index}
                         className={style.image}
                         src={description.image}
