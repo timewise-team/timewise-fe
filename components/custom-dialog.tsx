@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
+import Image from "next/image";
 
 interface Props {
   title: string;
@@ -44,7 +45,12 @@ const CustomDialog = ({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
-          <img src="/images/header-banner.webp" alt="workspace" />
+          <Image
+            width={1000}
+            height={1000}
+            src="/images/header-banner.webp"
+            alt="workspace"
+          />
         </DialogHeader>
         {children}
         <DialogFooter></DialogFooter>
