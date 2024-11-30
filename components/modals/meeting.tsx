@@ -120,6 +120,12 @@ const Meetting = ({session, data, scheduleId, disabled}: Props) => {
             queryClient.invalidateQueries({
                 queryKey: ["listBoardColumns"],
             });
+            queryClient.invalidateQueries({
+                queryKey: ["schedules", data.workspace_id],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["schedules"],
+            });
 
             toast.success("Meeting link updated successfully");
         },

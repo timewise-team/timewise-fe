@@ -80,7 +80,7 @@ const Comments = ({session, data, scheduleId, workspaceId}: Props) => {
                 queryKey: ["listComments"],
             });
             queryClient.invalidateQueries({
-                queryKey: ["listBoardColumns"],
+                queryKey: ["listBoardColumns", "schedules"],
             });
             startTransition(() => {
                 reset();
@@ -114,6 +114,12 @@ const Comments = ({session, data, scheduleId, workspaceId}: Props) => {
             });
             queryClient.invalidateQueries({
                 queryKey: ["listBoardColumns"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["schedules", workspaceId],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["schedules"],
             });
             toast.success("Comment deleted successfully");
         },

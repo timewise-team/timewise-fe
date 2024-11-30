@@ -51,7 +51,7 @@ export function DatePicker({data, disabled}: Props) {
 
     const {mutate: updateCardInformation} = useMutation({
         mutationFn: async (values: z.infer<typeof UpdateCard>) => {
-            const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId || data.workspaceId));
+            const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId || data.workspace_id));
             if (!userEmail) {
                 return null;
             }
@@ -94,6 +94,12 @@ export function DatePicker({data, disabled}: Props) {
             });
             queryClient.invalidateQueries({
                 queryKey: ["listBoardColumns"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["schedules", data.workspace_id],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["schedules"],
             });
             disableEditing();
             toast.success("Schedule updated successfully");

@@ -64,7 +64,7 @@ const ListContainer = ({ data }: Props) => {
     },
     onSuccess: () => {
       toast.success("Board reordered !");
-      queryClient.invalidateQueries({ queryKey: ["listBoardColumns"] });
+      queryClient.invalidateQueries({ queryKey: ["listBoardColumns", "schedules"] });
     },
     onError: () => {
       toast.error("Error when updating board");
@@ -94,7 +94,7 @@ const ListContainer = ({ data }: Props) => {
     },
     onSuccess: () => {
       toast.success("Card reordered !");
-      queryClient.invalidateQueries({ queryKey: ["listBoardColumns"] });
+      queryClient.invalidateQueries({ queryKey: ["listBoardColumns", "schedules"] });
     },
     onError: () => {
       toast.error("Error when updating card");
@@ -222,7 +222,7 @@ const ListContainer = ({ data }: Props) => {
   };
 
   return (
-    <div className="pt-[60px]">
+    <div className="p-2">
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="lists" type="list" direction="horizontal">
           {(provided) => (

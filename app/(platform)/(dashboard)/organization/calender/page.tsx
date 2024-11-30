@@ -52,7 +52,7 @@ const CalenderPage = () => {
         }
     }, [isLoading, data]);
 
-    if (!scheduleData || Object.keys(workspaceData).length === 0) {
+    if (!data || !scheduleData || Object.keys(workspaceData).length === 0) {
         return <div className="w-full h-full">Loading...</div>;
     }
 
@@ -65,7 +65,7 @@ const CalenderPage = () => {
                         workspaceDataTransformed={workspaceData}
                         onCheckedWorkspacesChange={handleCheckedWorkspacesChange}
                     />
-                    <CalendarApp scheduleData={scheduleData} workspaceData={workspaceData}/>
+                    <CalendarApp scheduleData={scheduleData} workspaceData={workspaceData} rawScheduleData={data}/>
                 </div>
             )}
         </div>

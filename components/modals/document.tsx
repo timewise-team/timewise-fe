@@ -64,7 +64,7 @@ const Document = ({ data, document, disabled }: Props) => {
         queryKey: ["documents"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["listBoardColumns"],
+        queryKey: ["listBoardColumns", "schedules"],
       });
       queryClient.invalidateQueries({
         queryKey: ["detailCard"],
@@ -108,6 +108,12 @@ const Document = ({ data, document, disabled }: Props) => {
       });
       queryClient.invalidateQueries({
         queryKey: ["listBoardColumns"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["schedules", data.workspace_id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["schedules"],
       });
       queryClient.invalidateQueries({
         queryKey: ["detailCard"],

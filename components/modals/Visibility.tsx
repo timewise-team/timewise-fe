@@ -89,6 +89,12 @@ const Visibility = ({data, disabled}: Props) => {
             queryClient.invalidateQueries({
                 queryKey: ["listBoardColumns"],
             });
+            queryClient.invalidateQueries({
+                queryKey: ["schedules", data.workspace_id],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["schedules"],
+            });
         },
         onError: (error) => {
             toast.error(error.message);

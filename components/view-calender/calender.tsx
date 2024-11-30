@@ -13,16 +13,23 @@ import {useCardModal} from "@/hooks/useCardModal";
 import {TransformedSchedule} from "@/types/Calendar";
 import {Calendars} from "@/utils/calendar/calendarUtils";
 import {createDragAndDropPlugin} from "@schedule-x/drag-and-drop";
+import {useSession} from "next-auth/react";
+import {updateCardID} from "@/lib/fetcher";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 interface CalendarAppProps {
     scheduleData: TransformedSchedule[];
     workspaceData: Calendars;
+    rawScheduleData: any;
 }
 
-function CalendarApp({scheduleData, workspaceData}: CalendarAppProps) {
+function CalendarApp({scheduleData, workspaceData, rawScheduleData}: CalendarAppProps) {
     const [isModalOpen] = useState(false);
     const [selectedEventId] = useState<string | null>(null);
     const cardModal = useCardModal();
+    const {data: session} = useSession();
+    const {stateUserEmails, stateWorkspacesByEmail} = useStateContext();
 
     const calendarApp = useNextCalendarApp({
         views: [viewWeek, viewMonthAgenda, viewDay, viewMonthGrid],
@@ -46,11 +53,42 @@ function CalendarApp({scheduleData, workspaceData}: CalendarAppProps) {
             onClickDateTime(dateTime) {
                 console.log('onClickDateTime', dateTime) // e.g. 2024-01-01T12:00:00
             },
-            onEventUpdate(event) {
-                console.log('onEventUpdate', event)
+            async onEventUpdate(event) {
+                await updateScheduleTime(event);
             }
         }
     }) as any;
+
+    const updateScheduleTime = async (event: any) => {
+        const updatedSchedule = rawScheduleData.find((schedule: any) => schedule.id === Number(event.id));
+
+        const updatedStart = new Date(event.start);
+        const updatedStartStr = format(updatedStart.setHours(updatedStart.getHours() - 7), "yyyy-MM-dd HH:mm:ss.SSS");
+        const updatedEnd = new Date(event.end);
+        const updatedEndStr = format(updatedEnd.setHours(updatedEnd.getHours() - 7), "yyyy-MM-dd HH:mm:ss.SSS");
+
+        const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(updatedSchedule.workspace_id));
+
+        return await updateCardID(
+            {
+                cardId: updatedSchedule.id,
+                visibility: updatedSchedule.visibility,
+                all_day: updatedSchedule.all_day,
+                description: updatedSchedule.description,
+                end_time: updatedEndStr,
+                extra_data: updatedSchedule.extra_data,
+                location: updatedSchedule.location,
+                priority: updatedSchedule.priority,
+                recurrence_pattern: updatedSchedule.recurrence_pattern,
+                start_time: updatedStartStr,
+                status: updatedSchedule.status,
+                title: updatedSchedule.title,
+                organizationId: updatedSchedule.workspace_id,
+                userEmail: userEmail?.email,
+            },
+            session
+        );
+    }
 
     useEffect(() => {
         if (calendarApp) {

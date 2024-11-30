@@ -65,7 +65,7 @@ const ListHeader = ({data, onAddCard}: Props) => {
             return response;
         },
         onSuccess: (data) => {
-            queryClient.invalidateQueries({queryKey: ["listBoardColumns"]});
+            queryClient.invalidateQueries({queryKey: ["listBoardColumns", "schedules"]});
             setTitle(data.title);
             startTransition(() => {
                 setIsEditing(false);

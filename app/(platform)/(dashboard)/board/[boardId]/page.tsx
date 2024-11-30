@@ -13,7 +13,7 @@ const BoardIdPage = () => {
   // const param = useParams();
 
   // const { data, isLoading } = useQuery({
-  //   queryKey: ["listBoardColumns"],
+  //   queryKey: ["listBoardColumns", "schedules"],
   //   queryFn: async () => {
   //     const response = await fetch(
   //       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/workspace/${param.organizationId}`,

@@ -51,7 +51,7 @@ const WorkspaceCalender = () => {
     // };
 
     const {data, isLoading} = useQuery({
-        queryKey: ["schedules", stateWorkspacesByEmail],
+        queryKey: ["schedules", params.organizationId],
         queryFn: async () => {
             const currentWorkspace = getWorkspaceById(
                 stateWorkspacesByEmail,
@@ -63,7 +63,6 @@ const WorkspaceCalender = () => {
 
             const payload = {
                 checkedWorkspaces: [currentWorkspace.ID],
-
                 startTime: "0001-10-01 00:00:00.000",
                 endTime: "9999-12-31 23:59:59.000",
                 isDeleted: false,
@@ -88,7 +87,7 @@ const WorkspaceCalender = () => {
         }
     }, [isLoading, data]);
 
-    if (!scheduleData || Object.keys(workspaceData).length === 0) {
+    if (!data || !scheduleData || Object.keys(workspaceData).length === 0) {
         return <div className="w-full h-full">Loading...</div>;
     }
 
@@ -106,11 +105,7 @@ const WorkspaceCalender = () => {
             </div>
             {stateWorkspacesByEmail && (
                 <div className="w-full max-w-[100vw] h-full flex gap-1">
-                    {/*<CalendarFilter*/}
-                    {/*    workspaceData={stateWorkspacesByEmail}*/}
-                    {/*    onCheckedWorkspacesChange={handleCheckedWorkspacesChange}*/}
-                    {/*/>*/}
-                    <CalendarApp scheduleData={scheduleData} workspaceData={workspaceData}/>
+                    <CalendarApp scheduleData={scheduleData} workspaceData={workspaceData} rawScheduleData={data}/>
                 </div>
             )}
         </div>

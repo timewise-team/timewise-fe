@@ -116,53 +116,55 @@ const OrganizationIdPage = () => {
     }
 
     return (
-        <div className="px-2 w-full mb-5 ">
+        <div className="w-full mb-5">
             <div className=" relative bg-no-repeat bg-cover bg-center ">
                 <main className="relative space-y-1 h-full ">
                     <div
-                        className="flex flex-row items-center px-1 w-full bg-black bg-opacity-40 fixed backdrop-blur justify-start">
+                        className="flex flex-row items-center px-1 w-full bg-black bg-opacity-40 backdrop-blur justify-between">
                         <p className="font-bold text-white">{workspace?.title}</p>
-                        <div className="flex flex-row p-2 justify-end w-[75%] text-white items-center">
-                            <InviteMember/>
-                            {Array.isArray(listMembers) &&
-                                listMembers
-                                    ?.slice(0, 3)
-                                    .map((participant: any, index: any) => (
-                                        <Image
-                                            key={index}
-                                            src={participant.profile_picture}
-                                            alt={"avatar"}
-                                            width={20}
-                                            height={20}
-                                            className="h-6 w-6 rounded-full object-cover"
-                                        />
-                                    ))}
-                            {listMembers && data?.length > 3 && (
-                                <span
-                                    className="flex items-center justify-center h-4 w-4 rounded-full bg-black text-xs text-white  border-2 border-white">
+                        <div className="flex items-center">
+                            <div className="flex flex-row p-2 justify-end w-[75%] text-white items-center">
+                                <InviteMember/>
+                                {Array.isArray(listMembers) &&
+                                    listMembers
+                                        ?.slice(0, 3)
+                                        .map((participant: any, index: any) => (
+                                            <Image
+                                                key={index}
+                                                src={participant.profile_picture}
+                                                alt={"avatar"}
+                                                width={20}
+                                                height={20}
+                                                className="h-6 w-6 rounded-full object-cover"
+                                            />
+                                        ))}
+                                {listMembers && data?.length > 3 && (
+                                    <span
+                                        className="flex items-center justify-center h-4 w-4 rounded-full bg-black text-xs text-white  border-2 border-white">
                   +{data.length - 3}
                 </span>
-                            )}
-                            <p className="text-white px-2">||</p>
-                        </div>
+                                )}
+                                <p className="text-white px-2">||</p>
+                            </div>
 
-                        <FilterPopover
-                            listMembers={listMembers}
-                            search={search}
-                            setSearch={setSearch}
-                            selectedMembers={selectedMembers}
-                            setSelectedMember={setSelectedMembers}
-                            due={due}
-                            setDue={setDue}
-                            dueComplete={dueComplete}
-                            setDueComplete={setDueComplete}
-                            overdue={overdue}
-                            setOverdue={setOverdue}
-                            notDue={notDue}
-                            setNotDue={setNotDue}
-                            isPopoverOpen={isPopoverOpen}
-                            setIsPopoverOpen={setIsPopoverOpen}
-                        />
+                            <FilterPopover
+                                listMembers={listMembers}
+                                search={search}
+                                setSearch={setSearch}
+                                selectedMembers={selectedMembers}
+                                setSelectedMember={setSelectedMembers}
+                                due={due}
+                                setDue={setDue}
+                                dueComplete={dueComplete}
+                                setDueComplete={setDueComplete}
+                                overdue={overdue}
+                                setOverdue={setOverdue}
+                                notDue={notDue}
+                                setNotDue={setNotDue}
+                                isPopoverOpen={isPopoverOpen}
+                                setIsPopoverOpen={setIsPopoverOpen}
+                            />
+                        </div>
                     </div>
                     <ListContainer
                         data={Array.isArray(data) ? data : []}
