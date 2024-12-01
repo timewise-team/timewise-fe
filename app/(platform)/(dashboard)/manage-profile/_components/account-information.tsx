@@ -98,6 +98,7 @@ const AccountInformation = ({ accountInformation }: Props) => {
 
       const responseData = await response.json();
       console.log("User information updated successfully:", responseData);
+      window.location.reload();
     } catch (error) {
       console.error("Failed to update user information:", error);
     }
