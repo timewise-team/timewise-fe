@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import React, { useTransition } from "react";
-import { Form, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -26,6 +26,12 @@ export const linkEmail = async (params: any, session: any) => {
       }),
     }
   );
+  if (!response.ok) {
+    // Nếu response không thành công, ném lỗi
+    const errorData = await response.json();
+    throw new Error(errorData?.error || "Failed to link email.");
+  }
+
   const data = await response.json();
   return data;
 };
@@ -68,45 +74,53 @@ const AddLinkEmail = () => {
         toast.success("Email sent successfully");
       });
     },
-    onError: () => {
+    onError: (error) => {
+      let errorMessage = "Failed to send email.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
       startTransition(() => {
-        toast.error("Failed to send email");
+        toast.error(errorMessage);
       });
     },
   });
 
   const handleSubmission = handleSubmit((values) => {
+    if (values.email === session?.user?.email) {
+      startTransition(() => {
+        toast.error("You cannot link your own email.");
+      });
+      return;
+    }
     linkEmailMutation(values);
   });
 
   return (
-    <CustomDialog
-      title={"Link new Email"}
-      description={
-        "Boost your productivity by making it easier for everyone to access boards in one location."
-      }
-      btnSubmitContent="Start Linking"
-    >
-      <Form {...form}>
-        <form className=" w-full flex flex-row gap-x-1">
+      <CustomDialog
+          title={"Link new Email"}
+          description={
+            "Boost your productivity by making it easier for everyone to access boards in one location."
+          }
+          btnSubmitContent="Start Linking"
+      >
+        <form onSubmit={handleSubmission} className="w-full flex flex-row gap-x-1">
           <div className="w-full flex items-center flex-col">
             <Input
-              type="text"
-              disabled={isPending}
-              placeholder="Enter email"
-              className="w-full p-2 border border-gray-300 rounded-md"
-              {...register("email")}
+                type="text"
+                disabled={isPending}
+                placeholder="Enter email"
+                className="w-full p-2 border border-gray-300 rounded-md"
+                {...register("email")}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email.message}</p>
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
             )}
           </div>
-          <Button className="w-fit" type="submit" onClick={handleSubmission}>
+          <Button className="w-fit" type="submit">
             Link
-          </Button>{" "}
+          </Button>
         </form>
-      </Form>
-    </CustomDialog>
+      </CustomDialog>
   );
 };
 
