@@ -15,22 +15,30 @@ const Activities = ({ session, activities }: Props) => {
       {activities && activities.length > 0 ? (
         activities.map((activity: any) => (
           <div
-            className="flex flex-row items-center gap-x-2 p-2 bg-sky-50 rounded-lg"
+            className="flex flex-row items-star justify-start gap-x-2 p-2 bg-sky-50 rounded-lg"
             key={activity.id}
           >
             <Image
-              src={session?.user?.image || "/images/banner/1.webp"}
+              src={session?.user?.picture || "/images/banner/1.png"}
               alt="avatar"
               width={40}
               height={40}
-              className="h-4 w-4 rounded-full object-cover"
+              className="h-5 w-5 rounded-full object-cover"
             />
             <div className="flex flex-col items-start">
-              <p>{format(new Date(activity?.created_at), "dd/MM/yyyy")}</p>
-              <p className="font-bold">{activity?.first_name}</p>
-              <p>{activity?.action}</p>
-              <p>{activity?.old_value}</p>
-              <p>{activity?.new_value}</p>
+              <div className="flex flex-row gap-x-2">
+                <p className="font-bold">{activity?.first_name}</p>
+                <p>
+                  {format(new Date(activity?.created_at), "dd/MM/yyyy HH:mm")}
+                </p>{" "}
+              </div>
+              <p>Action: {activity?.action}</p>
+
+              <div className="flex flex-row gap-x-2 text-sm">
+                <p className="line-through">{activity?.old_value}</p>
+                {"->"}
+                <p>{activity?.new_value}</p>
+              </div>
             </div>
           </div>
         ))

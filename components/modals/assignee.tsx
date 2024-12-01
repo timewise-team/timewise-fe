@@ -20,15 +20,8 @@ import { AssigneeSchedules } from "@/lib/fetcher";
 import { AssigneeSchedule } from "@/actions/assignee/schema";
 import Image from "next/image";
 import { Form, FormControl, FormField, FormItem } from "../ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import {getUserEmailByWorkspace} from "@/utils/userUtils";
-import {useStateContext} from "@/stores/StateContext";
+import { getUserEmailByWorkspace } from "@/utils/userUtils";
+import { useStateContext } from "@/stores/StateContext";
 
 interface Props {
   children: React.ReactNode;
@@ -48,7 +41,7 @@ const Assignee = ({ children, data, participant, disabled }: Props) => {
   const params = useParams();
   const queryClient = useQueryClient();
   const formRef = useRef<HTMLFormElement>(null);
-    const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
+  const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
 
   const assignTo = participant?.filter((p: any) => p.status === "assign to")[0];
 
@@ -66,7 +59,11 @@ const Assignee = ({ children, data, participant, disabled }: Props) => {
         throw new Error("Invalid fields");
       }
 
-      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, data.workspace_id);
+      const userEmail = getUserEmailByWorkspace(
+        stateUserEmails,
+        stateWorkspacesByEmail,
+        data.workspace_id
+      );
       if (!userEmail) {
         return null;
       }
@@ -76,7 +73,7 @@ const Assignee = ({ children, data, participant, disabled }: Props) => {
           email: values.email,
           schedule_id: data.id,
           organizationId: params.organizationId,
-          userEmail: userEmail.email
+          userEmail: userEmail.email,
         },
         session
       );
@@ -152,40 +149,36 @@ const Assignee = ({ children, data, participant, disabled }: Props) => {
           <form ref={formRef} className="flex flex-row gap-x-1">
             <div className="flex items-center flex-col">
               <FormField
-                control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <Select
-                      {...register("email")}
-                      disabled={isPending}
-                      defaultValue={field.value}
-                      onValueChange={(value) => handleSelectChange(value)}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select member to assign" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
+                    <FormControl>
+                      <select
+                        {...register("email")}
+                        disabled={isPending}
+                        defaultValue={field.value}
+                        onChange={(e) => handleSelectChange(e.target.value)}
+                        className="border border-gray-300 rounded p-2"
+                      >
+                        <option disabled>Select member to assign</option>
                         {participant
                           .filter((p: any) => p.status !== "creator")
                           .map((p: any) => (
-                            <SelectItem key={p.id} value={p.email}>
+                            <option key={p.id} value={p.email}>
                               <div className="flex flex-row gap-x-2">
                                 <Image
                                   width={20}
                                   height={20}
                                   src={p.profile_picture}
                                   alt={p.first_name}
-                                  className="w-10 h-10 rounded-full"
+                                  className="w-6 h-6 rounded-full"
                                 />
                                 {p.first_name} {p.last_name}
                               </div>
-                            </SelectItem>
+                            </option>
                           ))}
-                      </SelectContent>
-                    </Select>
+                      </select>
+                    </FormControl>
                   </FormItem>
                 )}
               />
@@ -197,22 +190,19 @@ const Assignee = ({ children, data, participant, disabled }: Props) => {
             </div>
           </form>
         ) : (
-          <div
-            onClick={enableEditing}
-            className="flex flex-row items-center gap-x-2"
-          >
+          <div onClick={enableEditing} className="flex flex-row items-center ">
             {assignTo ? (
               <>
                 <Image
                   width={20}
                   height={20}
-                  className="h-4 w-4 rounded-full"
+                  className="h-6 w-6 rounded-full"
                   src={assignTo.profile_picture}
                   alt={assignTo.first_name}
                 />
               </>
             ) : (
-              <span>Not assigned yet</span>
+              <span className="text-gray-400 pl-3">Not assigned yet</span>
             )}
             {assignTo?.first_name}
             {children}
