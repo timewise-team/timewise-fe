@@ -47,7 +47,6 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
   if (status === "" || status === "pending") {
     setStatus("linked");
   }
-  console.log("status", status)
   const { linkedEmails, isLoading: isEmailsLoading } = useLinkedEmailsForManage(status);
   const fetchWorkspaces = async (email: string) => {
     const response = await fetch(

@@ -10,7 +10,6 @@ import {createCalendarControlsPlugin} from "@schedule-x/calendar-controls";
 import {createEventsServicePlugin} from '@schedule-x/events-service';
 import ScheduleDetailsDrawer from "@components/view-calender/custom-event-modal";
 import {useCardModal} from "@/hooks/useCardModal";
-import {TransformedSchedule} from "@/types/Calendar";
 import {Calendars} from "@/utils/calendar/calendarUtils";
 import {createDragAndDropPlugin} from "@schedule-x/drag-and-drop";
 import {useSession} from "next-auth/react";
@@ -19,12 +18,11 @@ import {getUserEmailByWorkspace} from "@/utils/userUtils";
 import {useStateContext} from "@/stores/StateContext";
 
 interface CalendarAppProps {
-    scheduleData: TransformedSchedule[];
+    scheduleData: any[];
     workspaceData: Calendars;
-    rawScheduleData: any;
 }
 
-function CalendarApp({scheduleData, workspaceData, rawScheduleData}: CalendarAppProps) {
+function CalendarApp({scheduleData, workspaceData}: CalendarAppProps) {
     const [isModalOpen] = useState(false);
     const [selectedEventId] = useState<string | null>(null);
     const cardModal = useCardModal();
@@ -44,7 +42,6 @@ function CalendarApp({scheduleData, workspaceData, rawScheduleData}: CalendarApp
         calendars: workspaceData,
         callbacks: {
             onEventClick: (event) => {
-                console.log('Event clicked:', event);
                 cardModal.onOpen(event.id.toString(), event.workspaceId);
             },
             onClickDate(date) {
@@ -53,14 +50,14 @@ function CalendarApp({scheduleData, workspaceData, rawScheduleData}: CalendarApp
             onClickDateTime(dateTime) {
                 console.log('onClickDateTime', dateTime) // e.g. 2024-01-01T12:00:00
             },
-            async onEventUpdate(event) {
-                await updateScheduleTime(event);
+            onEventUpdate(event) {
+                updateScheduleTime(event, scheduleData).then(r => console.log(r));
             }
         }
     }) as any;
 
-    const updateScheduleTime = async (event: any) => {
-        const updatedSchedule = rawScheduleData.find((schedule: any) => schedule.id === Number(event.id));
+    const updateScheduleTime = (event: any, rawScheduleData: any) => {
+        const updatedSchedule = rawScheduleData.find((schedule: any) => schedule.id === event.id);
 
         const updatedStart = new Date(event.start);
         const updatedStartStr = format(updatedStart.setHours(updatedStart.getHours() - 7), "yyyy-MM-dd HH:mm:ss.SSS");
@@ -69,7 +66,7 @@ function CalendarApp({scheduleData, workspaceData, rawScheduleData}: CalendarApp
 
         const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(updatedSchedule.workspace_id));
 
-        return await updateCardID(
+        return updateCardID(
             {
                 cardId: updatedSchedule.id,
                 visibility: updatedSchedule.visibility,
@@ -93,6 +90,10 @@ function CalendarApp({scheduleData, workspaceData, rawScheduleData}: CalendarApp
     useEffect(() => {
         if (calendarApp) {
             calendarApp.eventsService.set(scheduleData);
+            // update onEventUpdate callback
+            calendarApp.$app.config.callbacks.onEventUpdate = (event: any) => {
+                updateScheduleTime(event, scheduleData).then(r => console.log(r));
+            }
         }
     }, [scheduleData, calendarApp]);
 
