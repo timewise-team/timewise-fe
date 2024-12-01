@@ -1,6 +1,22 @@
 /** @type {import('next').NextConfig} */
 
+const cspHeader = "frame-ancestors 'none';";
+
+
 const nextConfig = {
+  headers: async () => {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: cspHeader,
+          }
+        ],
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
