@@ -46,9 +46,9 @@ const CustomDialog = ({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
           <Image
-            width={1000}
-            height={1000}
-            src="/images/header-banner.webp"
+            width={800}
+            height={500}
+            src="/images/banner/3.png"
             alt="workspace"
           />
         </DialogHeader>

@@ -15,38 +15,38 @@ const MAX_SCALE_RATIOS = [0.1, 0.05, 0.025];
 
 export const BENEFITS = [
   {
-    image: "/images/banner/1.webp",
+    image: "/images/banner/1.png",
     type: "User Benefits",
-    title: "Empowering User-Controlled<br/> Data with Timewise",
+    title: "AI-Driven Meeting Summaries<br/> with Timewise",
     items: [
-      "User Data Sovereignty",
-      "Anonymous Data Sharing Rewards",
-      "Contributing to Research",
+      "Real-Time Transcription",
+      "Automatic Meeting Summaries",
+      "AI-Powered Insights & Action Items",
     ],
     bgColor: "#FFCDB2",
   },
 
   {
-    image: "/images/banner/2.webp",
+    image: "/images/banner/2.png",
     type: "User Benefits",
-    title: "Comprehensive Sleep Monitoring<br/> with Timewise",
+    title: "Drag & Drop Scheduling<br/> with Timewise",
     items: [
-      "Advanced Sleep Tracking",
-      "Personalized Sleep Insights",
-      "Smart Environment Control",
+      "Intuitive Calendar Management",
+      "Seamless Integration with Google Calendar",
+      "Personalized Scheduling Recommendations",
     ],
     bgColor: "#E5989B",
   },
   {
-    image: "/images/banner/3.webp",
+    image: "/images/banner/3.png",
     type: "User Benefits",
-    title: "Heart Rate Monitoring<br/> for Holistic Wellness",
+    title: "Comprehensive Task Management<br/> Like Trello",
     items: [
-      "Continuous Heart Rate Tracking",
-      "AI-Driven Analysis",
-      "Actionable Health Insights",
+      "Customizable Task Boards",
+      "Progress Tracking",
+      "Collaborative Project Tools",
     ],
-    bgColor: "##B5838D",
+    bgColor: "#B5838D",
   },
 ];
 
@@ -127,13 +127,13 @@ const Benefit = () => {
             <div className={style.blockBottom}>
               <div className={style.imageContainer}>
                 <div className={style.wrapper}>
-                  <h2 className={style.userBenefit}>AI Benefits</h2>
+                  <h2 className={style.userBenefit}> Benefits</h2>
 
                   <div className={style.frameWrapper}>
                     <Image
                       width={400}
                       height={400}
-                      src="/images/banner/4.webp"
+                      src="/images/banner/4.png"
                       alt="device-frame"
                       className={style.smartWatch}
                     />
@@ -141,7 +141,7 @@ const Benefit = () => {
                       width={400}
                       height={400}
                       className={style.iphone}
-                      src="/images/banner/5.webp"
+                      src="/images/banner/5.jpeg"
                       alt="device-frame"
                     />
                   </div>
