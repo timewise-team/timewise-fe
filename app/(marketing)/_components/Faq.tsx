@@ -20,14 +20,14 @@ const Faq = () => {
 
       <div className="container flex lg:flex-row flex-col justify-center p-4 mx-auto md:p-8">
         <Image
-          className="rounded-lg lg:h-fit h-auto object-contain"
-          src="/images/banner/1.webp"
+          className="w-[600px] rounded-lg lg:h-fit h-auto object-contain"
+          src="/images/banner/5.jpeg"
           alt="faq"
           width={620}
           height={600}
           quality={100}
         />
-        <div className="flex flex-col divide-y sm:px-8 lg:px-12 xl:px-32 dark:divide-gray-300">
+        <div className=" flex flex-col divide-y sm:px-8 lg:px-12 xl:px-32 dark:divide-gray-300">
           {dataFaqs.map((faq, index) => (
             <div key={index} className="py-4">
               <button

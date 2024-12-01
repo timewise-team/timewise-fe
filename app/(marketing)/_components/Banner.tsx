@@ -6,19 +6,19 @@ export const productivityList = [
   {
     title: "Board",
     description:
-      " Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit ipsa, a laborum non praesentium enim ipsum suscipit dignissimos voluptates eaque.",
-    img: "/images/task-management.webp",
+      "Organize your projects visually with our interactive boards. Drag and drop tasks as they progress through stages, and customize columns to fit your workflow. Perfect for teams looking to visualize project milestones and individual responsibilities.",
+    img: "/images/board-management.webp",
   },
   {
-    title: "Calender",
+    title: "Calendar",
     description:
-      " Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit ipsa, a laborum non praesentium enim ipsum suscipit dignissimos voluptates eaque.",
-    img: "/images/task-management.webp",
+      "Keep track of deadlines, meetings, and events with our integrated calendar. Sync with external calendars to ensure you never miss an important date. Use our drag-and-drop interface to reschedule tasks and events effortlessly.",
+    img: "/images/calendar-management.webp",
   },
   {
-    title: "Task Management",
+    title: "Schedule Management",
     description:
-      " Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit ipsa, a laborum non praesentium enim ipsum suscipit dignissimos voluptates eaque.",
+      "Manage daily tasks with efficiency. Set priorities, deadlines, and assignees. Receive notifications for upcoming deadlines and changes to task status. Utilize filters to view tasks by date, project, or priority.",
     img: "/images/task-management.webp",
   },
 ];
@@ -56,12 +56,13 @@ const Banner = () => {
           ))}
         </div>
         <Image
-          src={`/images/banner/${itemIndex + 1}.webp`}
+          src={`/images/banner/${itemIndex + 1}.png`}
           alt=""
           width={1000}
           height={1000}
           quality={100}
-          className="object-cover w-full rounded-t-lg h-auto"
+          className="w-[100%] h-[600px]  object-cover rounded-t-lg 
+          "
         />
       </div>
     </div>

@@ -7,31 +7,31 @@ const Overviews = [
   {
     backgroundColor: "#41B2D6",
     icon: <Apple className="w-10 h-10" />,
-    title: "AI </br>at the Core",
+    title: "Improve UI/UX",
     description:
-      "Leveraging technology, guarantees secure and private health data handling, giving users full control over their health information",
+      " Allow for easy event creation, modification, and deletion via drag-and-drop. Consider using a library like FullCalendar for robust calendar functionalities that support these interactions.",
   },
   {
     backgroundColor: "#5685FF",
 
     icon: <Apple className="w-10 h-10" />,
-    title: "asd <br/> Wellness",
+    title: "Improve UI/UX",
     description:
-      "Leveraging technology, guarantees secure and private health data handling, giving users full control over their health information",
+      "Enhance the visual feedback in the UI, such as adding animations when tasks are moved or updated, and visual cues for drag-and-drop actions.",
   },
   {
     backgroundColor: "#3EC6C5",
     icon: <Apple className="w-10 h-10" />,
-    title: "Comprehensive<br/> Wellness Ecosystem",
+    title: "AI Integration",
     description:
-      "Leveraging technology, guarantees secure and private health data handling, giving users full control over their health information",
+      "API for accessing meeting content if available. Use this data to feed into your AI summarization model.",
   },
   {
     backgroundColor: "#459DE6",
     icon: <Apple className="w-10 h-10" />,
-    title: "Mission <br/>Statement",
+    title: "Calendar Features",
     description:
-      "Leveraging technology, guarantees secure and private health data handling, giving users full control over their health information",
+      "Break down UI into smaller components for better manageability and reusability. This includes individual components for cards, lists, and the calendar.",
   },
 ];
 
@@ -45,8 +45,8 @@ const Overview = () => {
           productivity.
         </h2>
         <p className="text-gray-950 text-center text-base leading-6 tracking-[0.14px] mt-3">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. At odio
-          iusto, maiores debitis sed quis aut nihil repellat doloremque error!
+          Enhance the visual feedback in the UI, such as adding animations when
+          tasks are moved or updated, and visual cues for drag-and-drop actions.
         </p>
 
         {/* sm display grid and grid per col 1 in md display flex over flow x auto and in lg display grid and gridtemplate per collumn 4  */}

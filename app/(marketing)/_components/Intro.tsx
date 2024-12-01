@@ -1,40 +1,34 @@
 "use client";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import React from "react";
 
 const Intro = () => {
   return (
-    <div className="px-[10%] py-16 grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-b from-sky-300 to-blue-600">
-      <div className="text-white p-2">
+    <div className="relative px-[10%] py-16 grid grid-cols-1 lg:grid-cols-2">
+      <div className="absolute top-0 left-0 w-full h-full bg-[url('/images/banner/1.png')] bg-cover bg-fixed opacity-100 before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-black before:opacity-50 backdrop-blur-sm"></div>
+      <div className="relative z-10 text-white pt-10">
         <h1 className="font-extrabold text-5xl">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias,
-          nesciunt.
+          Transform Your Workday Efficiency
         </h1>
         <p className="text-lg mt-3 leading-10">
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Repellat,
-          molestiae.
+          Discover a suite of tools designed to enhance your productivity,
+          streamline your tasks, and synchronize your team&apos;s efforts
+          seamlessly.
         </p>
-        <h3 className="text-xl font-semibold mt-5">Lorem, ipsum dolor.</h3>
+        <h3 className="text-xl font-semibold mt-5">Why Choose Our Platform?</h3>
         <ul className="my-3 leading-10">
-          <li>Lorem, ipsum dolor.</li>
-          <li>Lorem, ipsum dolor.</li>
+          <li>Intuitive drag-and-drop project boards.</li>
+          <li>Comprehensive calendar integrations.</li>
+          <li>Advanced task management with real-time updates.</li>
         </ul>
-        <div className="flex w-full max-w-sm items-center space-x-2 mt-3">
-          <Input className="" type="email" />
-
-          <Button type="submit" className="bg-black text-white">
-            Sign Up For Free
-          </Button>
-        </div>
       </div>
-      <div>
+      <div className="relative z-100 top-10">
         <Image
-          width={500}
-          height={500}
-          src="/images/header-banner.webp"
-          alt="hero"
+          width={700}
+          height={700}
+          src="/images/banner/3.png"
+          alt="hero image of productivity tools"
+          className="w-full h-[600px] z-100"
         />
       </div>
     </div>
