@@ -177,14 +177,14 @@ const FilterPopover = ({
                 </label>
               </div>
               <div className="flex flex-col items-center">
-                <UserRoundSearch size={16} />
+                {/*<UserRoundSearch size={16} />*/}
                 <label
                   htmlFor="due"
-                  className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-left w-full"
                 >
-                  Date/Week/Month
+                  Due in
                 </label>
-                <div className="flex space-x-2 items-start justify-start">
+                <div className="flex space-x-2 items-start justify-start w-full">
                   <div className="flex flex-col items-start justify-start">
                     <label className="flex items-center space-x-2">
                       <Input
@@ -197,7 +197,7 @@ const FilterPopover = ({
                         className="w-4 h-4"
                       />
                       <Clock className="text-blue-500 w-4 h-4" />
-                      <span>Day</span>
+                      <span>Today</span>
                     </label>
                     <label className="flex items-center space-x-2">
                       <Input
@@ -210,7 +210,7 @@ const FilterPopover = ({
                         className="w-4 h-4"
                       />
                       <Clock className="text-yellow-500 w-4 h-4" />
-                      <span>Week</span>
+                      <span>This Week</span>
                     </label>
                     <label className="flex items-center space-x-2">
                       <Input
@@ -223,11 +223,12 @@ const FilterPopover = ({
                         className="w-4 h-4"
                       />
                       <Clock className="text-green-500 w-4 h-4" />
-                      <span>Month</span>
+                      <span>This Month</span>
                     </label>
                   </div>
                 </div>
               </div>
+
               <div className="flex items-center space-x-2">
                 <Input
                   type="checkbox"
