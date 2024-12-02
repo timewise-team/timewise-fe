@@ -8,32 +8,32 @@ export const productivityList = [
     description:
       "Organize your projects visually with our interactive boards. Drag and drop tasks as they progress through stages, and customize columns to fit your workflow. Perfect for teams looking to visualize project milestones and individual responsibilities.",
     img: "/images/board-management.webp",
-    bgColor: "#00dbee",
+    bgColor: "#d0f4f8",
   },
   {
     title: "Calendar",
     description:
       "Keep track of deadlines, meetings, and events with our integrated calendar. Sync with external calendars to ensure you never miss an important date. Use our drag-and-drop interface to reschedule tasks and events effortlessly.",
     img: "/images/calendar-management.webp",
-    bgColor: "#60a5fa",
+    bgColor: "#d6e7fb",
   },
   {
     title: "Summary Content",
     description:
       "Manage daily tasks with efficiency. Set priorities, deadlines, and assignees. Receive notifications for upcoming deadlines and changes to task status. Utilize filters to view tasks by date, project, or priority.",
     img: "/images/task-management.webp",
-    bgColor: "#f9f871",
+    bgColor: "#fefbd1",
   },
 ];
 
 const Banner = () => {
   const [itemIndex, setItemIndex] = useState(0);
   return (
-    <div className="px-[10%] py-10 bg-gradient-to-r from-sky-100 to-sky-300 space-y-3">
-      <h1 className="font-serif text-6xl font-bold text-shadow-xl ">
+    <div className="px-[10%] py-10 bg-gradient-to-r from-sky-50 to-sky-100 space-y-3">
+      <h1 className=" text-6xl font-bold text-shadow-xl ">
         A Productivity Software
       </h1>
-      <h2 className="font-serif text-xl max-w-[600px] font-bold">
+      <h2 className=" text-xl max-w-[600px] font-bold">
         See why TimeWise flexible, user-friendly Kanban boards are the top
         choice for teams seeking more customization and control.
       </h2>
@@ -54,12 +54,10 @@ const Banner = () => {
               }}
               onClick={() => setItemIndex(index)}
             >
-              <h5 className="mb-2 text-lg font-serif tracking-tight font-bold">
+              <h5 className="mb-2 text-lg  tracking-tight font-bold">
                 {item.title}
               </h5>
-              <p className="mb-3 font-serif text-gray-700">
-                {item.description}{" "}
-              </p>
+              <p className="mb-3  text-gray-700">{item.description} </p>
             </div>
           ))}
         </div>

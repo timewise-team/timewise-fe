@@ -10,7 +10,6 @@ interface Feature {
 
 const features: Feature[] = [
   { feature: "Kanban Boards", hasJira: true, hasTimeWise: true },
-  { feature: "15+ Custom Fields Types", hasJira: false, hasTimeWise: true },
   { feature: "Custom Task Statuses", hasJira: false, hasTimeWise: true },
   { feature: "Add Calendar", hasJira: true, hasTimeWise: true },
   { feature: "Create Workspace", hasJira: true, hasTimeWise: true },
@@ -26,11 +25,11 @@ const features: Feature[] = [
 
 const FeatureComparison = () => {
   return (
-    <div className="overflow-x-auto w-full max-w-[1200px] p-2 font-serif space-y-2 ">
-      <h1 className="font-serif text-6xl font-bold text-shadow-xl p-2 text-center">
+    <div className="overflow-x-auto w-full max-w-[1200px] p-2  space-y-2 ">
+      <h1 className=" text-6xl font-bold text-shadow-xl p-2 text-center">
         Why choose TimeWise over Jira?
       </h1>
-      <h2 className="font-serif text-xl  font-bold text-center p-2">
+      <h2 className=" text-xl  font-bold text-center p-2">
         See why TimeWise flexible, user-friendly Kanban boards are the top
         customization and control.
       </h2>
@@ -40,17 +39,8 @@ const FeatureComparison = () => {
             <th className="px-6 py-3 text-left text-xl font-bold text-black uppercase tracking-wider">
               Compare Feature
             </th>
-            <th className="px-6 py-3 text-left text-xl font-bold text-black uppercase tracking-wider flex flex-row items-center gap-x-2">
-              <Image
-                alt="logo"
-                loading="lazy"
-                width={64}
-                height={64}
-                sizes="16px"
-                className="cursor-pointer"
-                src="/images/icons/jira.svg"
-              />
-              <p className="text-blue-600">Jira</p>
+            <th className="px-6 py-3 text-center text-xl font-bold text-black uppercase tracking-wider flex flex-row items-center gap-x-2 justify-center mt-3">
+              <p className="text-blue-600">Others</p>
             </th>
             <th className="px-6 py-3 text-xl font-bold text-black uppercase tracking-wider text-center">
               <Image
