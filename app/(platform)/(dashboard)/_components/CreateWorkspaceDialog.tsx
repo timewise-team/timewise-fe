@@ -189,6 +189,7 @@ const CreateDialog = () => {
                           </SelectContent>
                         </SelectContent>
                       </Select>
+                      <FormMessage />
                     </FormItem>
                   );
                 }}
