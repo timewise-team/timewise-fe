@@ -5,10 +5,13 @@ import Overview from "./_components/Overview";
 import Intro from "./_components/Intro";
 import Benefit from "./_components/Benefits";
 import FeatureComparison from "./_components/compare-features";
+import Navbar from "./_components/navbar-menu";
 
 const MarketingPage = () => {
   return (
     <div className="flex items-center justify-center flex-col ">
+      {/* <Hero /> */}
+      <Navbar />
       <Intro />
       <Banner />
       <Overview />

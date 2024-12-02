@@ -5,14 +5,14 @@ export function createMarkup(data: string) {
 }
 const Overviews = [
   {
-    backgroundColor: "#41B2D6",
+    backgroundColor: "#a8d9e8",
     icon: <BadgePercent className="w-10 h-10" />,
     title: "Schedules Management",
     description:
       " Allow for easy event creation, modification, and deletion via drag-and-drop. Consider using a library like FullCalendar for robust calendar functionalities that support these interactions.",
   },
   {
-    backgroundColor: "#5685FF",
+    backgroundColor: "#b3c9ff",
 
     icon: <Anvil className="w-10 h-10" />,
     title: "Improve UI/UX",
@@ -20,14 +20,14 @@ const Overviews = [
       "Enhance the visual feedback in the UI, such as adding animations when tasks are moved or updated, and visual cues for drag-and-drop actions.",
   },
   {
-    backgroundColor: "#3EC6C5",
+    backgroundColor: "#a8e8e7",
     icon: <Apple className="w-10 h-10" />,
     title: "AI Integration",
     description:
       "API for accessing meeting content if available. Use this data to feed into your AI summarization model.",
   },
   {
-    backgroundColor: "#459DE6",
+    backgroundColor: "#a8cfee",
     icon: <BookAudio className="w-10 h-10" />,
     title: "Calendar Features",
     description:
@@ -38,8 +38,8 @@ const Overviews = [
 const Overview = () => {
   return (
     <>
-      <div className="max-w-screen-xl py-10 font-serif">
-        <h1 className="font-serif text-6xl font-bold text-shadow-xl p-2 text-center">
+      <div className="max-w-screen-xl py-10 ">
+        <h1 className=" text-6xl font-bold text-shadow-xl p-2 text-center">
           Overview of TIMIWISE as AI-powered schedule platform
         </h1>
         <p className="text-gray-950 text-center text-xl leading-6 tracking-[0.14px] mt-3 ">
