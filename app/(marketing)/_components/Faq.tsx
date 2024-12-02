@@ -13,10 +13,10 @@ const Faq = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="dark:bg-sky-200 dark:text-gray-800 py-10">
-      <h2 className="mb-12 text-xl font-bold leading-none text-center sm:text-3xl text-sky-500">
-        Frequently Asked Questions
-      </h2>
+    <section className="dark:bg-sky-200 dark:text-gray-800 py-10 font-serif">
+      <h1 className="font-serif text-6xl font-bold text-shadow-xl p-2 text-center">
+        FAQS
+      </h1>
 
       <div className="container flex lg:flex-row flex-col justify-center p-4 mx-auto md:p-8">
         <Image

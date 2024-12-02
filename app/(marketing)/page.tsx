@@ -4,6 +4,7 @@ import Banner from "./_components/Banner";
 import Overview from "./_components/Overview";
 import Intro from "./_components/Intro";
 import Benefit from "./_components/Benefits";
+import FeatureComparison from "./_components/compare-features";
 
 const MarketingPage = () => {
   return (
@@ -12,6 +13,7 @@ const MarketingPage = () => {
       <Banner />
       <Overview />
       {/* <FeatureBenefit /> */}
+      <FeatureComparison />
       <Benefit />
       <Faq />
     </div>
