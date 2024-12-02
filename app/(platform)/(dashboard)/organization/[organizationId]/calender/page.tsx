@@ -2,7 +2,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { TransformedSchedule } from "@/types/Calendar";
 import { useStateContext } from "@/stores/StateContext";
 import { useQuery } from "@tanstack/react-query";
 import { getSchedules } from "@/lib/fetcher";
@@ -33,11 +32,11 @@ const getWorkspaceById = (
 
 const WorkspaceCalender = () => {
   const { data: session } = useSession();
-  const [scheduleData, setScheduleData] = useState<TransformedSchedule[]>([]);
+  const [scheduleData, setScheduleData] = useState<any[]>([]);
   const { stateWorkspacesByEmail } = useStateContext();
   const [workspaceData, setWorkspaceData] = useState<Calendars>({});
-  const params = useParams();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const params = useParams();
 
   const openDialog = () => setIsDialogOpen(true);
   //openDialog();
@@ -98,10 +97,6 @@ const WorkspaceCalender = () => {
     }
   }, [isLoading, data]);
 
-  if (!data || !scheduleData || Object.keys(workspaceData).length === 0) {
-    return <div className="w-full h-full">Loading...</div>;
-  }
-
   return (
     <div className="w-full h-full flex flex-col items-center justify-center p-2">
       <div className="flex items-center justify-start w-full">
@@ -121,7 +116,6 @@ const WorkspaceCalender = () => {
           <CalendarApp
             scheduleData={scheduleData}
             workspaceData={workspaceData}
-            rawScheduleData={data}
           />
         </div>
       )}

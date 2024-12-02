@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {Schedule, TransformedSchedule} from "@/types/Calendar";
+import {Schedule} from "@/types/Calendar";
 import {format, parseISO} from "date-fns";
 import {Workspace} from "@/types/Board";
 
-export const transformScheduleData = (data: any): TransformedSchedule[] => {
+export const transformScheduleData = (data: any): any[] => {
     if (!Array.isArray(data)) {
         console.error("Expected an array, received:", data);
         return [];
@@ -19,6 +19,7 @@ export const transformScheduleData = (data: any): TransformedSchedule[] => {
             end = format(parseISO(schedule.end_time), "yyyy-MM-dd HH:mm");
         }
         return {
+            ...schedule,
             id: schedule.id.toString(),
             title: schedule.title,
             with: "",
@@ -94,7 +95,7 @@ const generateColors = (workspaceId: string) => {
 };
 
 export const getWorkspaceData = (stateWorkspacesByEmail: Record<string, Workspace[]>) => {
-    const result : Calendars = {};
+    const result: Calendars = {};
 
     Object.entries(stateWorkspacesByEmail).forEach(([email, workspaces]) => {
         workspaces.forEach(workspace => {

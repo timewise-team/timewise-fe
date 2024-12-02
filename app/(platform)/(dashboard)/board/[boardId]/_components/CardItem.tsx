@@ -41,7 +41,11 @@ const CardItem = ({ data, index, isBlurred }: Props) => {
             {...provided.dragHandleProps}
             ref={provided.innerRef}
             role="button"
-            onClick={() => cardModal.onOpen(data.id.toString())}
+            onClick={() => {
+              if (data.extra_data !== 'IsLocked') {
+                cardModal.onOpen(data.id.toString())
+              }
+            }}
             className={`flex flex-col gap-[2px] h-[150px] truncate border-2 border-transparent hover:border-black py-2 px-3 text-sm bg-white rounded-md shadow-md ${
               isBlurred ? "blur-sm pointer-events-none" : ""
             }`}

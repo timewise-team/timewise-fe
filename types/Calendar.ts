@@ -7,16 +7,3 @@ export interface Schedule {
     all_day: boolean;
     workspace_id: number;
 }
-
-export interface TransformedSchedule {
-    id: string;
-    title: string;
-    with: string;
-    start: string;
-    end: string;
-    color: string;
-    isEditable: boolean;
-    location: string;
-    topic: string;
-    workspaceId: string;
-}

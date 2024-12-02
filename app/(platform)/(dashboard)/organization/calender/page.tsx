@@ -5,7 +5,6 @@ import CalendarApp from "@/components/view-calender/calender";
 import {useSession} from "next-auth/react";
 import {useQuery} from "@tanstack/react-query";
 import {getSchedules} from "@/lib/fetcher";
-import {TransformedSchedule} from "@/types/Calendar";
 import {useStateContext} from "@/stores/StateContext";
 import CalendarFilter from "@components/view-calender/calendar-filter";
 import {Calendars, getWorkspaceData, transformScheduleData} from "@/utils/calendar/calendarUtils";
@@ -15,7 +14,7 @@ const CalenderPage = () => {
     const [checkedWorkspaces, setCheckedWorkspaces] = useState<string[]>([]);
     const {stateWorkspacesByEmail} = useStateContext();
 
-    const [scheduleData, setScheduleData] = useState<TransformedSchedule[]>([]);
+    const [scheduleData, setScheduleData] = useState<any[]>([]);
     const [workspaceData, setWorkspaceData] = useState<Calendars>({});
 
     const handleCheckedWorkspacesChange = (checkedWorkspaces: string[]) => {
@@ -52,7 +51,7 @@ const CalenderPage = () => {
         }
     }, [isLoading, data]);
 
-    if (!data || !scheduleData || Object.keys(workspaceData).length === 0) {
+    if (!scheduleData || Object.keys(workspaceData).length === 0) {
         return <div className="w-full h-full">Loading...</div>;
     }
 
@@ -65,7 +64,7 @@ const CalenderPage = () => {
                         workspaceDataTransformed={workspaceData}
                         onCheckedWorkspacesChange={handleCheckedWorkspacesChange}
                     />
-                    <CalendarApp scheduleData={scheduleData} workspaceData={workspaceData} rawScheduleData={data}/>
+                    <CalendarApp scheduleData={scheduleData} workspaceData={workspaceData}/>
                 </div>
             )}
         </div>
