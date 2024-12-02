@@ -133,6 +133,12 @@ function CalendarFilter({
           }}
           isEditing={false}
           isGlobalCalendar={true}
+          closeDialog={function (): void {
+            throw new Error("Function not implemented.");
+          }}
+          openDialog={function (): void {
+            throw new Error("Function not implemented.");
+          }}
         />
       </div>
       <div className="mt-6">

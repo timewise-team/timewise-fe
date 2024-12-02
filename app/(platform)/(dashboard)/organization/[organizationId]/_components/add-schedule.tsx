@@ -15,8 +15,8 @@ import { Input } from "@/components/ui/input";
 import { CreateCard } from "@/actions/create-card/schema";
 import { ListWithCards, Workspace } from "@/types/Board";
 import { Label } from "@/components/ui/label";
-import {useStateContext} from "@/stores/StateContext";
-import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import { useStateContext } from "@/stores/StateContext";
+import { getUserEmailByWorkspace } from "@/utils/userUtils";
 
 interface Props {
   listId: string;
@@ -25,6 +25,8 @@ interface Props {
   isEditing: boolean;
   isGlobalCalendar: boolean;
   boardId?: string;
+  closeDialog: () => void;
+  openDialog: () => void;
 }
 
 export const getBoardByWsId = async (params: any, session: any) => {
@@ -44,7 +46,12 @@ export const getBoardByWsId = async (params: any, session: any) => {
   return data;
 };
 
-const AddSchedule = ({ listId, isGlobalCalendar }: Props) => {
+const AddSchedule = ({
+  listId,
+  isGlobalCalendar,
+  closeDialog,
+  openDialog,
+}: Props) => {
   const { data: session } = useSession();
   const params = useParams();
   const [isPending, startTransition] = useTransition();
@@ -57,9 +64,22 @@ const AddSchedule = ({ listId, isGlobalCalendar }: Props) => {
     string | undefined
   >(undefined);
   const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
+  // const handleOpenDialog = () => {
+  //   openDialog();
+  //   setIsOpen(true);
+  // };
+  const handleCloseDialog = () => {
+    setIsOpen(false);
+    closeDialog();
+  };
 
+  const userEmail = getUserEmailByWorkspace(
+    stateUserEmails,
+    stateWorkspacesByEmail,
+    Number(params.organizationId)
+  );
 
   const handleWorkspaceChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -95,6 +115,8 @@ const AddSchedule = ({ listId, isGlobalCalendar }: Props) => {
     return data.map((workspace: Workspace) => workspace);
   };
 
+  console.log("isOpen", isOpen);
+
   const { data: wsByEmail } = useQuery({
     queryKey: ["workspaces", workspaceId],
     queryFn: async () => {
@@ -108,6 +130,7 @@ const AddSchedule = ({ listId, isGlobalCalendar }: Props) => {
   const {
     handleSubmit,
     register,
+    reset,
     formState: { errors },
   } = form;
 
@@ -142,12 +165,12 @@ const AddSchedule = ({ listId, isGlobalCalendar }: Props) => {
     },
     onSuccess: () => {
       toast.success(`Schedule created successfully`);
-
+      handleCloseDialog();
+      reset();
       queryClient.invalidateQueries({
         queryKey: ["listBoardColumns", params.organizationId],
       });
     },
-    //check
     onError: (error) => {
       toast.error(
         error.message || "Failed to create schedule. Please try again."
@@ -199,89 +222,92 @@ const AddSchedule = ({ listId, isGlobalCalendar }: Props) => {
   });
 
   return (
-    <CustomDialog
-      title={"Add new schedule"}
-      description={
-        "Create a new schedule and assign it to a specific board column."
-      }
-      btnSubmitContent="Create"
-      btnContentIcon={"Add new schedule"}
-    >
-      <Form {...form}>
-        <form onSubmit={handleSubmission}>
-          <div className="flex flex-col w-full space-y-2">
-            <div className="flex flex-col items-start justify-between space-y-2">
-              <Label className="font-bold mb-2" htmlFor="title">
-                Title
-              </Label>
-              <Input
-                disabled={isPending}
-                id="title"
-                placeholder="Enter title for this schedule"
-                {...register("title")}
-              />
-              {errors.title && (
-                <p className="text-red-500 text-xs">{errors.title.message}</p>
+    <div onClick={openDialog} className="cursor-pointer">
+      <CustomDialog
+        title={"Add new schedule"}
+        description={
+          "Create a new schedule and assign it to a specific board column."
+        }
+        btnSubmitContent="Create"
+        btnContentIcon={"Add new schedule"}
+        onClose={handleCloseDialog}
+      >
+        <Form {...form}>
+          <form onSubmit={handleSubmission}>
+            <div className="flex flex-col w-full space-y-2">
+              <div className="flex flex-col items-start justify-between space-y-2">
+                <Label className="font-bold mb-2" htmlFor="title">
+                  Title
+                </Label>
+                <Input
+                  disabled={isPending}
+                  id="title"
+                  placeholder="Enter title for this schedule"
+                  {...register("title")}
+                />
+                {errors.title && (
+                  <p className="text-red-500 text-xs">{errors.title.message}</p>
+                )}
+              </div>
+              <div className="flex flex-col items-start justify-between ">
+                <Label className="font-bold mb-2" htmlFor="description">
+                  Description
+                </Label>
+                <Input
+                  disabled={isPending}
+                  id="description"
+                  placeholder="Enter description for this schedule"
+                  {...register("description")}
+                />
+                {errors.description && (
+                  <p className="text-red-500 text-xs">
+                    {errors.description.message}
+                  </p>
+                )}
+              </div>
+
+              {isGlobalCalendar && (
+                <div className="flex flex-col items-start justify-between space-y-2">
+                  <Label className="font-bold mb-2" htmlFor="email">
+                    Select workspace
+                  </Label>
+                  <select
+                    onChange={handleWorkspaceChange}
+                    className="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  >
+                    {wsByEmail?.map((workspace: Workspace) => (
+                      <option key={workspace.ID} value={workspace.ID}>
+                        {workspace.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {isGlobalCalendar && (
+                <div className="flex flex-col items-start justify-between space-y-2">
+                  <Label className="font-bold mb-2" htmlFor="workspace">
+                    Select Board Bolumn
+                  </Label>
+                  <select
+                    onChange={handleBoardColumnChange}
+                    disabled={!selectedWorkspaceId || isPending}
+                    className="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  >
+                    {listBoard?.map((board: any) => (
+                      <option key={board.ID} value={board.ID}>
+                        {board.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               )}
             </div>
-            <div className="flex flex-col items-start justify-between ">
-              <Label className="font-bold mb-2" htmlFor="description">
-                Description
-              </Label>
-              <Input
-                disabled={isPending}
-                id="description"
-                placeholder="Enter description for this schedule"
-                {...register("description")}
-              />
-              {errors.description && (
-                <p className="text-red-500 text-xs">
-                  {errors.description.message}
-                </p>
-              )}
-            </div>
-
-            {isGlobalCalendar && (
-              <div className="flex flex-col items-start justify-between space-y-2">
-                <Label className="font-bold mb-2" htmlFor="email">
-                  Select workspace
-                </Label>
-                <select
-                  onChange={handleWorkspaceChange}
-                  className="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                >
-                  {wsByEmail?.map((workspace: Workspace) => (
-                    <option key={workspace.ID} value={workspace.ID}>
-                      {workspace.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {isGlobalCalendar && (
-              <div className="flex flex-col items-start justify-between space-y-2">
-                <Label className="font-bold mb-2" htmlFor="workspace">
-                  Select Board Bolumn
-                </Label>
-                <select
-                  onChange={handleBoardColumnChange}
-                  disabled={!selectedWorkspaceId || isPending}
-                  className="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                >
-                  {listBoard?.map((board: any) => (
-                    <option key={board.ID} value={board.ID}>
-                      {board.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </div>
-          <FormSubmit className="w-full mt-2">Add the schedule</FormSubmit>
-        </form>
-      </Form>
-    </CustomDialog>
+            <FormSubmit className="w-full mt-2">Add the schedule</FormSubmit>
+          </form>
+        </Form>
+      </CustomDialog>
+    </div>
   );
 };
 
