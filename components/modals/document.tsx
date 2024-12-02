@@ -43,7 +43,13 @@ const Document = ({ data, document }: Props) => {
   const scheduleId = data.id;
   const wsId = data.workspace_id;
   const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
-
+  const MAX_FILE_SIZE_MB = 10;
+  const formatFileSize = (sizeInBytes: number) => {
+    if (sizeInBytes >= 1024 * 1024) {
+      return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`;
+    }
+    return `${(sizeInBytes / 1024).toFixed(2)} KB`;
+  };
   const { mutate: deleteCommentMutation } = useMutation({
     mutationFn: async (document: any) => {
       const userEmail = getUserEmailByWorkspace(
@@ -134,6 +140,12 @@ const Document = ({ data, document }: Props) => {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
+      const selectedFile = event.target.files[0];
+
+      if (selectedFile.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        toast.error(`File size must be less than ${MAX_FILE_SIZE_MB} MB.`);
+        return;
+      }
       setFile(event.target.files[0]);
       uploadDocumentMutation();
     }
@@ -155,23 +167,23 @@ const Document = ({ data, document }: Props) => {
             <BookText className="h-6 w-6 text-orange-500" />
             <div className="flex flex-col flex-grow ml-4">
               <a
-                href={document.download_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 hover:text-gray-800 font-semibold hover:cursor-pointer"
+                  href={document.download_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-600 hover:text-gray-800 font-semibold hover:cursor-pointer"
               >
                 {document.file_name}
               </a>
               <span className="text-gray-400 text-sm">
-                {document.file_size > 1024
-                  ? `${(document.file_size / 1024).toFixed(2)} MB * Download`
-                  : document.file_size}{" "}
-              </span>
+              {document.file_size > 1024
+                  ? `${formatFileSize(document.file_size)} * Download`
+                  : `${document.file_size} B`}
+            </span>
             </div>
 
             <Button
-              onClick={() => deleteCommentMutation(document)}
-              className="top-[-8px] right-[-9px] ml-2 p-2 rounded-full border-gray-300 text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-transparent hover:bg-transparent absolute"
+                onClick={() => deleteCommentMutation(document)}
+                className="top-[-8px] right-[-9px] ml-2 p-2 rounded-full border-gray-300 text-gray-600 hover:text-gray-800 hover:border-gray-400 bg-transparent hover:bg-transparent absolute"
             >
               <X className="h-4 w-4 font-bold text-lg" />
             </Button>

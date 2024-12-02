@@ -40,7 +40,7 @@ export const BENEFITS = [
   {
     image: "/images/banner/3.png",
     type: "User Benefits",
-    title: "Comprehensive Task Management<br/> Like Trello",
+    title: "Comprehensive Task Management",
     items: [
       "Customizable Task Boards",
       "Progress Tracking",
