@@ -14,10 +14,10 @@ interface Props {
 export const ListItem = ({ index, data }: Props) => {
   const textareaRef = useRef<ElementRef<"textarea">>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const disableEditing = () => {
-    setIsEditing(false);
-  };
+  const openDialog = () => setIsDialogOpen(true);
+  const closeDialog = () => setIsDialogOpen(false);
 
   const enableEditing = () => {
     setIsEditing(true);
@@ -69,13 +69,15 @@ export const ListItem = ({ index, data }: Props) => {
                 </ol>
               )}
             </Droppable>
-
+            {isEditing && <></>}
             <AddSchedule
               listId={data.id}
-              isEditing={isEditing}
-              enableEditing={enableEditing}
-              disableEditing={disableEditing}
+              isEditing={isDialogOpen}
+              enableEditing={openDialog}
+              disableEditing={closeDialog}
               isGlobalCalendar={false}
+              closeDialog={closeDialog}
+              openDialog={openDialog}
             />
           </div>
         </li>

@@ -17,6 +17,8 @@ interface Props {
   children: React.ReactNode;
   btnSubmitContent?: string;
   btnContentIcon?: React.ReactNode;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 const CustomDialog = ({
@@ -24,9 +26,11 @@ const CustomDialog = ({
   description,
   children,
   btnContentIcon,
+  isOpen,
+  onClose,
 }: Props) => {
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={isOpen ? onClose : undefined}>
       <DialogTrigger asChild>
         <Button
           asChild
@@ -50,6 +54,7 @@ const CustomDialog = ({
             height={500}
             src="/images/banner/3.png"
             alt="workspace"
+            className="h-[300px]"
           />
         </DialogHeader>
         {children}
