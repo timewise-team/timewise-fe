@@ -22,6 +22,7 @@ import {useSession} from "next-auth/react";
 const MenuSidebarAccount = () => {
     const { data: session } = useSession();
     const [status, setStatus] = useState<string>("linked");
+    const [selectedEmail, setSelectedEmail] = useState<string>("all");
     const { data: accountInfo } = useQuery({
         queryKey: ["accountInformationForSchedule"],
         queryFn: async () => {
@@ -50,6 +51,15 @@ const MenuSidebarAccount = () => {
     );
   }
 
+    const handleEmailClick = (email: string) => {
+        setSelectedEmail(email); // Update the selected email
+    };
+
+    /*const filteredWorkspaces =
+        selectedEmail === "all"
+            ? Object.values(workspacesByEmail).flat() // Show all workspaces if "all" is selected
+            : workspacesByEmail[selectedEmail] || [];*/
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -61,24 +71,33 @@ const MenuSidebarAccount = () => {
         <DropdownMenuLabel>Linked Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {(Array.isArray(linkedEmails) ? linkedEmails : []).map(
-            (email: any, index: number) => (
-              <React.Fragment key={index}>
-                <div className="flex flex-row gap-x-2 items-center">
-                  <Image
-                    width={24}
-                    height={24}
-                    src={"/images/icons/google.svg"}
-                    alt={"logo"}
-                    className="rounded-md object-cover hover:cursor-pointer"
-                  />
-                  <DropdownMenuItem className="cursor-pointer">
-                    {email}
-                  </DropdownMenuItem>
-                </div>
-              </React.Fragment>
-            )
-          )}
+            <DropdownMenuItem
+                className={`cursor-pointer ${selectedEmail === "all" ? "font-bold" : ""}`}
+                onClick={() => handleEmailClick("all")}
+            >
+                All Workspaces
+            </DropdownMenuItem>
+            {(Array.isArray(linkedEmails) ? linkedEmails : []).map(
+                (email: any, index: number) => (
+                    <React.Fragment key={index}>
+                        <div
+                            className={`flex flex-row gap-x-2 items-center ${
+                                selectedEmail === email ? "font-bold" : ""
+                            }`}
+                            onClick={() => handleEmailClick(email)}
+                        >
+                            <Image
+                                width={24}
+                                height={24}
+                                src={"/images/icons/google.svg"}
+                                alt={"logo"}
+                                className="rounded-md object-cover hover:cursor-pointer"
+                            />
+                            <DropdownMenuItem className="cursor-pointer">{email}</DropdownMenuItem>
+                        </div>
+                    </React.Fragment>
+                )
+            )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
       </DropdownMenuContent>

@@ -10,6 +10,10 @@ interface StateContextProps {
     setStateNotifications: React.Dispatch<React.SetStateAction<NotificationItem[]>>;
     stateUserEmails: { email: string, id: number, status: string }[];
     setStateUserEmails: React.Dispatch<React.SetStateAction<{ email: string; id: number, status: string }[]>>;
+    stateSelectedEmail: string;
+    setStateSelectedEmail: React.Dispatch<React.SetStateAction<string>>;
+    stateFilteredWorkspaces: Workspace[];
+    setStateFilteredWorkspaces: React.Dispatch<React.SetStateAction<Workspace[]>>;
 }
 
 const StateContext = createContext<StateContextProps | undefined>(undefined);
@@ -19,6 +23,8 @@ export const StateProvider = ({children}: { children: ReactNode }) => {
     const [stateWorkspacesByEmail, setStateWorkspacesByEmail] = useState<Record<string, Workspace[]>>({});
     const [stateNotifications, setStateNotifications] = useState<NotificationItem[]>([]);
     const [stateUserEmails, setStateUserEmails] = useState<{ email: string; id: number, status: string }[]>([]);
+    const [stateSelectedEmail, setStateSelectedEmail] = useState<string>("all");
+    const [stateFilteredWorkspaces, setStateFilteredWorkspaces] = useState<Workspace[]>([]);
 
     return (
         <StateContext.Provider value={{
@@ -29,7 +35,11 @@ export const StateProvider = ({children}: { children: ReactNode }) => {
             stateNotifications,
             setStateNotifications,
             stateUserEmails,
-            setStateUserEmails
+            setStateUserEmails,
+            stateSelectedEmail,
+            setStateSelectedEmail,
+            stateFilteredWorkspaces,
+            setStateFilteredWorkspaces
         }}>
             {children}
         </StateContext.Provider>
