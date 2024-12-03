@@ -633,7 +633,7 @@ export const updateBoardOrder = async (params: any, session: any) => {
         throw new Error("Invalid fields");
     }
     const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/update_position/${params.board_column_id}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/board_columns/update_position/${params.boardColumnId}`,
         {
             method: "PUT",
             headers: {

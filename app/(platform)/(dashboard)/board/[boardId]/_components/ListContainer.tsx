@@ -51,10 +51,8 @@ const ListContainer = ({ data }: Props) => {
 
       const response = await updateBoardOrder(
         {
-          position: values.position + 1,
-          board_column_id: boardColumnsId.find(
-            (item) => item === orderedData[values.position].id
-          ),
+          position: values.position,
+          boardColumnId: values.boardColumnId,
           organizationId: params.organizationId,
           userEmail: userEmail?.email
         },
@@ -94,7 +92,7 @@ const ListContainer = ({ data }: Props) => {
     },
     onSuccess: () => {
       toast.success("Card reordered !");
-      queryClient.invalidateQueries({ queryKey: ["listBoardColumns", "schedules"] });
+      queryClient.invalidateQueries({ queryKey: ["listBoardColumns"] });
     },
     onError: () => {
       toast.error("Error when updating card");
@@ -133,6 +131,7 @@ const ListContainer = ({ data }: Props) => {
       setOrderedData(items);
       updateBoardColumns({
         position: destination.index + 1,
+        boardColumnId: Number(orderedData[source.index].id)
       });
     }
 

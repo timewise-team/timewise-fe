@@ -65,7 +65,6 @@ const AddSchedule = ({
     >(undefined);
     const {stateUserEmails, stateWorkspacesByEmail} = useStateContext();
     const [isOpen, setIsOpen] = useState(false);
-    console.log('isOpen', isOpen)
 
     // const handleOpenDialog = () => {
     //   openDialog();
