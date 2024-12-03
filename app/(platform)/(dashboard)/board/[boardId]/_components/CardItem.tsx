@@ -1,11 +1,14 @@
-import { useCardModal } from "@/hooks/useCardModal";
-import { Card } from "@/types/Board";
+import {useCardModal} from "@/hooks/useCardModal";
+import {Card} from "@/types/Board";
 import React from "react";
-import { Separator } from "@/components/ui/separator";
+import {Separator} from "@/components/ui/separator";
 import Image from "next/image";
-import { Draggable } from "@hello-pangea/dnd";
-import { Link, MessageCircle, Tv } from "lucide-react";
-import { truncateText } from "@/utils";
+import {Draggable} from "@hello-pangea/dnd";
+import {Link, Lock, MessageCircle, Tv} from "lucide-react";
+import {truncateText} from "@/utils";
+import {checkSchedulePermission, ScheduleAction} from "@/constants/roles";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
   data: Card;
@@ -27,10 +30,16 @@ const getRandomColor = () => {
 };
 
 const CardItem = ({ data, index, isBlurred }: Props) => {
+  const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
+
   const cardModal = useCardModal();
   if (!data.id) {
     return null;
   }
+
+  const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(data.workspace_id));
+
+  const currentScheduleRole = data.schedule_participants?.find(participant => participant.email === userEmail?.email)?.status;
 
   return (
     <>
@@ -46,20 +55,24 @@ const CardItem = ({ data, index, isBlurred }: Props) => {
                 cardModal.onOpen(data.id.toString())
               }
             }}
-            className={`flex flex-col gap-[2px] h-[150px] truncate border-2 border-transparent hover:border-black py-2 px-3 text-sm bg-white rounded-md shadow-md ${
-              isBlurred ? "blur-sm pointer-events-none" : ""
-            }`}
+            className={`flex flex-col gap-[2px] h-[150px] truncate border-2 border-transparent hover:border-black py-2 px-3 text-sm bg-white rounded-md shadow-md 
+            ${isBlurred && "opacity-50"}
+            ${!checkSchedulePermission(currentScheduleRole || '', ScheduleAction.position) && "pointer-events-none"}`
+          }
           >
-            {data.title && (
-              <span
-                className={`w-fit px-2 py-1 leading-tight inline-flex items-center ${getRandomColor()} rounded`}
-              >
+            <div className="flex justify-between items-center">
+              {data.title && (
+                  <span
+                      className={`w-fit px-2 py-1 leading-tight inline-flex items-center ${getRandomColor()} rounded`}
+                  >
                 <Tv className="w-4 h-4" />
                 <span className={"text-sm ml-2 font-bold text-teal-900"}>
                   {"Board"}
                 </span>
               </span>
-            )}
+              )}
+              {isBlurred && <Lock className="w-5 h-5" />}
+            </div>
             <div className="text-lg font-bold">
               {truncateText(data.title, 20)}
             </div>

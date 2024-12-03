@@ -97,7 +97,7 @@ const Tab = ({id, data}: Props) => {
         <div className="w-full">
             <div className="relative right-0">
                 <ul
-                    className="relative flex flex-wrap px-1.5 py-1.5 list-none rounded-md"
+                    className="relative flex flex-wrap list-none rounded-md"
                     data-tabs="tabs"
                     role="list"
                 >

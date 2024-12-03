@@ -315,9 +315,34 @@ export const inviteMemberToCard = async (params: any, session: any) => {
             }),
         }
     );
+    if (!response.ok) {
+        throw new Error("Failed to invite member");
+    }
     const data = await response.json();
     return data;
 };
+
+export const removeParticipantFromSchedule = async (params: any, session: any) => {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedule_participant/remove/${params.participantId}`,
+        {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${session?.user.access_token}`,
+                "X-User-Email": `${params.userEmail}`,
+                "X-Workspace-ID": `${params.organizationId}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                schedule_id: params.scheduleId,
+            }),
+        }
+    );
+    if (!response.ok) {
+        throw new Error("Failed to remove participant");
+    }
+    return await response.json();
+}
 
 //add comment
 export const addComment = async (params: any, session: any): Promise<Card> => {
@@ -410,9 +435,35 @@ export const AssigneeSchedules = async (params: any, session: any) => {
             }),
         }
     );
+    if (!response.ok) {
+        throw new Error("Failed to assignee");
+    }
     const data = await response.json();
     return data;
 };
+
+export const UnassignSchedule = async (params: any, session: any) => {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedule_participant/unassign/${params.participantId}`,
+        {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${session?.user.access_token}`,
+                "X-User-Email": `${params.userEmail}`,
+                "X-Workspace-ID": `${params.organizationId}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                schedule_id: params.scheduleId,
+            }),
+        }
+    );
+    if (!response.ok) {
+        throw new Error("Failed to unassign");
+    }
+    const data = await response.json();
+    return data;
+}
 
 //get schedule by id
 export const getScheduleByID = async (params: any, session: any) => {

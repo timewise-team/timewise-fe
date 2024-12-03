@@ -153,16 +153,16 @@ const Header = ({ data }: Props) => {
           ) : (
             <div
               onClick={enableEditing}
-              className=" flex flex-row items-center w-full text-[25px]  h-3 font-bold border-transparent"
+              className=" flex flex-row items-center w-full text-[25px] font-bold border-transparent leading-none"
             >
               {truncateText(data.title, 30)}
             </div>
           )}
         </Form>
-        <p className=" text-md text-muted-foreground">
-          In List{" "}
-          <span className="underline"> {truncateText(data.title, 30)}</span>
-        </p>
+        {/*<p className=" text-md text-muted-foreground">*/}
+        {/*  In List{" "}*/}
+        {/*  <span className="underline"> {truncateText(data.title, 30)}</span>*/}
+        {/*</p>*/}
       </div>
     </div>
   );

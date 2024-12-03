@@ -1,5 +1,3 @@
-import content from "@components/modals/content";
-
 export const ParticipantRole = {
     creator: 'creator',
     assignTo: 'assign to',
