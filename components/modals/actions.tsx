@@ -60,14 +60,14 @@ const Actions = ({ organizationId, data }: Props) => {
   };
 
   return (
-    <div className="space-y-2 mt-2">
+    <div className="space-y-2">
       <Button
         variant={"primary"}
         size={"sm"}
         onClick={onDelete}
-        className="w-full justify-start text-black bg-transparent hover:bg-transparent"
+        className="w-full justify-start text-black bg-transparent hover:bg-transparent h-4"
       >
-        <Trash className="h-4 w-4 mr-2" />
+        <Trash className="h-4 w-4 mr-2 text-gray-400" />
       </Button>
     </div>
   );
@@ -75,7 +75,7 @@ const Actions = ({ organizationId, data }: Props) => {
 
 Actions.Skeleton = function ActionsSkeleton() {
   return (
-    <div className="space-y-2 mt-2 ">
+    <div className="space-y-2">
       <Skeleton className="w-20 h-4 bg-neutral-200" />
       <Skeleton className="w-full h-8 bg-neutral-200" />
       <Skeleton className="w-full h-8 bg-neutral-200" />

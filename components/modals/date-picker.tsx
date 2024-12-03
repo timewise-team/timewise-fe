@@ -2,22 +2,22 @@
 "use client";
 
 import * as React from "react";
-import { ArchiveIcon, CalendarHeart } from "lucide-react";
-import { format, parseISO } from "date-fns";
-import { useEffect, useRef, useState, useTransition } from "react";
-import { useSession } from "next-auth/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { UpdateCard } from "@/actions/update-card/schema";
-import { Input } from "../ui/input";
-import { useParams } from "next/navigation";
-import { Form, useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "../ui/Button";
-import { updateCardID } from "@/lib/fetcher";
-import { getUserEmailByWorkspace } from "@/utils/userUtils";
-import { useStateContext } from "@/stores/StateContext";
+import {useEffect, useRef, useState, useTransition} from "react";
+import {CalendarMinus2} from "lucide-react";
+import {format, parseISO} from "date-fns";
+import {useSession} from "next-auth/react";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {toast} from "sonner";
+import {UpdateCard} from "@/actions/update-card/schema";
+import {Input} from "../ui/input";
+import {useParams} from "next/navigation";
+import {Form, useForm} from "react-hook-form";
+import {z} from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Button} from "../ui/Button";
+import {updateCardID} from "@/lib/fetcher";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
   data: any;
@@ -155,90 +155,91 @@ export function DatePicker({ data, disabled }: Props) {
     };
   }, []);
 
-  return (
-    <div className="flex w-full">
-      <div>
-        <Form {...form}>
-          {isEditing ? (
-            <>
-              <form ref={formRef} className="space-y-2">
-                <div className="flex flex-row items-center gap-x-1">
-                  <div className="flex flex-row gap-x-2 w-full items-start font-medium">
-                    <CalendarHeart className="w-6 h-6 text-gray-400" />
-                    <p className="max-w-[100px]">Start Date:</p>
-                  </div>
-                  <Input
-                    type="datetime-local"
-                    id="start-time"
-                    value={startDate}
-                    disabled={isPending}
-                    defaultValue={startDate}
-                    onKeyDown={handleEnterPress}
-                    {...register("start_time")}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className=" shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                  />
-                </div>
-
-                <div className=" flex flex-row  items-center gap-x-1 ">
-                  <div className="flex flex-row w-full gap-x-2 items-start font-medium">
-                    <ArchiveIcon className="w-6 h-6 text-gray-400" />
-                    End Date:
-                  </div>{" "}
-                  <Input
-                    type="datetime-local"
-                    id="end-time"
-                    value={endDate}
-                    disabled={isPending}
-                    defaultValue={endDate}
-                    onKeyDown={handleEnterPress}
-                    {...register("end_time")}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className=" shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                  />
-                </div>
-                {errors.end_time && (
-                  <p className="text-red-500 text-sm items-start pb-1">
-                    {"Start date must be before end date"}
-                  </p>
-                )}
-                <Button onClick={handleSubmission}>Save</Button>
-              </form>
-            </>
-          ) : (
-            <div
-              onClick={enableEditing}
-              className="flex flex-col items-start gap-x-1"
-            >
-              <div className="flex flex-row gap-x-2 items-center font-medium w-[100%] ">
-                <div className="flex flex-row gap-x-2 w-full items-start font-medium">
-                  <ArchiveIcon className="w-6 h-6 text-gray-400" />
-                  <p className="text-gray-400 font-bold">Start Date:</p>
-                </div>
-                <Input
-                  type="datetime-local"
-                  value={startDate}
-                  readOnly
-                  className="border-none"
-                />
-              </div>
-
-              <div className="flex flex-row gap-x-2 items-center font-medium w-[100%] ">
-                <div className="flex flex-row gap-x-2 w-full items-center font-medium">
-                  <ArchiveIcon className="w-6 h-6 text-gray-400" />
-                  <p className="text-gray-400 font-semibold">End Date:</p>
-                </div>
-                <Input
-                  type="datetime-local"
-                  value={endDate}
-                  readOnly
-                  className="ml-2 border-none"
-                />
-              </div>
-            </div>
-          )}
-        </Form>
+  const renderDateInput = () => (
+  <>
+    <div className="flex flex-row items-center gap-x-1">
+      <div className="flex gap-x-2 w-full items-center text-gray-400">
+        <CalendarMinus2 className="w-4 h-4" />
+        <p className="w-[100px]">Start Date</p>
       </div>
+      <Input
+        type="datetime-local"
+        id="start-time"
+        value={startDate}
+        disabled={isPending}
+        defaultValue={startDate}
+        onKeyDown={handleEnterPress}
+        {...register("start_time")}
+        onChange={(e) => setStartDate(e.target.value)}
+        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+      />
     </div>
-  );
+
+    <div className="flex flex-row items-center gap-x-1">
+      <div className="flex flex-row w-full gap-x-2 items-start text-gray-400">
+        <div className="w-4 h-4" />
+        <p className="w-[100px]">End Date</p>
+      </div>
+      <Input
+        type="datetime-local"
+        id="end-time"
+        value={endDate}
+        disabled={isPending}
+        defaultValue={endDate}
+        onKeyDown={handleEnterPress}
+        {...register("end_time")}
+        onChange={(e) => setEndDate(e.target.value)}
+        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+      />
+    </div>
+    {errors.end_time && (
+      <p className="text-red-500 text-sm items-start pb-1">
+        {"Start date must be before End date"}
+      </p>
+    )}
+  </>
+);
+
+return (
+  <div className="flex w-full">
+    <div>
+      <Form {...form}>
+        {isEditing ? (
+          <form ref={formRef} className="space-y-2">
+            {renderDateInput()}
+            <Button onClick={handleSubmission}>Save</Button>
+          </form>
+        ) : (
+          <div onClick={enableEditing} className="flex flex-col items-start gap-x-1">
+            <div className="flex flex-row gap-x-2 items-center mt-2">
+              <div className="flex items-center gap-x-2 w-full text-gray-400">
+                <CalendarMinus2 className="w-4 h-4" />
+                <p className="w-[100px]">Start Date</p>
+              </div>
+              <Input
+                type="datetime-local"
+                value={startDate}
+                readOnly
+                className="border-none p-0 h-6 text-[16px]"
+              />
+            </div>
+
+            <div className="flex flex-row gap-x-2 items-center w-[100%] mt-2">
+              <div className="flex flex-row gap-x-2 w-full items-center text-gray-400">
+                <div className="w-4 h-4" />
+                <p className="w-[100px]">End Date</p>
+              </div>
+              <Input
+                type="datetime-local"
+                value={endDate}
+                readOnly
+                className="border-none p-0 h-6 text-[16px]"
+              />
+            </div>
+          </div>
+        )}
+      </Form>
+    </div>
+  </div>
+);
 }

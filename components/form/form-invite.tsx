@@ -6,7 +6,7 @@ import {Button} from "../ui/Button";
 import {toast} from "sonner";
 import {InviteMembers} from "@/actions/invite-member/schema";
 import {z} from "zod";
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useSession} from "next-auth/react";
 import {Form, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -34,6 +34,7 @@ const FormInvite = ({children, data, disabled}: Props) => {
     const params = useParams();
     const [email, setEmail] = useState("");
     const {stateUserEmails, stateWorkspacesByEmail} = useStateContext();
+    const queryClient = useQueryClient();
 
     const form = useForm<z.infer<typeof InviteMembers>>({
         resolver: zodResolver(InviteMembers),
@@ -95,6 +96,9 @@ const FormInvite = ({children, data, disabled}: Props) => {
             toast.success(
                 "Member invited successfully, please wait for their response"
             );
+            queryClient.invalidateQueries({
+                queryKey: ['scheduleParticipant'],
+            });
         },
         onError: () => {
             toast.error("Failed to invite member");
@@ -115,7 +119,7 @@ const FormInvite = ({children, data, disabled}: Props) => {
     });
     return (
         <>
-            <Form {...form}>
+            <Form {...form} className="flex items-center">
                 {isEditing ? (
                     <form className="flex flex-row items-center gap-x-2">
                         <Input

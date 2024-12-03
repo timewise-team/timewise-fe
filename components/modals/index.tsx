@@ -1,21 +1,21 @@
-import { useCardModal } from "@/hooks/useCardModal";
-import { CardWithList, Workspace } from "@/types/Board";
-import { useQuery } from "@tanstack/react-query";
-import { Dialog, DialogContent } from "../ui/dialog";
+import {useCardModal} from "@/hooks/useCardModal";
+import {CardWithList, Workspace} from "@/types/Board";
+import {useQuery} from "@tanstack/react-query";
+import {Dialog, DialogContent} from "../ui/dialog";
 import Description from "./description";
 import Actions from "./actions";
 import Header from "./header";
-import { fetchWorkspaceDetails, getCardByID } from "@/lib/fetcher";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
+import {fetchWorkspaceDetails, getCardByID} from "@/lib/fetcher";
+import {useSession} from "next-auth/react";
+import {useParams} from "next/navigation";
 import Content from "./content";
 import Tab from "./tab";
 import * as React from "react";
-import { checkSchedulePermission, ScheduleAction } from "@/constants/roles";
-import { useStateContext } from "@/stores/StateContext";
-import { getUserEmailByWorkspace } from "@/utils/userUtils";
-import { Layout } from "lucide-react";
-import { Separator } from "../ui/separator";
+import {checkSchedulePermission, ScheduleAction} from "@/constants/roles";
+import {useStateContext} from "@/stores/StateContext";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {Layout} from "lucide-react";
+import {Separator} from "../ui/separator";
 
 const CardModal = () => {
   const { id, isOpen, onClose, workspaceId } = useCardModal((state) => ({
@@ -30,10 +30,10 @@ const CardModal = () => {
   const { stateWorkspacesByEmail, stateUserEmails } = useStateContext();
 
   const { data: workspace } = useQuery<Workspace>({
-    queryKey: ["workspaceDetails", params.organizationId],
+    queryKey: ["workspaceDetails", workspaceId],
     queryFn: () =>
-      fetchWorkspaceDetails(params.organizationId as string, session),
-    enabled: !!params.organizationId,
+      fetchWorkspaceDetails(workspaceId as string, session),
+    enabled: !!workspaceId,
   });
 
   const { data: cardData } = useQuery<CardWithList>({
@@ -65,10 +65,9 @@ const CardModal = () => {
         {workspace ? (
           <div className="flex flex-row gap-x-2 items-center">
             <Layout className="w-5 h-5 mt-1 text-neutral-700" />
-            <h1 className=" font-medium">
-              {"|"} {workspace.title} {"/"}
+            <h1 className="mt-1 font-medium">
+              {workspace.title} {"/"} {cardData?.status}
             </h1>
-            <h1 className="font-medium">{cardData?.status}</h1>
           </div>
         ) : (
           <div className="flex flex-row justify-between">
@@ -76,8 +75,7 @@ const CardModal = () => {
           </div>
         )}
         <Separator />
-
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row justify-between items-center">
           {cardData ? (
             <div>
               <Header data={cardData} />
@@ -116,10 +114,11 @@ const CardModal = () => {
                 <Description.Skeleton />
               )}
 
-              <Tab id={id} data={cardData} />
+
             </div>
           </div>
         </div>
+        <Tab id={id} data={cardData} />
       </DialogContent>
     </Dialog>
   );

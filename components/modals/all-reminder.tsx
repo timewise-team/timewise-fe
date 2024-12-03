@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, parseISO } from "date-fns";
-import { Gauge, Pencil } from "lucide-react";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { Form } from "../ui/form";
-import { updateReminderParticipant } from "@/lib/fetcher";
-import { getUserEmailByWorkspace } from "@/utils/userUtils";
-import { useStateContext } from "@/stores/StateContext";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {format, parseISO} from "date-fns";
+import {Users} from "lucide-react";
+import {useSession} from "next-auth/react";
+import {useParams} from "next/navigation";
+import React, {useEffect, useRef, useState} from "react";
+import {useForm} from "react-hook-form";
+import {toast} from "sonner";
+import {z} from "zod";
+import {Form} from "../ui/form";
+import {updateReminderParticipant} from "@/lib/fetcher";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
   data: any;
@@ -118,47 +118,45 @@ const AllReminder = ({ data, disabled }: Props) => {
     updateReminderParticipants({ reminder_time: event.target.value });
   };
 
-  return (
-    <>
-      <Form {...form}>
-        {isEditing ? (
-          <form ref={formRef}>
-            <div className="flex flex-row items-center gap-x-3">
-              <p className="text-sm font-medium">Set Reminder:</p>
-              <select
-                {...register("reminder_time")}
-                onChange={handleSelectChange}
-              >
-                <option value={"0"}>Until start</option>
-                <option value={"60"}>1 hour before</option>
-                <option value={"120"}>2 hours before</option>
-              </select>
-            </div>
-          </form>
-        ) : (
-          <>
-            <div className="flex items-center">
-              <div className="flex flex-row items-center">
-                <Gauge className="h-6 w-6 mr-2 text-gray-400 " />
-                <p className="text-md font-bold text-gray-400">Participant: </p>
-                <p className="text-md text-neutral-500 pl-7">
-                  {getReminderText(data?.method)}
-                </p>
-              </div>
+  const renderReminderContent = () => (
+  <div className="flex flex-row items-center ml-6 mt-1">
+    <Users className="w-4 h-4 mr-2 text-gray-400 " />
+    <p className="text-gray-400 w-[85px]">Everyone</p>
+    <select
+      {...register("reminder_time")}
+      onChange={handleSelectChange}
+    >
+      <option value={"0"}>Until start</option>
+      <option value={"60"}>1 hour before</option>
+      <option value={"120"}>2 hours before</option>
+    </select>
+  </div>
+);
 
-              <Pencil
-                className="w-6 h-6 pl-2 text-gray-700"
-                onClick={() => {
-                  if (disabled) return;
-                  setIsEditing(true);
-                }}
-              />
-            </div>
-          </>
-        )}
-      </Form>
-    </>
-  );
+return (
+  <>
+    <Form {...form}>
+      {isEditing ? (
+        <form ref={formRef}>
+          {renderReminderContent()}
+        </form>
+      ) : (
+        <div className="flex items-center ml-6 mt-1">
+          <div className="flex flex-row items-center">
+            <Users className="w-4 h-4 mr-2 text-gray-400 " />
+            <p className=" text-gray-400 w-[85px]">Everyone</p>
+            <p className="text-md" onClick={() => {
+              if (disabled) return;
+              setIsEditing(true);
+            }}>
+              {getReminderText(data?.method)}
+            </p>
+          </div>
+        </div>
+      )}
+    </Form>
+  </>
+);
 };
 
 export default AllReminder;

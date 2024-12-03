@@ -17,177 +17,179 @@ import {getUserEmailByWorkspace} from "@/utils/userUtils";
 import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
-  data: CardWithList;
-  disabled: boolean;
+    data: CardWithList;
+    disabled: boolean;
 }
 
-const Description = ({ data, disabled }: Props) => {
-  const [isPending, startTransition] = useTransition();
-  const queryClient = useQueryClient();
-  const [isEditing, setIsEditing] = useState(false);
-  const { data: session } = useSession();
-  const params = useParams();
-  const [description, setDescription] = useState(data.description);
-    const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
+const Description = ({data, disabled}: Props) => {
+    const [isPending, startTransition] = useTransition();
+    const queryClient = useQueryClient();
+    const [isEditing, setIsEditing] = useState(false);
+    const {data: session} = useSession();
+    const params = useParams();
+    const [description, setDescription] = useState(data.description);
+    const {stateUserEmails, stateWorkspacesByEmail} = useStateContext();
 
-  const form = useForm<z.infer<typeof UpdateCard>>({
-    resolver: zodResolver(UpdateCard),
-    defaultValues: {
-      ...data,
-    },
-  });
-
-  const { mutate: updateCardInformation } = useMutation({
-    mutationFn: async (values: z.infer<typeof UpdateCard>) => {
-      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId || data.workspace_id));
-
-      const response = await updateCardID(
-        {
-          cardId: data.id,
-          visibility: values.visibility,
-          all_day: values.all_day,
-          description: values.description,
-          end_time: format(
-            new Date(values.end_time),
-            "yyyy-MM-dd HH:mm:ss.SSS"
-          ),
-          extra_data: values.extra_data,
-          location: values.location,
-          priority: values.priority,
-          recurrence_pattern: values.recurrence_pattern,
-          start_time: format(
-            new Date(values.start_time),
-            "yyyy-MM-dd HH:mm:ss.SSS"
-          ),
-          status: values.status,
-          title: values.title,
-          organizationId: params.organizationId || data.workspace_id,
-          userEmail: userEmail?.email
+    const form = useForm<z.infer<typeof UpdateCard>>({
+        resolver: zodResolver(UpdateCard),
+        defaultValues: {
+            ...data,
         },
-        session
-      );
-      return response;
-    },
-    onSuccess: (data) => {
-      setDescription(data.description);
-      startTransition(() => {
-        setIsEditing(false);
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["detailCard"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["listBoardColumns"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["schedules", data.workspace_id],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["schedules"],
-      });
-
-      toast.success("Schedule updated successfully");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
-  const {
-    register,
-    formState: { errors },
-  } = form;
-
-  const textareaRef = useRef<ElementRef<"textarea">>(null);
-  const formRef = useRef<ElementRef<"form">>(null);
-
-  const enableEditing = () => {
-    setIsEditing(true);
-    setTimeout(() => {
-      textareaRef.current?.focus();
     });
-  };
 
-  const handleSubmission = form.handleSubmit((values) => {
-    updateCardInformation(values);
-  });
+    const {mutate: updateCardInformation} = useMutation({
+        mutationFn: async (values: z.infer<typeof UpdateCard>) => {
+            const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId || data.workspace_id));
 
-  const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      form.handleSubmit((values) => updateCardInformation(values))();
-    }
-  };
+            const response = await updateCardID(
+                {
+                    cardId: data.id,
+                    visibility: values.visibility,
+                    all_day: values.all_day,
+                    description: values.description,
+                    end_time: format(
+                        new Date(values.end_time),
+                        "yyyy-MM-dd HH:mm:ss.SSS"
+                    ),
+                    extra_data: values.extra_data,
+                    location: values.location,
+                    priority: values.priority,
+                    recurrence_pattern: values.recurrence_pattern,
+                    start_time: format(
+                        new Date(values.start_time),
+                        "yyyy-MM-dd HH:mm:ss.SSS"
+                    ),
+                    status: values.status,
+                    title: values.title,
+                    organizationId: params.organizationId || data.workspace_id,
+                    userEmail: userEmail?.email
+                },
+                session
+            );
+            return response;
+        },
+        onSuccess: (data) => {
+            setDescription(data.description);
+            startTransition(() => {
+                setIsEditing(false);
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["detailCard"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["listBoardColumns"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["schedules", data.workspace_id],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["schedules"],
+            });
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (formRef.current && !formRef.current.contains(event.target as Node)) {
-      setIsEditing(false);
-    }
-  };
+            toast.success("Schedule updated successfully");
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        },
+    });
 
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+    const {
+        register,
+        formState: {errors},
+    } = form;
+
+    const textareaRef = useRef<ElementRef<"textarea">>(null);
+    const formRef = useRef<ElementRef<"form">>(null);
+
+    const enableEditing = () => {
+        setIsEditing(true);
+        setTimeout(() => {
+            textareaRef.current?.focus();
+        });
     };
-  }, []);
 
-  return (
-    <div className="flex items-start gap-x-3 w-full">
-      <AlignLeft className="h-5 w-5 mt-0.5 text-neutral-700" />
-      <div className="w-full">
-        <p className="font-semibold text-neutral-400 mb-2">Description</p>
-        <Form {...form}>
-          {isEditing ? (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmission();
-              }}
-              ref={formRef}
-              className="space-y-2"
-            >
-              <Input
-                id={"description"}
-                disabled={isPending || disabled}
-                onFocus={enableEditing}
-                onKeyDown={handleEnterPress}
-                className="min-h-[78px] w-full "
-                placeholder="Add a more detailed description..."
-                defaultValue={description}
-                {...register("description")}
-              />
-              {errors.description && (
-                <p className="text-red-500 text-sm items-start">
-                  {errors.description.message}
-                </p>
-              )}
-              <button type="submit" />
-            </form>
-          ) : (
-            <div
-              onClick={enableEditing}
-              role="button"
-              className="min-h-[78px] bg-neutral-200 text-s, font-medium py-3 px-3.5 rounded-md"
-            >
-              {data.description || "Add a more detailed description..."}
+    const handleSubmission = form.handleSubmit((values) => {
+        updateCardInformation(values);
+    });
+
+    const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            form.handleSubmit((values) => updateCardInformation(values))();
+        }
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+        if (formRef.current && !formRef.current.contains(event.target as Node)) {
+            setIsEditing(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    return (
+        <div className="gap-x-3 w-full">
+            <div className="flex items-center gap-2">
+                <AlignLeft className="h-4 w-4 text-gray-400"/>
+                <p className="text-gray-400">Description</p>
             </div>
-          )}
-        </Form>
-      </div>
-    </div>
-  );
+            <div className="w-full mt-1">
+                <Form {...form}>
+                    {isEditing ? (
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleSubmission();
+                            }}
+                            ref={formRef}
+                            className="space-y-2"
+                        >
+                            <Input
+                                id={"description"}
+                                disabled={isPending || disabled}
+                                onFocus={enableEditing}
+                                onKeyDown={handleEnterPress}
+                                className="min-h-[78px] w-full "
+                                placeholder="Add a more detailed description..."
+                                defaultValue={description}
+                                {...register("description")}
+                            />
+                            {errors.description && (
+                                <p className="text-red-500 text-sm items-start">
+                                    {errors.description.message}
+                                </p>
+                            )}
+                            <button type="submit"/>
+                        </form>
+                    ) : (
+                        <div
+                            onClick={enableEditing}
+                            role="button"
+                            className="min-h-[78px] bg-neutral-200 text-s, font-medium py-3 px-3.5 rounded-md"
+                        >
+                            {data.description || "Add a more detailed description..."}
+                        </div>
+                    )}
+                </Form>
+            </div>
+        </div>
+    );
 };
 
 Description.Skeleton = function DescriptionSkeleton() {
-  return (
-    <div className="flex items-start gap-x-3 w-full">
-      <Skeleton className="h-6 w-6 bg-neutral-200" />
-      <div className="w-full">
-        <Skeleton className="h-6 w-24 mb-2 bg-neutral-200" />
-        <Skeleton className="h-[78px] w-full bg-neutral-200" />
-      </div>
-    </div>
-  );
+    return (
+        <div className="flex items-start gap-x-3 w-full">
+            <Skeleton className="h-6 w-6 bg-neutral-200"/>
+            <div className="w-full">
+                <Skeleton className="h-6 w-24 mb-2 bg-neutral-200"/>
+                <Skeleton className="h-[78px] w-full bg-neutral-200"/>
+            </div>
+        </div>
+    );
 };
 export default Description;

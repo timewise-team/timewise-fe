@@ -1,20 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { UpdateCard } from "@/actions/update-card/schema";
-import { updateCardID } from "@/lib/fetcher";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
-import React, { useEffect, useRef, useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { format, parseISO } from "date-fns";
-import { Eye, Pencil } from "lucide-react";
-import { Form } from "../ui/form";
-import { getUserEmailByWorkspace } from "@/utils/userUtils";
-import { useStateContext } from "@/stores/StateContext";
+import {UpdateCard} from "@/actions/update-card/schema";
+import {updateCardID} from "@/lib/fetcher";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useSession} from "next-auth/react";
+import {useParams} from "next/navigation";
+import React, {useEffect, useRef, useState, useTransition} from "react";
+import {useForm} from "react-hook-form";
+import {toast} from "sonner";
+import {z} from "zod";
+import {format, parseISO} from "date-fns";
+import {Eye} from "lucide-react";
+import {Form} from "../ui/form";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
+import {VisibilityConst} from "@/constants/general";
 
 interface Props {
   data: any;
@@ -129,45 +130,52 @@ const Visibility = ({ data, disabled }: Props) => {
     });
   };
 
-  return (
-    <>
-      <Form {...form}>
-        {isEditing ? (
-          <form ref={formRef} className="flex flex-row items-center gap-x-1">
-            <Eye className="w-6 h-6 text-gray-400" />
-            <p className="text-gray-400 font-bold">Visibility: </p>
-            <select
-              {...register("visibility")}
-              onChange={handleSelectChange}
-              value={data.visibility}
-              disabled={isPending}
-            >
-              <option value="public">Public</option>
-              <option value="private">Private</option>
-            </select>
-          </form>
-        ) : (
-          <div className="flex items-center space-x-2 cursor-pointer justify-between">
-            <div className="flex flex-row gap-x-2">
-              <Eye className="w-6 h-6 text-gray-400" />
-              <p className="text-gray-400 font-bold">Visibility: </p>
-            </div>
+  const IconComponent = VisibilityConst[visibility as keyof typeof VisibilityConst].icon;
 
-            <div className=" flex flex-row items-center w-full pl-6">
-              <span>{visibility}</span>
-              <button
-                className="ml-2 text-primary-500"
-                disabled={disabled}
-                onClick={() => setIsEditing(true)}
-              >
-                <Pencil className="w-4 h-4" />
-              </button>
-            </div>
+  const renderVisibilityContent = () => (
+  <div className="flex items-center gap-x-2">
+    <Eye className="w-4 h-4 text-gray-400" />
+    <p className="text-gray-400 w-[100px]">Visibility</p>
+    {isEditing ? (
+      <select
+        {...register("visibility")}
+        onChange={handleSelectChange}
+        value={visibility}
+        disabled={isPending}
+      >
+        <option value="public">Public</option>
+        <option value="private">Private</option>
+      </select>
+    ) : (
+      <span onClick={() => {
+        if (!disabled) {
+          setIsEditing(true);
+        }
+      }} className="flex gap-1 items-center">
+          {visibility}
+          <IconComponent className="w-3.5 h-3.5" />
+      </span>
+    )}
+  </div>
+);
+
+return (
+  <>
+    <Form {...form}>
+      {isEditing ? (
+        <form ref={formRef} className="flex items-center center gap-x-2">
+          {renderVisibilityContent()}
+        </form>
+      ) : (
+        <div className="flex items-center space-x-2 cursor-pointer justify-between">
+          {renderVisibilityContent()}
+          <div className="flex flex-row items-center w-full pl-6">
           </div>
-        )}
-      </Form>
-    </>
-  );
+        </div>
+      )}
+    </Form>
+  </>
+);
 };
 
 export default Visibility;

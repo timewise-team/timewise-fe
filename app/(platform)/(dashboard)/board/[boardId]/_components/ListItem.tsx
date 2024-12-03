@@ -59,7 +59,7 @@ export const ListItem = ({ index, data }: Props) => {
                         key={schedule.id}
                         index={index}
                         data={schedule}
-                        isBlurred={data.extra_data === "IsLocked"}
+                        isBlurred={schedule.extra_data === "IsLocked"}
                       />
                     ))
                   ) : (

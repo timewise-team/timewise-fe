@@ -1,25 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, parseISO } from "date-fns";
-import { Pencil, PersonStanding, Plus, Trash } from "lucide-react";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
-import React, { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { Form } from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/Button";
-import {
-  addPersonalReminder,
-  removePersonalReminder,
-  updateReminderPersonal,
-} from "@/lib/fetcher";
-import { getUserEmailByWorkspace } from "@/utils/userUtils";
-import { useStateContext } from "@/stores/StateContext";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {format, parseISO} from "date-fns";
+import {Plus, UserRound, X} from "lucide-react";
+import {useSession} from "next-auth/react";
+import {useParams} from "next/navigation";
+import React, {useState, useTransition} from "react";
+import {useForm} from "react-hook-form";
+import {toast} from "sonner";
+import {z} from "zod";
+import {Form} from "../ui/form";
+import {Input} from "../ui/input";
+import {Button} from "../ui/Button";
+import {addPersonalReminder, removePersonalReminder, updateReminderPersonal,} from "@/lib/fetcher";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
   data: any;
@@ -185,69 +181,73 @@ const PersonalReminder = ({ data, schedule, disabled }: Props) => {
     updateReminderPersonalMutate(values);
   });
 
-  return (
-    <>
-      <Form {...form}>
-        {isEditing ? (
-          <form>
-            <div className="flex flex-row items-center gap-x-3">
-              <p className="text-md font-bold">Personal: </p>
-              <Input
-                id="time"
-                value={reminderTime}
-                disabled={isPending}
-                defaultValue={reminderTime}
-                type="datetime-local"
-                {...register("time")}
-                onChange={(e) => setReminderTime(e.target.value)}
-              />
-              <Button onClick={handleSubmission}>Change</Button>
-            </div>
-          </form>
-        ) : (
-          <div className="flex items-center">
-            {data && !data.message ? (
-              <div className="flex flex-row items-center">
-                <PersonStanding className="h-6 w-6 mr-2 text-neutral-400" />
-                <p className="text-md font-bold text-neutral-400">Personal: </p>
-                <p className="text-md text-neutral-500 pl-10">
-                  {data.reminder_time
-                    ? format(new Date(data.reminder_time), "dd-MM-yyyy HH:mm")
-                    : "No reminder set"}
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-row items-center gap-x-2">
-                <Button
-                  className="bg-transparent hover:bg-transparent text-black"
-                  onClick={handleAddReminder}
-                >
-                  <Plus className={"w-4 h-4 mr-1 "} />
-                  Add personal reminder
-                </Button>
-              </div>
-            )}
+  const renderPersonalReminderContent = () => (
+  <div className="flex items-center ml-6 mt-1">
+    <UserRound className="h-4 w-4 mr-2 text-gray-400" />
+    <p className="text-md text-gray-400 w-[100px]">Personal</p>
+    <Input
+      id="time"
+      value={reminderTime}
+      disabled={isPending}
+      defaultValue={reminderTime}
+      type="datetime-local"
+      {...register("time")}
+      onChange={(e) => setReminderTime(e.target.value)}
+      className="px-1 w-50 mr-1"
+    />
+    <Button onClick={handleSubmission}>Change</Button>
+  </div>
+);
 
-            {data && !data.message && (
-              <div className="ml-1 flex flex-row items-center gap-x-2 cursor-pointer">
-                <Pencil
-                  className="w-4 h-4"
-                  onClick={() => {
-                    if (disabled) return;
-                    setIsEditing(true);
-                  }}
-                />
-                <Trash
-                  className="w-4 h-4"
-                  onClick={() => removePersonalReminderMutate()}
-                />
-              </div>
-            )}
-          </div>
-        )}
-      </Form>
-    </>
-  );
+return (
+  <>
+    <Form {...form}>
+      {isEditing ? (
+        <form>
+          {renderPersonalReminderContent()}
+        </form>
+      ) : (
+        <div className="flex items-center">
+          {data && !data.message ? (
+            <div className="flex flex-row items-center ml-6 mt-1">
+              <UserRound className="h-4 w-4 mr-2 text-gray-400" />
+              <p className="text-md text-gray-400 w-[85px]">Personal</p>
+              <p className="text-md" onClick={() => {
+                if (disabled) return;
+                setIsEditing(true);
+              }}>
+                {data.reminder_time
+                  ? format(new Date(data.reminder_time), "dd-MM-yyyy HH:mm")
+                  : "No reminder set"}
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-row items-center ml-6 mt-1">
+              <UserRound className="h-4 w-4 mr-2 text-gray-400" />
+              <p className="text-md text-gray-400 w-[85px]">Personal</p>
+              <Button
+                className="bg-transparent hover:bg-transparent text-black p-0 text-gray-400"
+                onClick={handleAddReminder}
+              >
+                <Plus className={"w-4 h-4 mr-1"} />
+                Add personal reminder
+              </Button>
+            </div>
+          )}
+
+          {data && !data.message && (
+            <div className="ml-1 flex flex-row items-center gap-x-2 cursor-pointer mt-1">
+              <X
+                className="w-4 h-4 text-gray-400"
+                onClick={() => removePersonalReminderMutate()}
+              />
+            </div>
+          )}
+        </div>
+      )}
+    </Form>
+  </>
+);
 };
 
 export default PersonalReminder;
