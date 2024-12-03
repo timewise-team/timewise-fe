@@ -16,6 +16,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useSession } from "next-auth/react";
+import {toast} from "sonner";
 
 interface Props {
   accountInformation: any;
@@ -97,10 +98,10 @@ const AccountInformation = ({ accountInformation }: Props) => {
       }
 
       const responseData = await response.json();
-      console.log("User information updated successfully:", responseData);
+      toast("User information updated successfully:", responseData);
       window.location.reload();
     } catch (error) {
-      console.error("Failed to update user information:", error);
+      toast("Failed to update user information:", error || "");
     }
   };
 
