@@ -7,7 +7,6 @@ import Image from "next/image";
 import {
     fetchWorkspaceDetails,
     getCurrentWorkspaceUserInfo,
-    getMembersInWorkspace,
     getMembersInWorkspaceForManage,
     removeMember,
     updateRole
@@ -55,11 +54,7 @@ const ViewMember = () => {
             if (!userEmail) {
                 return null;
             }
-            const fetcher =
-                currentUserInfo?.role === "admin" || currentUserInfo?.role === "owner"
-                    ? getMembersInWorkspaceForManage
-                    : getMembersInWorkspace;
-            return await fetcher({...params, userEmail: userEmail.email}, session);
+            return await getMembersInWorkspaceForManage({...params, userEmail: userEmail.email}, session);
         },
         enabled: !!currentUserInfo?.role,
     });
@@ -73,27 +68,61 @@ const ViewMember = () => {
     });
 
     useEffect(() => {
-        let filtered = Array.isArray(membersData)
-            ? membersData?.filter((member: any) => {
-                const term = searchTerm.toLowerCase();
-                return (
-                    member.first_name.toLowerCase().includes(term) ||
-                    member.last_name.toLowerCase().includes(term) ||
-                    member.email.toLowerCase().includes(term)
-                );
-            }) : [];
+        if (!Array.isArray(membersData)) return;
 
-        filtered = filtered?.sort((a: any, b: any) => {
+        const userEmail = session?.user?.email?.toLowerCase();
+
+        const filtered = membersData.filter((member) => {
+            const isMemberWithJoinedStatus =
+                currentUserInfo?.role === "admin" ||
+                currentUserInfo?.role === "owner" ||
+                ((member.role === "member"  || member.role === "admin" || member.role === "owner") && (member.status === "joined" || member.status === "pending" || member.status === "declined"));
+
+            const matchesSearchTerm =
+                searchTerm.toLowerCase().length === 0 ||
+                member.first_name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+                member.last_name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+                member.email?.toLowerCase()?.includes(searchTerm.toLowerCase());
+
+            const matchesExtraData =
+                (currentUserInfo?.role !== "admin" && currentUserInfo?.role !== "owner")
+                    ? (member.extra_data?.toLowerCase()?.includes(userEmail) || !member.extra_data)
+                    : true;
+
+            return isMemberWithJoinedStatus && matchesSearchTerm && matchesExtraData;
+        });
+
+        const sorted = filtered.sort((a, b) => {
             const fieldA = a[sortBy]?.toLowerCase?.() || "";
             const fieldB = b[sortBy]?.toLowerCase?.() || "";
+
+            if (sortBy === "status") {
+                const statusOrder = {
+                    active: 1,
+                    "invited": 2,
+                    declined: 3,
+                    joined: 4,
+                };
+
+                const statusA = statusOrder[a.status] || 5;
+                const statusB = statusOrder[b.status] || 5;
+                console.log("status A", statusA)
+                console.log("status B", statusB)
+                if (sortOrder === "asc") {
+                    return statusA - statusB;
+                } else {
+                    return statusB - statusA;
+                }
+            }
+
             if (sortOrder === "asc") {
                 return fieldA > fieldB ? 1 : -1;
             }
             return fieldA < fieldB ? 1 : -1;
         });
 
-        setFilteredMembers(filtered || []);
-    }, [searchTerm, sortBy, sortOrder, membersData]);
+        setFilteredMembers(sorted);
+    }, [searchTerm, sortBy, sortOrder, membersData, session, currentUserInfo]);
 
     const mutationRoleChange = useMutation({
         mutationFn: async ({organizationId, email, role}: { organizationId: any; email: any; role: any }) => {
@@ -195,7 +224,7 @@ const ViewMember = () => {
         <div className="workspace-actions p-6 pt-0">
             <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-semibold text-gray-800">Workspace Members</h2>
-                {(currentUserInfo?.role === "owner" && !isPersonalWsp) && <InviteMember members={membersData}/>}
+                {(currentUserInfo?.role !== "guest" && !isPersonalWsp) && <InviteMember members={membersData} currentUserInfo={currentUserInfo}/>}
             </div>
             {!isPersonalWsp && <div className="flex gap-4 mb-4">
                 <input
@@ -214,6 +243,7 @@ const ViewMember = () => {
                     <option value="first_name">Name</option>
                     <option value="email">Email</option>
                     <option value="role">Role</option>
+                    <option value="status">Status</option>
                 </select>
 
                 <button
@@ -244,14 +274,21 @@ const ViewMember = () => {
                                                 {member?.email === session?.user?.email && " (You)"}
                                             </p>
                                             <span className={`text-xs font-semibold px-2 py-1 rounded ${
-                                                member?.is_active
-                                                    ? "bg-green-100 text-green-700"
-                                                    : member?.status === "joined"
-                                                        ? "bg-gray-100 text-gray-700"
-                                                        : "bg-yellow-100 text-yellow-700"
-                                            }`}
-                                            >
-                                                {member?.is_active ? "Active" : member?.status === "joined" ? "Inactive" : "Invited"}
+                                                member?.status === "declined"
+                                                    ? "bg-red-100 text-red-700"
+                                                    : member?.is_active
+                                                        ? "bg-green-100 text-green-700"
+                                                        : member?.status === "joined"
+                                                            ? "bg-gray-100 text-gray-700"
+                                                            : "bg-yellow-100 text-yellow-700"
+                                            }`}>
+                                                {member?.status === "declined"
+                                                    ? "Rejected"
+                                                    : member?.is_active
+                                                        ? "Active"
+                                                        : (member?.status === "joined"
+                                                            ? "Inactive"
+                                                            : "Invited")}
                                             </span>
                                         </div>
                                         <p className="text-sm text-gray-500">{member?.email}</p>

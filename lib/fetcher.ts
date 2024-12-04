@@ -263,6 +263,35 @@ export const inviteMemberToWorkspace = async (params: any, session: any) => {
     return data;
 };
 
+export const inviteMemberToWorkspaceByMember = async (params: any, session: any) => {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/member/send-invitation`,
+        {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${session?.user.access_token}`,
+                "X-User-Email": `${params.userEmail}`,
+                "X-Workspace-ID": `${params.organizationId}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: params.email,
+                role: params.role,
+            }),
+        }
+    );
+    if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData.message === "This email is not registered") {
+            throw new Error("This email is not registered");
+        } else {
+            throw new Error("Failed to send invitation");
+        }
+    }
+    const data = await response.json();
+    return data;
+};
+
 export const updateRole = async (params: any, session: any) => {
     const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/update-role`,

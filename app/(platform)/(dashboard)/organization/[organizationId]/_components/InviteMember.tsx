@@ -14,12 +14,12 @@ import FormSubmit from "@/components/form/form-submit";
 import Tab from "./tab";
 import {Input} from "@/components/ui/input";
 import useDebounce from "@/hooks/useDebounce";
-import {getListUserInvite, inviteMemberToWorkspace} from "@/lib/fetcher";
+import {getListUserInvite, inviteMemberToWorkspace, inviteMemberToWorkspaceByMember} from "@/lib/fetcher";
 import {SendingInvitation} from "@/actions/invite-member/schema";
 import {getUserEmailByWorkspace} from "@/utils/userUtils";
 import {useStateContext} from "@/stores/StateContext";
 
-const InviteMember = ({ members }) => {
+const InviteMember = ({ members, currentUserInfo }) => {
     const {data: session} = useSession();
     const params = useParams();
     const [isCommandListOpen, setIsCommandListOpen] = useState(false);
@@ -33,7 +33,7 @@ const InviteMember = ({ members }) => {
         resolver: zodResolver(SendingInvitation),
         defaultValues: {
             email: "",
-            role: "admin",
+            role: "member",
         },
     });
 
@@ -86,17 +86,29 @@ const InviteMember = ({ members }) => {
             if (!userEmail) {
                 return null;
             }
-
-            const response = await inviteMemberToWorkspace(
-                {
-                    email: values.email,
-                    role: values.role,
-                    organizationId: params.organizationId,
-                    userEmail: userEmail.email
-                },
-                session
-            );
-            return response;
+            if (currentUserInfo?.role === "member") {
+                const response = await inviteMemberToWorkspaceByMember(
+                    {
+                        email: values.email,
+                        role: values.role,
+                        organizationId: params.organizationId,
+                        userEmail: userEmail.email
+                    },
+                    session
+                );
+                return response;
+            } else {
+                const response = await inviteMemberToWorkspace(
+                    {
+                        email: values.email,
+                        role: values.role,
+                        organizationId: params.organizationId,
+                        userEmail: userEmail.email
+                    },
+                    session
+                );
+                return response;
+            }
         },
     });
     const organizationId = params.organizationId;
@@ -166,6 +178,7 @@ const InviteMember = ({ members }) => {
                             control={form.control}
                             name={"role"}
                             render={({field}) => {
+                                const roles = currentUserInfo?.role === "member" ? ["member", "guest"] : ["admin", "member"];
                                 return (
                                     <FormItem key={field.value} className="w-full">
                                         <Select
@@ -181,8 +194,11 @@ const InviteMember = ({ members }) => {
                                             </FormControl>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    <SelectItem value={"admin"}>Admin</SelectItem>
-                                                    <SelectItem value={"member"}>Member</SelectItem>
+                                                    {roles.map((role) => (
+                                                        <SelectItem key={role} value={role}>
+                                                            {role.charAt(0).toUpperCase() + role.slice(1)}
+                                                        </SelectItem>
+                                                    ))}
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
