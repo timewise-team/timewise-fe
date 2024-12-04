@@ -42,7 +42,7 @@ const FeatureComparison = () => {
             <th className="px-6 py-3 text-center text-xl font-bold text-black uppercase tracking-wider flex flex-row items-center gap-x-2 justify-center mt-3">
               <p className="text-blue-600">Others</p>
             </th>
-            <th className="px-6 py-3 text-xl font-bold text-black uppercase tracking-wider text-center">
+            <th className="pl-[150px] text-xl font-bold text-black uppercase tracking-wider text-center">
               <Image
                 alt="logo"
                 loading="lazy"

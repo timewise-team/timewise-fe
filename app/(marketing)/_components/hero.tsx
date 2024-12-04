@@ -85,7 +85,7 @@ const Carousel = () => {
     <div className="relative w-full h-96">
       <div
         ref={carouselRef}
-        className="absolute w-[100%] left-1/2 transform -translate-x-1/2 h-[800px] rounded-full bottom-[-420px] perspective-[1000px]"
+        className="absolute w-fit left-1/2 transform -translate-x-1/2 h-[800px] rounded-full bottom-[-420px] perspective-[1000px]"
         style={{ transform: `rotate(-5deg) translateX(${position}px)` }}
       >
         <div className="absolute w-full h-full flex gap-6 p-0 [calc(25%-150px)] items-start transform-origin-center">

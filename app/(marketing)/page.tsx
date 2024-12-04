@@ -10,7 +10,6 @@ import Navbar from "./_components/navbar-menu";
 const MarketingPage = () => {
   return (
     <div className="flex items-center justify-center flex-col ">
-      {/* <Hero /> */}
       <Navbar />
       <Intro />
       <Banner />
