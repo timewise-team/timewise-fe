@@ -70,10 +70,10 @@ const FilterPopover = memo(
     const handleMemberChange = useCallback(
       (email: string) => {
         setSelectedMember((prev) => {
-          const newMembers = prev.includes(email)
-            ? prev.filter((m) => m !== email)
-            : [...prev, email];
-          return newMembers;
+          if (prev.includes(email)) {
+            return prev.filter((member) => member !== email);
+          }
+          return [...prev, email];
         });
       },
       [setSelectedMember]
@@ -137,11 +137,11 @@ const FilterPopover = memo(
                         key={members.id}
                       >
                         <Input
-                          className="w-4 h-4"
                           type="checkbox"
+                          id={`member-${members.id}`}
                           checked={selectedMembers.includes(members.email)}
-                          id={members.id}
                           onChange={() => handleMemberChange(members.email)}
+                          className="w-4 h-4"
                         />
                         <UserRoundSearch size={16} />
                         <label
