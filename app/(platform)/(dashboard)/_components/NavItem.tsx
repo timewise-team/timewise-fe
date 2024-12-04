@@ -60,9 +60,10 @@ const NavItem = ({ workspace, onExpand }: Props) => {
           {/*    className="rounded-sm object-cover"*/}
           {/*  />*/}
           {/*</div>*/}
-          <span className="text-sm font-semibold pt-1.5">
+          <span className="text-sm font-semibold pt-1">
             {workspace.title}
           </span>
+          {workspace.type === "personal" && (<span className="text-xs italic text-gray-500 pt-1.5">Personal</span>)}
         </div>
       </AccordionTrigger>
       <AccordionContent className="text-neutral-700">
