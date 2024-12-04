@@ -125,7 +125,7 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
   }
 
   return (
-      <div className="flex flex-col py-8 px-4">
+      <div className="flex flex-col pt-4 pb-8 px-4">
           {/* Dropdown cho Linked Emails */}
           <div className="w-56 mb-5 h-10">
               <Listbox value={selectedEmail} onChange={handleSelectEmail}>

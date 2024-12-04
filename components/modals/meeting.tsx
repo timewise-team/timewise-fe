@@ -13,9 +13,13 @@ import {Input} from "../ui/input";
 import {triggerMeeting, updateCardID} from "@/lib/fetcher";
 import {UpdateCard} from "@/actions/update-card/schema";
 import {Button} from "../ui/Button";
-import {Pencil} from "lucide-react";
+import {Bot, HelpCircle, Info, Pencil, Video} from "lucide-react";
 import {getUserEmailByWorkspace} from "@/utils/userUtils";
 import {useStateContext} from "@/stores/StateContext";
+import HintTool from "@components/hint-tool";
+import {Slot} from "@radix-ui/react-slot";
+import description from "@components/modals/description";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@components/ui/tooltip";
 
 interface Props {
     session: any;
@@ -154,18 +158,37 @@ const Meetting = ({session, data, scheduleId, disabled}: Props) => {
     };
 
     return (
-        <div className="space-y-4 bg-gray-50 p-4 rounded-lg shadow-md">
+        <div className="max-h-[400px] h-auto overflow-auto space-y-2">
             {/* Meeting Link Section */}
             <div className="space-y-2">
                 <div className="flex items-center gap-x-2">
-                    <Image
-                        src={"/images/icons/gg-meet.svg"}
-                        alt="Google Meet Icon"
-                        width={40}
-                        height={40}
-                        className="h-6 w-6 rounded-full object-cover"
-                    />
-                    <span className="font-semibold text-lg">Meeting Link</span>
+                    <Video/>
+                    <span className="font-semibold text-lg">Meeting URL</span>
+                    <TooltipProvider>
+                        <Tooltip delayDuration={0}>
+                            <TooltipTrigger><Info className="w-4 h-4 text-gray-500"/></TooltipTrigger>
+                            <TooltipContent
+                                sideOffset={10}
+                                side="top"
+                                className="text-xs w-[320px] break-words"
+                            >
+                                <p className="font-semibold text-lg flex gap-2 items-center">
+                                    AI Meeting Bot
+                                    <Bot className="w-5 h-5"/>
+                                </p>
+                                <p className="text-sm">AI Meeting Bot automatically records your meeting, converts the
+                                    audio to a transcript, and provides a detailed summary.</p>
+
+                                <p className="font-semibold text-sm mt-1">Instruction</p>
+                                <ul className="text-sm">
+                                    <li>Enter the meeting URL</li>
+                                    <li>Click 'Start Recording & Generate Summary</li>
+                                    <li>Let the us handle the rest</li>
+                                </ul>
+
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
                 {isEditing ? (
                     <form
@@ -184,7 +207,7 @@ const Meetting = ({session, data, scheduleId, disabled}: Props) => {
                             defaultValue={mettingLocation}
                             {...register("location")}
                         />
-                        <Button type="submit" className="bg-blue-600 text-white">
+                        <Button type="submit" className="bg-gray-950 text-white">
                             Save
                         </Button>
                     </form>
@@ -211,9 +234,10 @@ const Meetting = ({session, data, scheduleId, disabled}: Props) => {
             {/* Start Meeting Button */}
             <Button
                 onClick={() => triggerMeetingMutation()}
-                className="w-full bg-green-600 text-white hover:bg-green-700 transition-all"
+                className={`w-full bg-gray-950 text-white transition-all ${summary ? "bg-gray-300" : ""}`}
+                disabled={summary !== null}
             >
-                Start Meeting
+                Start Recording & Generate Summary
             </Button>
         </div>
     );

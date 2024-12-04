@@ -121,8 +121,8 @@ function CalendarFilter({
   );
 
   return (
-    <div className="p-1.5 pt-0 w-80 flex flex-col gap-1.5">
-      <div className="mt-3 w-fit flex items-center bg-black text-white rounded">
+    <div className="p-1.5 pt-0 w-80 flex flex-col gap-1.5 mt-2">
+      <div className="w-fit flex items-center bg-black text-white rounded h-[48px] hover:bg-transparent">
         <AddSchedule
           listId={""}
           enableEditing={function (): void {
@@ -133,12 +133,8 @@ function CalendarFilter({
           }}
           isEditing={false}
           isGlobalCalendar={true}
-          closeDialog={function (): void {
-            throw new Error("Function not implemented.");
-          }}
-          openDialog={function (): void {
-            throw new Error("Function not implemented.");
-          }}
+          closeDialog={function (): void {}}
+          openDialog={function (): void {}}
         />
       </div>
       <div className="mt-6">

@@ -169,8 +169,11 @@ const Participants = ({scheduleData, participantsData}: ParticipantsProps) => {
     return (
         <div className="mt-2">
             <div className="flex gap-x-2 text-gray-400">
-                <Users className="h-4 w-4"/>
-                <p className="w-[100px]">Participants</p>
+                <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4"/>
+                    <p className="w-[100px]">Participants</p>
+                </div>
+
 
                 <div className="flex flex-wrap gap-1 overflow-y-auto">
                     {localParticipantsData?.map((participant: any) => (

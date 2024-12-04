@@ -120,6 +120,13 @@ const Description = ({ data, disabled }: Props) => {
     });
   };
 
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
   const handleSubmission = form.handleSubmit((values) => {
     updateCardInformation(values);
   });
@@ -136,6 +143,10 @@ const Description = ({ data, disabled }: Props) => {
       setIsEditing(false);
     }
   };
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [description]);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -186,15 +197,15 @@ const Description = ({ data, disabled }: Props) => {
               className="min-h-[78px] bg-neutral-200 text-s, font-medium p-1 rounded-md"
             >
               <Textarea
-                id="description"
-                disabled={isPending || disabled}
-                onFocus={enableEditing}
-                className="min-h-[78px] w-full"
-                placeholder="Add a more detailed description..."
-                defaultValue={
-                  data.description || "Add a more detailed description..."
-                }
-                {...register("description")}
+                  id="description"
+                  disabled={isPending || disabled}
+                  onFocus={enableEditing}
+                  className="min-h-[78px] w-full"
+                  placeholder="Add a more detailed description..."
+                  defaultValue={description}
+                  {...register("description")}
+                  ref={textareaRef}
+                  onInput={adjustTextareaHeight}
               />
             </div>
           )}

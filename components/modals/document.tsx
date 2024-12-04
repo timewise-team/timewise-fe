@@ -155,7 +155,7 @@ const Document = ({data, document}: Props) => {
             <div className="flex items-center gap-1.5 mb-1">
                 <div className="flex items-center gap-x-2">
                     <ArchiveIcon className="h-4 w-4 text-gray-400"/>
-                    Attachment
+                    <p className="w-[100px]">Document</p>
                 </div>
                 <Input
                     type="file"
