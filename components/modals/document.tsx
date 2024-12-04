@@ -56,8 +56,6 @@ const Document = ({data, document}: Props) => {
                 Number(data.workspace_id)
             );
 
-            console.log('aaa', document)
-
             const response = await deleteDocument(
                 {
                     scheduleId: document.schedule_id,

@@ -890,3 +890,52 @@ export const getCurrentWorkspaceUserInfo = async (
   const data = await response.json();
   return data;
 };
+
+export const deleteWorkspace = async (workspaceId: string, userEmail: string, session: any) => {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/delete-workspace`,
+        {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${session?.user?.access_token}`,
+                "X-User-Email": userEmail,
+                "X-Workspace-ID": workspaceId,
+                "Content-Type": "application/json",
+            },
+        }
+    );
+
+    if (!response.ok) {
+        const errorDetails = await response.json();
+        throw new Error(errorDetails.message || "Failed to delete workspace");
+    }
+};
+
+export const updateWorkspace = async (params: any, session: any) => {
+    console.log('params', params)
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace/update-workspace`,
+        {
+            method: "PUT",
+            headers: {
+                accept: "application/json",
+                Authorization: `Bearer ${session?.user.access_token}`,
+                "X-User-Email": params.userEmail,
+                "X-Workspace-Id": params.workspaceId,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                description: params.description,
+                title: params.title,
+            }),
+        }
+    );
+
+    if (!response.ok) {
+        const errorDetails = await response.json();
+        throw new Error(errorDetails.message || "Failed to update workspace");
+    }
+
+    const data = await response.json();
+    return data;
+};

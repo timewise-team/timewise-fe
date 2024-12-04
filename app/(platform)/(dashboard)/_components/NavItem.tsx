@@ -22,7 +22,7 @@ const NavItem = ({ workspace, onExpand }: Props) => {
 
   const routers = [
     {
-      label: "Boards",
+      label: "Board",
       icon: <Layout className="h-3 w-3 mr-1" />,
       href: `/organization/${workspace.ID}`,
     },
@@ -32,7 +32,7 @@ const NavItem = ({ workspace, onExpand }: Props) => {
       href: `/organization/${workspace.ID}/calender`,
     },
     {
-      label: "Members",
+      label: "Settings",
       icon: <Users className="h-3 w-3 mr-1" />,
       href: `/organization/${workspace.ID}/members`,
     },
