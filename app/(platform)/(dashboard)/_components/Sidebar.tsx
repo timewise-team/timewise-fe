@@ -70,7 +70,6 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
 
   useEffect(() => {
     if (workspacesByEmail) {
-      console.log("workspacesByEmail", workspacesByEmail);
       setStateWorkspacesByEmail(workspacesByEmail);
     }
   }, [workspacesByEmail, setStateWorkspacesByEmail]);
@@ -81,14 +80,26 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
         : workspacesByEmail?.[selectedEmail] || [];
   }, [selectedEmail, workspacesByEmail]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     setStateSelectedEmail(selectedEmail);
     setStateFilteredWorkspaces(filteredWorkspaces);
-  }, [selectedEmail, filteredWorkspaces, setStateSelectedEmail, setStateFilteredWorkspaces]);
+  }, [selectedEmail, filteredWorkspaces, setStateSelectedEmail, setStateFilteredWorkspaces]);*/
 
   const handleSelectEmail = (email: string) => {
     setSelectedEmail(email);
   };
+
+    const groupedWorkspaces = useMemo(() => {
+        return selectedEmail === "all"
+            ? workspacesByEmail || {}
+            : { [selectedEmail]: workspacesByEmail?.[selectedEmail] || [] };
+    }, [selectedEmail, workspacesByEmail]);
+
+    useEffect(() => {
+        const allWorkspaces = Object.values(groupedWorkspaces).flat();
+        setStateSelectedEmail(selectedEmail);
+        setStateFilteredWorkspaces(allWorkspaces);
+    }, [groupedWorkspaces, selectedEmail, setStateSelectedEmail, setStateFilteredWorkspaces]);
 
   const onExpand = (id: string) => {
     setExpanded((curr) => ({
@@ -114,113 +125,118 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
   }
 
   return (
-    <div className="flex flex-col p-8">
-      {/* Dropdown cho Linked Emails */}
-      <div className="w-56 mb-5">
-        <Listbox value={selectedEmail} onChange={handleSelectEmail}>
-          <Listbox.Button
-              className="border border-gray-300 px-3 py-2 w-full text-left rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center gap-2"
-          >
-            {selectedEmail === "all" ? (
-                <span className="font-medium">All</span>
-            ) : (
-                <div className="flex items-center gap-2">
-                  <Image
-                      width={24}
-                      height={24}
-                      src="/images/icons/google.svg"
-                      alt="Avatar"
-                      className="rounded-full"
-                  />
-                  <div className="flex flex-col">
+      <div className="flex flex-col p-8">
+          {/* Dropdown cho Linked Emails */}
+          <div className="w-56 mb-5">
+              <Listbox value={selectedEmail} onChange={handleSelectEmail}>
+                  <Listbox.Button
+                      className="border border-gray-300 px-3 py-2 w-full text-left rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center gap-2"
+                  >
+                      {selectedEmail === "all" ? (
+                          <span className="font-medium">All</span>
+                      ) : (
+                          <div className="flex items-center gap-2">
+                              <Image
+                                  width={24}
+                                  height={24}
+                                  src="/images/icons/google.svg"
+                                  alt="Avatar"
+                                  className="rounded-full"
+                              />
+                              <div className="flex flex-col">
                 <span className="font-medium truncate">
                   {selectedEmail.split("@")[0]}
                 </span>
-                    <span className="text-xs text-gray-500 truncate">
+                                  <span className="text-xs text-gray-500 truncate">
                   {selectedEmail}
                 </span>
-                  </div>
-                </div>
-            )}
-          </Listbox.Button>
-          <Listbox.Options
-              className="absolute z-10 mt-2 w-70 bg-white border border-gray-300 rounded-md shadow-lg max-h-65 overflow-auto"
-          >
-            <Listbox.Option
-                value="all"
-                className="cursor-pointer p-3 hover:bg-gray-100 flex items-center gap-3"
-            >
-              <Image
-                  width={24}
-                  height={24}
-                  src="/images/icons/google.svg"
-                  alt="Avatar"
-                  className="rounded-full"
-              />
-              <span className="font-medium">All</span>
-            </Listbox.Option>
-            {linkedEmails?.map((email: string) => (
-                <Listbox.Option
-                    key={email}
-                    value={email}
-                    className="cursor-pointer p-3 hover:bg-gray-100 flex items-center gap-3"
-                >
-                  <Image
-                      width={24}
-                      height={24}
-                      src="/images/icons/google.svg"
-                      alt="Avatar"
-                      className="rounded-full"
-                  />
-                  <div className="flex flex-col">
+                              </div>
+                          </div>
+                      )}
+                  </Listbox.Button>
+                  <Listbox.Options
+                      className="absolute z-10 mt-2 w-70 bg-white border border-gray-300 rounded-md shadow-lg max-h-65 overflow-auto"
+                  >
+                      <Listbox.Option
+                          value="all"
+                          className="cursor-pointer p-3 hover:bg-gray-100 flex items-center gap-3"
+                      >
+                          <Image
+                              width={24}
+                              height={24}
+                              src="/images/icons/google.svg"
+                              alt="Avatar"
+                              className="rounded-full"
+                          />
+                          <span className="font-medium">All</span>
+                      </Listbox.Option>
+                      {linkedEmails?.map((email: string) => (
+                          <Listbox.Option
+                              key={email}
+                              value={email}
+                              className="cursor-pointer p-3 hover:bg-gray-100 flex items-center gap-3"
+                          >
+                              <Image
+                                  width={24}
+                                  height={24}
+                                  src="/images/icons/google.svg"
+                                  alt="Avatar"
+                                  className="rounded-full"
+                              />
+                              <div className="flex flex-col">
                 <span className="font-medium truncate">
                   {email.split("@")[0]}
                 </span>
-                    <span className="text-xs text-gray-500 truncate">
+                                  <span className="text-xs text-gray-500 truncate">
                   {email}
                 </span>
-                  </div>
-                </Listbox.Option>
-            ))}
-          </Listbox.Options>
-        </Listbox>
-      </div>
+                              </div>
+                          </Listbox.Option>
+                      ))}
+                  </Listbox.Options>
+              </Listbox>
+          </div>
 
-      <Separator className="my-3 w-full" />
-        <Link href={"/organization/calender"}>
-            <div className="font-medium text-xs flex mb-1 hover:cursor-pointer hover:bg-gray-200 w-full">
+          <Separator className="my-3 w-full"/>
+          <Link href={"/organization/calender"}>
+              <div className="font-medium text-xs flex mb-1 hover:cursor-pointer hover:bg-gray-200 w-full">
                 <span className="flex items-center align-middle gap-1 font-semibold text-sm">
-                  <CalendarRange className="w-4 h-4" />
+                  <CalendarRange className="w-4 h-4"/>
                     Calendar
                 </span>
-            </div>
-        </Link>
-        <div className="flex justify-between w-full">
+              </div>
+          </Link>
+          <div className="flex justify-between w-full">
             <span className="flex gap-1 items-center font-semibold text-sm">
-                <Store className="w-4 h-4" /> Workspaces
+                <Store className="w-4 h-4"/> Workspaces
             </span>
-            <CreateDialog />
-        </div>
-      <Separator className="my-3 w-full" />
-      {/* Workspaces Accordion */}
-      <div className="flex flex-col justify-center">
-        <Accordion
-            type="multiple"
-            defaultValue={Object.keys(expanded).filter((key) => expanded[key])}
-            className="space-y-2"
-        >
-          {filteredWorkspaces.map((workspace: Workspace, index: number) => (
-              <NavItem
-                  key={index}
-                  workspace={workspace}
-                  onExpand={onExpand}
-                  isActive={expanded[workspace.ID]}
-                  isExpanded={false}
-              />
-          ))}
-        </Accordion>
+              <CreateDialog/>
+          </div>
+          <Separator className="my-3 w-full"/>
+          {/* Workspaces Accordion */}
+          <div className="flex flex-col justify-center">
+              {Object.entries(groupedWorkspaces).map(([email, workspaces]) => (
+                  <div key={email} className="mb-4">
+                      <h3 className="text-sm font-thin italic mb-2 text-gray-500">{email}</h3>
+                      <Accordion
+                          type="multiple"
+                          defaultValue={Object.keys(expanded).filter((key) => expanded[key])}
+                          className="space-y-2"
+                      >
+                          {workspaces.map((workspace: Workspace, index: number) => (
+                              <NavItem
+                                  key={index}
+                                  workspace={workspace}
+                                  onExpand={onExpand}
+                                  isActive={expanded[workspace.ID]}
+                                  isExpanded={false}
+                              />
+                          ))}
+                      </Accordion>
+                  </div>
+              ))}
+          </div>
       </div>
-    </div>
   );
 };
 
