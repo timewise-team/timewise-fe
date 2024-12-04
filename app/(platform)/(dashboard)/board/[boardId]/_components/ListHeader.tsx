@@ -87,6 +87,7 @@ const ListHeader = ({ data, onAddCard }: Props) => {
     setTimeout(() => {
       inputRef.current?.focus();
     });
+    //check
     document.addEventListener("click", handleClickOutside, true);
   };
 
