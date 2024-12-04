@@ -73,7 +73,7 @@ const Document = ({data, document}: Props) => {
                 queryKey: ["documents"],
             });
             queryClient.invalidateQueries({
-                queryKey: ["listBoardColumns", "schedules"],
+                queryKey: ["listBoardColumns"],
             });
             queryClient.invalidateQueries({
                 queryKey: ["detailCard"],

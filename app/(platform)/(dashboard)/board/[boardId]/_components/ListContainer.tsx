@@ -62,7 +62,7 @@ const ListContainer = ({ data }: Props) => {
     },
     onSuccess: () => {
       toast.success("Board reordered !");
-      queryClient.invalidateQueries({ queryKey: ["listBoardColumns", "schedules"] });
+      queryClient.invalidateQueries({ queryKey: ["listBoardColumns"] });
     },
     onError: () => {
       toast.error("Error when updating board");

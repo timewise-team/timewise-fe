@@ -85,7 +85,7 @@ const Comments = ({ session, data, scheduleId, workspaceId }: Props) => {
         queryKey: ["listComments"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["listBoardColumns", "schedules"],
+        queryKey: ["listBoardColumns"],
       });
       startTransition(() => {
         reset();

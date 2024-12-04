@@ -96,7 +96,7 @@ const BoardMember = ({data}: Props) => {
         onSuccess: () => {
             toast.success("Member removed successfully");
             queryClient.invalidateQueries({queryKey: ["listMembers"]});
-            queryClient.invalidateQueries({queryKey: ["listBoardColumns", "schedules"]});
+            queryClient.invalidateQueries({queryKey: ["listBoardColumns"]});
         },
         onError: () => {
             toast.error("Error when removing member");

@@ -59,7 +59,7 @@ const ListOptions = ({data, onAddCard}: Props) => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["listBoardColumns", "schedules"],
+                queryKey: ["listBoardColumns"],
             });
             toast.success("Board deleted successfully");
         },

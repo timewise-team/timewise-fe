@@ -65,12 +65,12 @@ const ListHeader = ({data, onAddCard}: Props) => {
             return response;
         },
         onSuccess: (data) => {
-            queryClient.invalidateQueries({queryKey: ["listBoardColumns", "schedules"]});
+            queryClient.invalidateQueries({queryKey: ["listBoardColumns"]});
             setTitle(data.title);
             startTransition(() => {
                 setIsEditing(false);
             });
-            toast.success("Schedule updated successfully");
+            toast.success("Board column updated successfully");
         },
         onError: (error) => {
             toast.error(error.message);
