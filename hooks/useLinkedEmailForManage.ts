@@ -20,7 +20,7 @@ export const useLinkedEmailsForManage = (params: any) => {
         }
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch linked emails");
+        return [];
       }
 
       const result = await response.json();

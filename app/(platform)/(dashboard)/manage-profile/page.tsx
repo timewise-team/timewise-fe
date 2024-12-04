@@ -24,7 +24,7 @@ const ManageAccountPage = () => {
     <Tabs defaultValue="account" className="w-[700px] mt-20">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="account">Profile</TabsTrigger>
-        <TabsTrigger value="linked-email">Linked-Email</TabsTrigger>
+        <TabsTrigger value="linked-email">Linked Emails</TabsTrigger>
       </TabsList>
       <TabsContent value="account">
         <AccountInformation accountInformation={accountInformation} />
