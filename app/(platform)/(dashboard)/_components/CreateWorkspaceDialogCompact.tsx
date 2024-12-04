@@ -30,7 +30,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLinkedEmails } from "@/hooks/useLinkedEmail";
 
-const CreateDialog = () => {
+const CreateWorkspaceDialogCompact = () => {
   const { data: session } = useSession();
   const [isPending, startTransition] = useTransition();
   const { linkedEmails } = useLinkedEmails();
@@ -104,7 +104,6 @@ const CreateDialog = () => {
       description={
         "Boost your productivity by making it easier for everyone to access boards in one location."
       }
-      btnContentIcon="Create New Workspace"
       btnSubmitContent="Create Workspace"
     >
       <Form {...form}>
@@ -123,7 +122,7 @@ const CreateDialog = () => {
                         placeholder="Title"
                         {...field}
                         type="text"
-                        className="px-4 py-2 transition duration-300 border border-gray-300 rounded focus:border-transparent focus:outline-none focus:ring-4 focus:ring-blue-200"
+                        className="px-4 py-2 transition duration-300 border border-gray-300 rounded focus:ring-4 focus:ring-blue-200"
                       />
                     </FormControl>
                     <FormMessage />
@@ -144,7 +143,7 @@ const CreateDialog = () => {
                         placeholder="Description"
                         {...field}
                         type="text"
-                        className="px-4 py-2 transition duration-300 border border-gray-300 rounded focus:border-transparent focus:outline-none focus:ring-4 focus:ring-blue-200"
+                        className="px-4 py-2 transition duration-300 border border-gray-300 rounded focus:ring-4 focus:ring-blue-200"
                       />
                     </FormControl>
                     <FormMessage />
@@ -204,4 +203,4 @@ const CreateDialog = () => {
   );
 };
 
-export default CreateDialog;
+export default CreateWorkspaceDialogCompact;

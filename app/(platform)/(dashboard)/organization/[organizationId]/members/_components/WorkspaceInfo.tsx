@@ -1,6 +1,6 @@
 "use client";
 import React, {useState} from "react";
-import {useMutation, useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useParams} from "next/navigation";
 import {fetchWorkspaceDetails, getCurrentWorkspaceUserInfo, updateWorkspace} from "@/lib/fetcher";
 import {useSession} from "next-auth/react";
@@ -8,7 +8,6 @@ import {Skeleton} from "@components/ui/skeleton";
 import {Workspace} from "@/types/Board";
 import {getUserEmailByWorkspace} from "@/utils/userUtils";
 import {useStateContext} from "@/stores/StateContext";
-import InviteMember from "@/app/(platform)/(dashboard)/organization/[organizationId]/_components/InviteMember";
 import {toast} from "sonner";
 
 const WorkspaceInfo = () => {
@@ -20,6 +19,7 @@ const WorkspaceInfo = () => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const {stateUserEmails, stateWorkspacesByEmail} = useStateContext();
+    const queryClient = useQueryClient();
 
     const {data: workspaceInfo, isLoading} = useQuery<Workspace>({
         queryKey: ["workspaceDetails", organizationId],
@@ -29,7 +29,7 @@ const WorkspaceInfo = () => {
             setDescription(data.description);
             return data;
         },
-        enabled: !!organizationId && !!session
+        enabled: !!session
     });
 
     const {data: currentUserInfo, isLoading: isLoadingUserInfo} = useQuery({
@@ -66,9 +66,8 @@ const WorkspaceInfo = () => {
             }, session);
         },
         onSuccess: () => {
-            setIsEditingTitle(false);
-            setIsEditingDesc(false);
             toast.success("Workspace Information updated successfully");
+            queryClient.invalidateQueries({ queryKey: ["workspaces"] });
         },
         onError: (error) => {
             console.error(error);

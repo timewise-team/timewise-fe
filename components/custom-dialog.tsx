@@ -49,13 +49,13 @@ const CustomDialog = ({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
-          <Image
-            width={800}
-            height={500}
-            src="/images/banner/3.png"
-            alt="workspace"
-            className="h-[300px]"
-          />
+          {/*<Image*/}
+          {/*  width={800}*/}
+          {/*  height={500}*/}
+          {/*  src="/images/banner/3.png"*/}
+          {/*  alt="workspace"*/}
+          {/*  className="h-[300px]"*/}
+          {/*/>*/}
         </DialogHeader>
         {children}
         <DialogFooter></DialogFooter>

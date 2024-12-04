@@ -15,6 +15,7 @@ import ArrowRightIcon from "@/assets/icons/arrow-right-icon.svg";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import Image from "next/image";
 import CreateDialog from "@/app/(platform)/(dashboard)/_components/CreateWorkspaceDialog";
+import {Skeleton} from "@components/ui/skeleton";
 
 type Member = {
   profile_picture: string;
@@ -34,7 +35,7 @@ const ManageWorkspaces = () => {
   const [memberAvatars, setMemberAvatars] = useState<Record<string, Member[]>>(
     {}
   );
-  const [filterOption, setFilterOption] = useState<string>("");
+  const [filterOption, setFilterOption] = useState<string>("name");
   const [filterValue, setFilterValue] = useState<string>("");
   const [sortOption, setSortOption] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -250,13 +251,12 @@ const ManageWorkspaces = () => {
         </h1>
 
         <div className="flex items-center justify-between mb-6 space-x-4">
-          <div className="relative w-1/3">
+          <div className="relative w-1/3 flex gap-2">
             <select
               value={filterOption}
               onChange={(e) => setFilterOption(e.target.value)}
-              className="p-3 rounded-md border border-gray-300 w-full"
+              className="px-2 py-1  rounded-md border border-gray-300 h-12"
             >
-              <option value="">Filter</option>
               <option value="type">Filter by Type</option>
               <option value="email">Filter by Email</option>
               <option value="name">Filter by Name</option>
@@ -264,7 +264,7 @@ const ManageWorkspaces = () => {
 
             {filterOption === "type" && (
               <select
-                className="p-3 mt-2 rounded-md border border-gray-300 w-full"
+                className="px-2 py-1  rounded-md border border-gray-300 w-full h-12"
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
               >
@@ -276,7 +276,7 @@ const ManageWorkspaces = () => {
 
             {filterOption === "email" && (
               <select
-                className="p-3 mt-2 rounded-md border border-gray-300 w-full"
+                className="px-2 py-1  rounded-md border border-gray-300 w-full h-12"
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
               >
@@ -292,37 +292,37 @@ const ManageWorkspaces = () => {
             {filterOption === "name" && (
               <input
                 type="text"
-                placeholder="Search by name..."
-                className="p-3 mt-2 rounded-md border border-gray-300 w-full"
+                placeholder="Enter workspace name"
+                className="px-2 py-1  rounded-md border border-gray-300 w-full h-12"
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
               />
             )}
           </div>
 
-          <div className="flex items-center w-1/3">
-            <select
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-              className="p-3 rounded-md border border-gray-300 w-full"
-            >
-              <option value="">Sort</option>
-              <option value="name">Sort by Name</option>
-              <option value="created_at">Sort by Created At</option>
-            </select>
+          {/*<div className="flex items-center w-1/3">*/}
+          {/*  <select*/}
+          {/*    value={sortOption}*/}
+          {/*    onChange={(e) => setSortOption(e.target.value)}*/}
+          {/*    className="px-2 py-1  rounded-md border border-gray-300 w-full"*/}
+          {/*  >*/}
+          {/*    <option value="">Sort</option>*/}
+          {/*    <option value="name">Sort by Name</option>*/}
+          {/*    <option value="created_at">Sort by Created At</option>*/}
+          {/*  </select>*/}
 
-            {/* Arrow button positioned to the right */}
-            {sortOption && (
-              <button
-                onClick={() =>
-                  setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))
-                }
-                className="text-gray-500 p-2 ml-2"
-              >
-                {sortDirection === "asc" ? <ArrowDownIcon /> : <ArrowUpIcon />}
-              </button>
-            )}
-          </div>
+          {/*  /!* Arrow button positioned to the right *!/*/}
+          {/*  {sortOption && (*/}
+          {/*    <button*/}
+          {/*      onClick={() =>*/}
+          {/*        setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))*/}
+          {/*      }*/}
+          {/*      className="text-gray-500 p-2 ml-2"*/}
+          {/*    >*/}
+          {/*      {sortDirection === "asc" ? <ArrowDownIcon /> : <ArrowUpIcon />}*/}
+          {/*    </button>*/}
+          {/*  )}*/}
+          {/*</div>*/}
         </div>
 
         {Object.keys(filteredWorkspaces).length > 0 ? (
@@ -412,7 +412,7 @@ const ManageWorkspaces = () => {
             ))}
           </div>
         ) : (
-          <p>No workspaces found.</p>
+            <Skeleton className="w-full h-full absolute" />
         )}
       </div>
     </div>

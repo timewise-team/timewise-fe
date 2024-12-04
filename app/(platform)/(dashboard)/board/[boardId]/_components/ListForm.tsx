@@ -71,7 +71,7 @@ const ListForm = () => {
           },
           body: JSON.stringify({
             name,
-            position: position + 1,
+            position: position,
             workspace_id: workspaceId,
           }),
         }

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Accordion } from "@radix-ui/react-accordion";
 import { useLocalStorage } from "usehooks-ts";
 import NavItem from "./NavItem";
-import CreateDialog from "./CreateWorkspaceDialog";
+import CreateWorkspaceDialogCompact from "./CreateWorkspaceDialogCompact";
 import {CalendarRange, Store, Users} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -47,7 +47,7 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
   };
 
   const { data: workspacesByEmail, isLoading: isWorkspacesLoading } = useQuery({
-    queryKey: ["workspaces", selectedEmail],
+    queryKey: ["workspaces"],
     queryFn: async () => {
       if (!linkedEmails) return {};
 
@@ -214,7 +214,7 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
             <span className="flex gap-1 items-center font-semibold text-sm">
                 <Store className="w-4 h-4"/> Workspaces
             </span>
-              <CreateDialog/>
+              <CreateWorkspaceDialogCompact/>
           </div>
           <Separator className="my-3 w-full"/>
           {/* Workspaces Accordion */}
