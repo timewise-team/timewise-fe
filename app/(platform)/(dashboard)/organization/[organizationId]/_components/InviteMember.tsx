@@ -19,7 +19,7 @@ import {SendingInvitation} from "@/actions/invite-member/schema";
 import {getUserEmailByWorkspace} from "@/utils/userUtils";
 import {useStateContext} from "@/stores/StateContext";
 
-const InviteMember = () => {
+const InviteMember = ({ members }) => {
     const {data: session} = useSession();
     const params = useParams();
     const [isCommandListOpen, setIsCommandListOpen] = useState(false);
@@ -101,6 +101,12 @@ const InviteMember = () => {
     });
     const organizationId = params.organizationId;
     const handleSubmission = handleSubmit((values) => {
+        const existingMember = members.find((member: { email: string; }) => member.email === values.email);
+        if (existingMember) {
+            toast.error("This email is pending to join or already is a member of the workspace.");
+            return;
+        }
+
         startTransition(() => {
             mutate(values, {
                 onSuccess: () => {

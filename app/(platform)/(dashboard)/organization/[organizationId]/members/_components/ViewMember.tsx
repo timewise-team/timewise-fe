@@ -55,7 +55,6 @@ const ViewMember = () => {
             if (!userEmail) {
                 return null;
             }
-            console.log("current user role", currentUserInfo?.role)
             const fetcher =
                 currentUserInfo?.role === "admin" || currentUserInfo?.role === "owner"
                     ? getMembersInWorkspaceForManage
@@ -196,7 +195,7 @@ const ViewMember = () => {
         <div className="workspace-actions p-6 pt-0">
             <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-semibold text-gray-800">Workspace Members</h2>
-                {(currentUserInfo?.role === "owner" && !isPersonalWsp) && <InviteMember/>}
+                {(currentUserInfo?.role === "owner" && !isPersonalWsp) && <InviteMember members={membersData}/>}
             </div>
             {!isPersonalWsp && <div className="flex gap-4 mb-4">
                 <input
