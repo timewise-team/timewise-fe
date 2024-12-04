@@ -2,7 +2,7 @@ import CustomDialog from "@/components/custom-dialog";
 import {Form, FormControl, FormField, FormItem} from "@/components/ui/form";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useMutation, useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useSession} from "next-auth/react";
 import {useParams} from "next/navigation";
 import React, {useState, useTransition} from "react";
@@ -26,7 +26,7 @@ const InviteMember = () => {
     const [isPending, startTransition] = useTransition();
     const [email, setEmail] = useState("");
     const {stateUserEmails, stateWorkspacesByEmail} = useStateContext();
-
+    const queryClient = useQueryClient();
     const debouncedEmail = useDebounce(email, 1000);
 
     const form = useForm<z.infer<typeof SendingInvitation>>({
@@ -99,11 +99,16 @@ const InviteMember = () => {
             return response;
         },
     });
-
+    const organizationId = params.organizationId;
     const handleSubmission = handleSubmit((values) => {
         startTransition(() => {
             mutate(values, {
-                onSuccess: () => toast.success("Invitation sent successfully"),
+                onSuccess: () => {
+                    queryClient.invalidateQueries({
+                        queryKey: ["listMembers", organizationId]
+                    });
+                    toast.success("Invitation sent successfully")
+                },
                 onError: (error) => toast.error(error.message),
             });
         });

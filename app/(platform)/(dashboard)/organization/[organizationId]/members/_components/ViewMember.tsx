@@ -55,6 +55,7 @@ const ViewMember = () => {
             if (!userEmail) {
                 return null;
             }
+            console.log("current user role", currentUserInfo?.role)
             const fetcher =
                 currentUserInfo?.role === "admin" || currentUserInfo?.role === "owner"
                     ? getMembersInWorkspaceForManage
