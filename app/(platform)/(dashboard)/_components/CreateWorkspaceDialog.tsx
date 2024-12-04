@@ -104,11 +104,12 @@ const CreateDialog = () => {
       description={
         "Boost your productivity by making it easier for everyone to access boards in one location."
       }
+      btnContentIcon="Create New Workspace"
       btnSubmitContent="Create Workspace"
     >
       <Form {...form}>
         <form onSubmit={handleSubmit}>
-          <div className="grid gap-4  ">
+          <div className="grid gap-4">
             <div className="grid grid-cols-1 items-center gap-4">
               <FormField
                 control={form.control}

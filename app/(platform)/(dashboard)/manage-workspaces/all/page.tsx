@@ -244,7 +244,7 @@ const ManageWorkspaces = () => {
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto space-y-8">
-        <h1 className="text-3xl font-semibold text-gray-800 mb-6">
+        <h1 className="text-3xl font-semibold text-gray-800 mb-6 flex items-center gap-1">
           Manage Workspaces
           <CreateDialog />
         </h1>
@@ -329,46 +329,28 @@ const ManageWorkspaces = () => {
           <div className="space-y-6">
             {Object.keys(filteredWorkspaces).map((email) => (
               <div key={email} className="space-y-4">
-                <h3 className="text-xl font-medium text-gray-600">
-                  For {email}
-                </h3>
-
+                <h3 className="text-xl font-medium text-gray-600">{email}</h3>
                 <div className="flex items-center justify-between">
-                  {/* Left Pagination Button */}
-                  <div className="w-8 h-8 flex items-center justify-center">
-                    {pagination[email]?.currentPage > 1 ? (
-                      <button
-                        onClick={() => changePage(email, "prev")}
-                        className="p-2 rounded-md hover:bg-gray-300 flex items-center justify-center"
-                      >
-                        <ArrowLeftIcon className="w-4 h-4" />
-                      </button>
-                    ) : (
-                      <div className="w-4 h-4"></div>
-                    )}
-                  </div>
+                  {pagination[email]?.currentPage > 1 &&
+                      <div className="w-8 h-8 flex items-center justify-center">
+                        {pagination[email]?.currentPage > 1 && (
+                            <button
+                                onClick={() => changePage(email, "prev")}
+                                className="p-2 rounded-md hover:bg-gray-300 flex items-center justify-center"
+                            >
+                              <ArrowLeftIcon className="w-4 h-4"/>
+                            </button>
+                        )}
+                      </div>
+                  }
 
                   {/* Workspaces */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-1 mx-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-1">
                     {getCurrentWorkspaces(email).map((workspace) => (
                         <div key={workspace.ID} className="relative">
-                          {/* Nút Delete nằm bên ngoài Link và được định vị */}
-                          {memberAvatars[workspace.ID]?.some(
-                              (member) => member.email === email && member.role === "owner"
-                          ) && (
-                              <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    deleteWorkspace(String(workspace.ID), email);
-                                  }}
-                                  className="absolute top-2 right-2 px-4 py-2 rounded-md hover:bg-red-600 hover:text-white z-10"
-                              >
-                                X
-                              </button>
-                          )}
-
                           <Link href={`/organization/${workspace.ID}`}>
-                            <div className="flex flex-col bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all cursor-pointer relative min-h-full">
+                            <div
+                                className="flex flex-col bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all cursor-pointer relative min-h-full">
                               <h4 className="text-lg font-semibold text-gray-800">
                                 {workspace.title}
                               </h4>
