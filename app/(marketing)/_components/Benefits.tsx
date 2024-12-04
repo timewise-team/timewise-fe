@@ -15,7 +15,7 @@ const MAX_SCALE_RATIOS = [0.1, 0.05, 0.025];
 
 export const BENEFITS = [
   {
-    image: "/images/banner/1.png",
+    image: "/images/banner/2.png",
     type: "User Benefits",
     title: "AI-Driven Meeting Summaries<br/> with Timewise",
     items: [
@@ -27,7 +27,7 @@ export const BENEFITS = [
   },
 
   {
-    image: "/images/banner/2.png",
+    image: "/images/banner/1.png",
     type: "User Benefits",
     title: "Drag & Drop Scheduling<br/> with Timewise",
     items: [
@@ -38,7 +38,7 @@ export const BENEFITS = [
     bgColor: "#E5989B",
   },
   {
-    image: "/images/banner/3.png",
+    image: "/images/banner/5.png",
     type: "User Benefits",
     title: "Comprehensive Task Management",
     items: [
@@ -133,16 +133,9 @@ const Benefit = () => {
                     <Image
                       width={400}
                       height={400}
-                      src="/images/banner/4.png"
-                      alt="device-frame"
-                      className={style.smartWatch}
-                    />
-                    <Image
-                      width={400}
-                      height={400}
-                      className={style.iphone}
-                      src="/images/banner/5.jpeg"
-                      alt="device-frame"
+                      className={style.image}
+                      src={"/images/banner/3.png"}
+                      alt="feature-benefit"
                     />
                   </div>
                   {BENEFITS.map((description, index) => (

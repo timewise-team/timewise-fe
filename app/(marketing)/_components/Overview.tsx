@@ -40,7 +40,7 @@ const Overview = () => {
     <>
       <div className="max-w-screen-xl py-10 ">
         <h1 className=" text-6xl font-bold text-shadow-xl p-2 text-center">
-          Overview of TIMIWISE as AI-powered schedule platform
+          Overview of TIMEWISE as AI-powered schedule platform
         </h1>
         <p className="text-gray-950 text-center text-xl leading-6 tracking-[0.14px] mt-3 ">
           Enhance the visual feedback in the UI, such as adding animations when
