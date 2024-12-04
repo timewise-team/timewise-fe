@@ -51,10 +51,10 @@ const LinkedEmail = () => {
 
   const { mutate: unlinkEmailMutation } = useMutation({
       mutationFn: async (email: any) => {
-          const {user} = queryClient.getQueryData(["session"]) as {
-              user: { access_token: string };
-          };
-          return unlinkEmail(email, user.access_token);
+          if (!session || !session.user.access_token) {
+              throw new Error("No session or access token available");
+          }
+          return unlinkEmail(email, session.user.access_token);
       },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["linked-email", emailStatus] });
@@ -106,7 +106,7 @@ const LinkedEmail = () => {
                                 <TableCell>
                                   <Button
                                       className="hover:bg-sky-50 bg-transparent text-red-500"
-                                      onClick={() => unlinkEmailMutation(email)}
+                                      onClick={() => unlinkEmailMutation({ email })}
                                   >
                                     Unlink
                                   </Button>
