@@ -6,7 +6,7 @@ const OrganizationLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <main className="mx-auto h-full bg-gray-100">
       <div className="flex h-full">
-        <div className="w-75 shrink-0 hidden md:block min-w-[320px] max-w-[320px]">
+        <div className="w-75 shrink-0 hidden md:block w-[250px]">
           <Sidebar />
         </div>
         <div

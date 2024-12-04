@@ -118,6 +118,8 @@ const ViewMember = () => {
         onSuccess: () => refetch(),
     });
 
+    const [members, setMembers] = React.useState<any[]>([]);
+
     const handleRoleChange = async (organizationId: string | string[], email: string, role: string) => {
         const currentUser = membersData?.find(
             (member: { email: string | null | undefined }) => member.email === session?.user?.email

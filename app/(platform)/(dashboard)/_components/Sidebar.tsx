@@ -6,7 +6,7 @@ import { Accordion } from "@radix-ui/react-accordion";
 import { useLocalStorage } from "usehooks-ts";
 import NavItem from "./NavItem";
 import CreateDialog from "./CreateWorkspaceDialog";
-import { CalendarRange, Store } from "lucide-react";
+import {CalendarRange, Store, Users} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
@@ -125,15 +125,19 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
   }
 
   return (
-      <div className="flex flex-col p-8">
+      <div className="flex flex-col py-8 px-4">
           {/* Dropdown cho Linked Emails */}
-          <div className="w-56 mb-5">
+          <div className="w-56 mb-5 h-10">
               <Listbox value={selectedEmail} onChange={handleSelectEmail}>
                   <Listbox.Button
-                      className="border border-gray-300 px-3 py-2 w-full text-left rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center gap-2"
+                      className="border border-gray-300 h-12 px-3 py-2 w-full text-left rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center gap-2"
                   >
                       {selectedEmail === "all" ? (
-                          <span className="font-medium">All</span>
+                          <div className="flex items-center gap-2">
+                              <Users width={24} height={24} className="rounded-full"/>
+                              <span className="font-medium">All linked emails</span>
+                          </div>
+
                       ) : (
                           <div className="flex items-center gap-2">
                               <Image
