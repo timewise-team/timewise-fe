@@ -266,7 +266,7 @@ const ViewMember = () => {
                 </button>
             </div>}
             <div className="border-2 border-gray-300 rounded-xl">
-                <div className="overflow-auto" style={{maxHeight: "390px"}}>
+                <div className="overflow-auto" style={{maxHeight: "320px"}}>
                     <table className="w-full">
                         <tbody>
                         {(Array.isArray(filteredMembers) ? filteredMembers : []).map((member) => (
