@@ -66,8 +66,6 @@ const OrganizationIdPage = () => {
         return null;
       }
 
-      console.log("before call", selectedMembers);
-
       const data = await getBoardColumns(
         {
           ...params,

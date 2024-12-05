@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 "use client";
-import {ListWithCards} from "@/types/Board";
-import {DragDropContext, Droppable} from "@hello-pangea/dnd";
-import React, {useEffect, useState} from "react";
+import { ListWithCards } from "@/types/Board";
+import { DragDropContext, Droppable } from "@hello-pangea/dnd";
+import React, { useEffect, useState } from "react";
 import ListItem from "./ListItem";
 import ListForm from "./ListForm";
-import {useSession} from "next-auth/react";
-import {useParams} from "next/navigation";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {z} from "zod";
-import {toast} from "sonner";
-import {UpdateListOrder} from "@/actions/update-list-order/schema";
-import {updateBoardOrder, updateCardPosition} from "@/lib/fetcher";
-import {UpdateCardOrder} from "@/actions/update-card-order/schema";
-import {getUserEmailByWorkspace} from "@/utils/userUtils";
-import {useStateContext} from "@/stores/StateContext";
+import { useSession } from "next-auth/react";
+import { useParams } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
+import { toast } from "sonner";
+import { UpdateListOrder } from "@/actions/update-list-order/schema";
+import { updateBoardOrder, updateCardPosition } from "@/lib/fetcher";
+import { UpdateCardOrder } from "@/actions/update-card-order/schema";
+import { getUserEmailByWorkspace } from "@/utils/userUtils";
+import { useStateContext } from "@/stores/StateContext";
 
 interface Props {
   data: ListWithCards[];
@@ -36,7 +36,7 @@ const ListContainer = ({ data }: Props) => {
   const params = useParams();
   const [orderedData, setOrderedData] = useState(data);
   const queryClient = useQueryClient();
-    const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
+  const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
 
   const boardColumnsId = data.map((item) => item.id);
 
@@ -47,35 +47,50 @@ const ListContainer = ({ data }: Props) => {
         throw new Error("Invalid fields");
       }
 
-      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
+      const userEmail = getUserEmailByWorkspace(
+        stateUserEmails,
+        stateWorkspacesByEmail,
+        Number(params.organizationId)
+      );
 
       const response = await updateBoardOrder(
         {
           position: values.position,
           boardColumnId: values.boardColumnId,
           organizationId: params.organizationId,
-          userEmail: userEmail?.email
+          userEmail: userEmail?.email,
         },
         session
       );
+
+      console.log("Board columns update response:", response);
       return response;
     },
     onSuccess: () => {
-      toast.success("Board reordered !");
-      queryClient.invalidateQueries({ queryKey: ["listBoardColumns", "schedules"] });
+      toast.success("Board reordered!");
+      queryClient.invalidateQueries({
+        queryKey: ["listBoardColumns"],
+      });
     },
-    onError: () => {
+    onError: (error) => {
       toast.error("Error when updating board");
+      console.error("Board update error:", error);
     },
   });
 
   const { mutate: updateCardOrder } = useMutation({
     mutationFn: async (values: z.infer<typeof UpdateCardOrder>) => {
+      console.log("Updating card order with values:", values);
       const validatedFields = UpdateCardOrder.safeParse(values);
       if (!validatedFields.success) {
         throw new Error("Invalid fields");
       }
-      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
+
+      const userEmail = getUserEmailByWorkspace(
+        stateUserEmails,
+        stateWorkspacesByEmail,
+        Number(params.organizationId)
+      );
 
       const response = await updateCardPosition(
         {
@@ -83,18 +98,19 @@ const ListContainer = ({ data }: Props) => {
           board_column_id: values.board_column_id,
           position: values.position,
           organizationId: params.organizationId,
-            userEmail: userEmail?.email
+          userEmail: userEmail?.email,
         },
         session
       );
 
+      console.log("Card order update response:", response);
       return response;
     },
     onSuccess: () => {
-      toast.success("Card reordered !");
+      toast.success("Card reordered!");
       queryClient.invalidateQueries({ queryKey: ["listBoardColumns"] });
     },
-    onError: () => {
+    onError: (error) => {
       toast.error("Error when updating card");
     },
   });
@@ -131,7 +147,7 @@ const ListContainer = ({ data }: Props) => {
       setOrderedData(items);
       updateBoardColumns({
         position: destination.index + 1,
-        boardColumnId: Number(orderedData[source.index].id)
+        boardColumnId: Number(orderedData[source.index].id),
       });
     }
 
@@ -151,19 +167,19 @@ const ListContainer = ({ data }: Props) => {
       }
 
       // Check if cards exist on the sourceList
-      if (!sourceList.cards) {
-        sourceList.cards = [];
+      if (!sourceList.schedules) {
+        sourceList.schedules = [];
       }
 
       // Check if Cards exist on the destinationList
-      if (!destList.cards) {
-        destList.cards = [];
+      if (!destList.schedules) {
+        destList.schedules = [];
       }
 
       // Moving the card in the same list
       if (source.droppableId === destination.droppableId) {
         const reorderedCards = reorder(
-          sourceList.cards,
+          sourceList.schedules,
           source.index,
           destination.index
         );
@@ -175,7 +191,7 @@ const ListContainer = ({ data }: Props) => {
           }
         });
 
-        sourceList.cards = reorderedCards;
+        sourceList.schedules = reorderedCards;
 
         setOrderedData(newOrderedData);
         updateCardOrder({
@@ -183,7 +199,6 @@ const ListContainer = ({ data }: Props) => {
           position: destination.index + 1,
           cardId: parseInt(result.draggableId),
         });
-
         // User moves the cards to another list
       } else {
         // Remove card from the source list
@@ -198,15 +213,15 @@ const ListContainer = ({ data }: Props) => {
         movedCard.board_column_id = parseInt(destination.droppableId);
 
         // ADD card to the destination list
-        destList.cards.splice(destination.index, 0, movedCard);
+        destList.schedules.splice(destination.index, 0, movedCard);
         //update the card position
         // Update the position of each card in the source list
-        sourceList.cards.forEach((card, idx) => {
+        sourceList.schedules.forEach((card, idx) => {
           card.position = idx + 1; // Ensure position starts from 1
         });
 
         // Update the order for each card in the destination list
-        destList.cards.forEach((card, idx) => {
+        destList.schedules.forEach((card, idx) => {
           card.position = idx + 1; // Ensure position starts from 1
         });
 
