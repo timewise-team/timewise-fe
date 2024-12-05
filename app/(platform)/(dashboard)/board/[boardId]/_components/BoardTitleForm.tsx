@@ -3,7 +3,7 @@ import FormInput from "@/components/form/form-input";
 import { Button } from "@/components/ui/Button";
 import { Board } from "@/types/Board";
 import React, { ElementRef, useRef, useState } from "react";
-import InviteMember from "../../../organization/[organizationId]/_components/InviteMember";
+/*import InviteMember from "../../../organization/[organizationId]/_components/InviteMember";*/
 
 interface Props {
   data: Board;
@@ -78,7 +78,7 @@ const BoardTitleForm = ({ data }: Props) => {
       >
         {title}
       </Button>
-      <InviteMember />
+      {/*<InviteMember />*/}
     </div>
   );
 };
