@@ -11,7 +11,7 @@ interface Props {
 
 const Activities = ({ session, activities }: Props) => {
   return (
-    <div className="max-h-[150px] h-auto overflow-auto space-y-2">
+    <div className="max-h-[400px] h-auto overflow-auto space-y-2">
       {activities && activities.length > 0 ? (
         activities.map((activity: any) => (
           <div

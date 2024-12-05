@@ -167,7 +167,7 @@ const Content = ({data}: Props) => {
 
             <Participants scheduleData={data} participantsData={scheduleParticipant}/>
             <div className="flex flex-row items-center text-gray-400 mt-1">
-                <div className="h-4 w-4"/>
+                <div className="h-4 w-4 mr-2"/>
                 <p className="w-[105px]">Assignee</p>
                 <p className="text-yellow-500">{scheduleParticipant?.email}</p>
                 <div className="flex flex-row items-center gap-x-1">

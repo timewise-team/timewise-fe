@@ -251,6 +251,14 @@ export const inviteMemberToWorkspace = async (params: any, session: any) => {
             }),
         }
     );
+    if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData.message === "This email is not registered") {
+            throw new Error("This email is not registered");
+        } else {
+            throw new Error("Failed to send invitation");
+        }
+    }
     const data = await response.json();
     return data;
 };

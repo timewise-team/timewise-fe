@@ -85,7 +85,7 @@ const Comments = ({ session, data, scheduleId, workspaceId }: Props) => {
         queryKey: ["listComments"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["listBoardColumns", "schedules"],
+        queryKey: ["listBoardColumns"],
       });
       startTransition(() => {
         reset();
@@ -232,7 +232,7 @@ const Comments = ({ session, data, scheduleId, workspaceId }: Props) => {
           </Button>
         </form>
       </div>
-      <div className="max-h-[130px] h-auto overflow-auto space-y-2">
+      <div className="max-h-[400px] h-auto overflow-auto space-y-2">
         {data && data.length > 0 ? (
           data.map((comment: Comment) => (
             <div

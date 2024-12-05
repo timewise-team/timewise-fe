@@ -6,7 +6,7 @@ import { Accordion } from "@radix-ui/react-accordion";
 import { useLocalStorage } from "usehooks-ts";
 import NavItem from "./NavItem";
 import CreateWorkspaceDialogCompact from "./CreateWorkspaceDialogCompact";
-import {CalendarRange, Store, Users} from "lucide-react";
+import {CalendarRange, ChevronsUpDown, Store, Users} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
@@ -125,7 +125,7 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
   }
 
   return (
-      <div className="flex flex-col py-8 px-4">
+      <div className="flex flex-col pt-4 pb-8 px-4">
           {/* Dropdown cho Linked Emails */}
           <div className="w-56 mb-5 h-10">
               <Listbox value={selectedEmail} onChange={handleSelectEmail}>
@@ -133,9 +133,12 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
                       className="border border-gray-300 h-12 px-3 py-2 w-full text-left rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center gap-2"
                   >
                       {selectedEmail === "all" ? (
-                          <div className="flex items-center gap-2">
-                              <Users width={24} height={24} className="rounded-full"/>
-                              <span className="font-medium">All linked emails</span>
+                          <div className="flex items-center justify-between w-full">
+                              <div className="flex items-center gap-2">
+                                  <Users width={24} height={24} className="rounded-full"/>
+                                  <span className="font-medium">All Emails</span>
+                              </div>
+                              <ChevronsUpDown className="w-2.5 h-2.5"/>
                           </div>
 
                       ) : (
@@ -147,7 +150,7 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
                                   alt="Avatar"
                                   className="rounded-full"
                               />
-                              <div className="flex flex-col">
+                              <div className="flex flex-col w-[148px]">
                 <span className="font-medium truncate">
                   {selectedEmail.split("@")[0]}
                 </span>
@@ -155,6 +158,7 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
                   {selectedEmail}
                 </span>
                               </div>
+                              <ChevronsUpDown className="w-8 h-8"/>
                           </div>
                       )}
                   </Listbox.Button>
@@ -163,22 +167,16 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
                   >
                       <Listbox.Option
                           value="all"
-                          className="cursor-pointer p-3 hover:bg-gray-100 flex items-center gap-3"
+                          className="cursor-pointer p-3 hover:bg-gray-100 flex items-center gap-3 h-12"
                       >
-                          <Image
-                              width={24}
-                              height={24}
-                              src="/images/icons/google.svg"
-                              alt="Avatar"
-                              className="rounded-full"
-                          />
-                          <span className="font-medium">All</span>
+                          <Users width={24} height={24} className="rounded-full"/>
+                          <span className="font-medium">All Emails</span>
                       </Listbox.Option>
                       {linkedEmails?.map((email: string) => (
                           <Listbox.Option
                               key={email}
                               value={email}
-                              className="cursor-pointer p-3 hover:bg-gray-100 flex items-center gap-3"
+                              className="cursor-pointer p-3 hover:bg-gray-100 flex items-center gap-3 h-12"
                           >
                               <Image
                                   width={24}
@@ -203,25 +201,25 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
 
           <Separator className="my-3 w-full"/>
           <Link href={"/organization/calender"}>
-              <div className="font-medium text-xs flex mb-1 hover:cursor-pointer hover:bg-gray-200 w-full">
+              <div className="font-medium text-xs flex mb-1 hover:cursor-pointer w-full rounded-xl h-6">
                 <span className="flex items-center align-middle gap-1 font-semibold text-sm">
                   <CalendarRange className="w-4 h-4"/>
-                    Calendar
+                  <span>Calendar</span>
                 </span>
               </div>
           </Link>
-          <div className="flex justify-between w-full">
+          <Separator className="my-3 w-full"/>
+          <div className="flex justify-between w-full mb-1.5">
             <span className="flex gap-1 items-center font-semibold text-sm">
                 <Store className="w-4 h-4"/> Workspaces
             </span>
               <CreateWorkspaceDialogCompact/>
           </div>
-          <Separator className="my-3 w-full"/>
           {/* Workspaces Accordion */}
           <div className="flex flex-col justify-center">
               {Object.entries(groupedWorkspaces).map(([email, workspaces]) => (
                   <div key={email} className="mb-4">
-                      <h3 className="text-sm font-thin italic mb-2 text-gray-500">{email}</h3>
+                      <h3 className="text-sm font-thin italic mb-1 text-gray-500">{email}</h3>
                       <Accordion
                           type="multiple"
                           defaultValue={Object.keys(expanded).filter((key) => expanded[key])}
