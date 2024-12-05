@@ -2,12 +2,11 @@
 import React, {useEffect, useState} from "react";
 import {useParams} from "next/navigation";
 import {useSession} from "next-auth/react";
-import {useMutation, useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import Image from "next/image";
 import {
     fetchWorkspaceDetails,
     getCurrentWorkspaceUserInfo,
-    getMembersInWorkspace,
     getMembersInWorkspaceForManage,
     removeMember,
     updateRole
@@ -31,6 +30,7 @@ const ViewMember = () => {
     const [sortOrder, setSortOrder] = useState("asc");
     const [filteredMembers, setFilteredMembers] = useState<any[]>([]);
     const {stateUserEmails, stateWorkspacesByEmail} = useStateContext();
+    const queryClient = useQueryClient();
 
     const {data: currentUserInfo, isLoading: isLoadingUserInfo} = useQuery({
         queryKey: ["currentUserInfo", organizationId],
@@ -55,11 +55,7 @@ const ViewMember = () => {
             if (!userEmail) {
                 return null;
             }
-            const fetcher =
-                currentUserInfo?.role === "admin" || currentUserInfo?.role === "owner"
-                    ? getMembersInWorkspaceForManage
-                    : getMembersInWorkspace;
-            return await fetcher({...params, userEmail: userEmail.email}, session);
+            return await getMembersInWorkspaceForManage({...params, userEmail: userEmail.email}, session);
         },
         enabled: !!currentUserInfo?.role,
     });
@@ -73,27 +69,66 @@ const ViewMember = () => {
     });
 
     useEffect(() => {
-        let filtered = Array.isArray(membersData)
-            ? membersData?.filter((member: any) => {
-                const term = searchTerm.toLowerCase();
-                return (
-                    member.first_name.toLowerCase().includes(term) ||
-                    member.last_name.toLowerCase().includes(term) ||
-                    member.email.toLowerCase().includes(term)
-                );
-            }) : [];
+        if (!Array.isArray(membersData)) return;
 
-        filtered = filtered?.sort((a: any, b: any) => {
+        const userEmail = session?.user?.email?.toLowerCase();
+
+        const filtered = membersData.filter((member) => {
+            const isAdminOrOwner = currentUserInfo?.role === "admin" || currentUserInfo?.role === "owner";
+            const isMember = currentUserInfo?.role === "member";
+            const isGuest = currentUserInfo?.role === "guest";
+
+            if (isAdminOrOwner) {
+                return true;
+            }
+
+            if (isMember) {
+                const hasInvited = member.extra_data?.toLowerCase().includes(userEmail);
+                return (member.status === "joined" || hasInvited);
+            }
+
+            if (isGuest) {
+                return member.status === "joined";
+            }
+
+            return false;
+        });
+
+        const sorted = filtered.sort((a, b) => {
+
+            if (a.is_verify === false && b.is_verify !== false) return -1;
+            if (a.is_verify !== false && b.is_verify === false) return 1;
+
             const fieldA = a[sortBy]?.toLowerCase?.() || "";
             const fieldB = b[sortBy]?.toLowerCase?.() || "";
+
+            if (sortBy === "status") {
+                const statusOrder = {
+                    active: 1,
+                    "invited": 2,
+                    declined: 3,
+                    joined: 4,
+                };
+
+                const statusA = statusOrder[a.status] || 5;
+                const statusB = statusOrder[b.status] || 5;
+                console.log("status A", statusA)
+                console.log("status B", statusB)
+                if (sortOrder === "asc") {
+                    return statusA - statusB;
+                } else {
+                    return statusB - statusA;
+                }
+            }
+
             if (sortOrder === "asc") {
                 return fieldA > fieldB ? 1 : -1;
             }
             return fieldA < fieldB ? 1 : -1;
         });
 
-        setFilteredMembers(filtered || []);
-    }, [searchTerm, sortBy, sortOrder, membersData]);
+        setFilteredMembers(sorted);
+    }, [searchTerm, sortBy, sortOrder, membersData, session, currentUserInfo]);
 
     const mutationRoleChange = useMutation({
         mutationFn: async ({organizationId, email, role}: { organizationId: any; email: any; role: any }) => {
@@ -103,7 +138,10 @@ const ViewMember = () => {
             }
             return updateRole({organizationId, email, role, userEmail: userEmail.email}, session);
         },
-        onSuccess: () => refetch(),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["listMembers", organizationId] });
+            queryClient.invalidateQueries({ queryKey: ["currentUserInfo", organizationId] });
+        },
     });
 
     const mutationRemoveMember = useMutation({
@@ -115,7 +153,9 @@ const ViewMember = () => {
             return removeMember({organizationId, workspaceUserId, userEmail: userEmail.email}, session);
         },
 
-        onSuccess: () => refetch(),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["listMembers", organizationId] });
+        },
     });
 
     const [members, setMembers] = React.useState<any[]>([]);
@@ -195,7 +235,8 @@ const ViewMember = () => {
         <div className="workspace-actions p-6 pt-0">
             <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-semibold text-gray-800">Workspace Members</h2>
-                {(currentUserInfo?.role === "owner" && !isPersonalWsp) && <InviteMember members={membersData}/>}
+                {(currentUserInfo?.role !== "guest" && !isPersonalWsp) &&
+                    <InviteMember members={membersData} currentUserInfo={currentUserInfo}/>}
             </div>
             {!isPersonalWsp && <div className="flex gap-4 mb-4">
                 <input
@@ -214,6 +255,7 @@ const ViewMember = () => {
                     <option value="first_name">Name</option>
                     <option value="email">Email</option>
                     <option value="role">Role</option>
+                    <option value="status">Status</option>
                 </select>
 
                 <button
@@ -224,83 +266,124 @@ const ViewMember = () => {
                 </button>
             </div>}
             <div className="border-2 border-gray-300 rounded-xl">
-                <table className="w-full">
-                    <tbody>
-                    {(Array.isArray(filteredMembers) ? filteredMembers : []).map((member) => (
-                        <tr key={member.id} className="border-b border-gray-200">
-                            <td className="p-4 flex justify-between">
-                                <div className="flex items-center gap-4">
-                                    <Image
-                                        src={member?.profile_picture || "/default-avatar.png"}
-                                        alt="user"
-                                        className="w-10 h-10 rounded-full"
-                                        width={40}
-                                        height={40}
-                                    />
-                                    <div>
-                                        <div className="flex gap-2 items-center">
-                                            <p className="text-sm text-gray-800" style={{fontSize: "20px"}}>
-                                                {member?.first_name} {member?.last_name}
-                                                {member?.email === session?.user?.email && " (You)"}
-                                            </p>
-                                            <span className={`text-xs font-semibold px-2 py-1 rounded ${
-                                                member?.is_active
-                                                    ? "bg-green-100 text-green-700"
-                                                    : member?.status === "joined"
-                                                        ? "bg-gray-100 text-gray-700"
-                                                        : "bg-yellow-100 text-yellow-700"
-                                            }`}
-                                            >
-                                                {member?.is_active ? "Active" : member?.status === "joined" ? "Inactive" : "Invited"}
-                                            </span>
-                                        </div>
-                                        <p className="text-sm text-gray-500">{member?.email}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    {
-                                        (currentUserInfo?.role === "admin" || currentUserInfo?.role === "owner") ? (
-                                            member.role === "owner" || member.email === session?.user?.email ? (
-                                                <p className="text-sm text-gray-700 font-semibold">{member.role}</p>
-                                            ) : member.status === "pending" || !member.is_active ? (
-                                                <p className="text-sm text-gray-700">{member?.role}</p>
-                                            ) : (
-                                                <select
-                                                    value={member?.role}
-                                                    onChange={(e) =>
-                                                        openModal("changeRole", {
-                                                            email: member.email,
-                                                            role: e.target.value
-                                                        })
-                                                    }
-                                                    className="border border-gray-300 rounded p-1 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none hover:border-indigo-300 transition-all"
+                <div className="overflow-auto" style={{maxHeight: "320px"}}>
+                    <table className="w-full">
+                        <tbody>
+                        {(Array.isArray(filteredMembers) ? filteredMembers : []).map((member) => (
+                            <tr key={member.id} className="border-b border-gray-200">
+                                <td className="p-4 flex justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <Image
+                                            src={member?.profile_picture || "/default-avatar.png"}
+                                            alt="user"
+                                            className="w-10 h-10 rounded-full"
+                                            width={40}
+                                            height={40}
+                                        />
+                                        <div>
+                                            <div className="flex gap-2 items-center">
+                                                <p className="text-sm text-gray-800" style={{fontSize: "20px"}}>
+                                                    {member?.first_name} {member?.last_name}
+                                                    {member?.email === session?.user?.email && " (You)"}
+                                                </p>
+                                                <span
+                                                    className={`text-xs font-semibold px-2 py-1 rounded ${
+                                                        member?.is_verified === false
+                                                            ? "bg-yellow-100 text-yellow-700"
+                                                            : member?.status === "declined"
+                                                                ? "bg-red-100 text-red-700"
+                                                                : member?.status === "removed"
+                                                                    ? "bg-blue-100 text-gray-700"
+                                                                    : member?.is_active
+                                                                        ? "bg-green-100 text-green-700"
+                                                                        : member?.status === "joined"
+                                                                            ? "bg-gray-100 text-gray-700"
+                                                                            : "bg-yellow-100 text-yellow-700"
+                                                    }`}
                                                 >
-                                                    {(currentUserInfo?.role === "owner") ?
-                                                        <option value="owner">Owner</option> : ""}
-                                                    <option value="admin">Admin</option>
-                                                    <option value="member">Member</option>
-                                                    <option value="guest">Guest</option>
-                                                </select>
+                                            {member?.is_verified === false
+                                                ? "Awaiting Admin/Owner Approval"
+                                                : member?.status === "declined"
+                                                    ? "Rejected"
+                                                    : member?.status === "removed"
+                                                        ? "Removed"
+                                                        : member?.is_active
+                                                            ? "Active"
+                                                            : member?.status === "joined"
+                                                                ? "Inactive"
+                                                                : "Invited"}
+                                        </span>
+                                            </div>
+                                            <p className="text-sm text-gray-500">{member?.email}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        {(currentUserInfo?.role === "admin" || currentUserInfo?.role === "owner") ? (
+                                            member.role === "owner" || member.email === session?.user?.email ? (
+                                                <div className="flex-1 text-right">
+                                                    <p className="text-sm text-gray-700 font-semibold">{member.role}</p>
+                                                    {member?.extra_data && (
+                                                        <p className="text-sm text-gray-500 mt-1">{member?.extra_data}</p>
+                                                    )}
+                                                </div>
+                                            ) : member.status === "pending" ||
+                                            !member.is_active ||
+                                            member.status === "removed" ? (
+                                                <div className="flex-1 text-right">
+                                                    <p className="text-sm text-gray-700">{member?.role}</p>
+                                                    {member?.extra_data && (
+                                                        <p className="text-sm text-gray-500 mt-1">{member?.extra_data}</p>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className="flex-1 text-right">
+                                                    <select
+                                                        value={member?.role}
+                                                        onChange={(e) =>
+                                                            openModal("changeRole", {
+                                                                email: member.email,
+                                                                role: e.target.value,
+                                                            })
+                                                        }
+                                                        className="border border-gray-300 rounded p-1 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none hover:border-indigo-300 transition-all"
+                                                    >
+                                                        {currentUserInfo?.role === "owner" && (
+                                                            <option value="owner">Owner</option>
+                                                        )}
+                                                        <option value="admin">Admin</option>
+                                                        <option value="member">Member</option>
+                                                        <option value="guest">Guest</option>
+                                                    </select>
+                                                    {member?.extra_data && (
+                                                        <p className="text-sm text-gray-500 mt-1">{member?.extra_data}</p>
+                                                    )}
+                                                </div>
                                             )
                                         ) : (
-                                            <p className="text-sm text-gray-700">{member?.role}</p>
-                                        )
-                                    }
-                                    {(currentUserInfo?.role === "owner" || currentUserInfo?.role === "admin") && member?.email !== session?.user?.email
-                                        && member?.role !== "owner" && (
-                                            <button
-                                                onClick={() => openModal("removeMember", {memberId: member.id})}
-                                                className="text-red-500 hover:text-red-700"
-                                            >
-                                                <Delete size={18}/>
-                                            </button>
+                                            <div className="flex-1 text-right">
+                                                <p className="text-sm text-gray-700">{member?.role}</p>
+                                                {member?.extra_data && (
+                                                    <p className="text-sm text-gray-500 mt-1">{member?.extra_data}</p>
+                                                )}
+                                            </div>
                                         )}
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+                                        {(currentUserInfo?.role === "owner" || currentUserInfo?.role === "admin") &&
+                                            member?.email !== session?.user?.email &&
+                                            member?.role !== "owner" && (
+                                                <button
+                                                    onClick={() => openModal("removeMember", {memberId: member.id})}
+                                                    className="text-red-500 hover:text-red-700"
+                                                >
+                                                    <Delete size={18}/>
+                                                </button>
+                                            )}
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">

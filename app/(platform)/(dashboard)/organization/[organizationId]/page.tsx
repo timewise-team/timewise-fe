@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import {
   fetchWorkspaceDetails,
-  getBoardColumns,
+  getBoardColumns, getCurrentWorkspaceUserInfo,
   getMembersInWorkspace,
 } from "@/lib/fetcher";
 import InviteMember from "./_components/InviteMember";
@@ -116,6 +116,22 @@ const OrganizationIdPage = () => {
     enabled: !!session && !!workspace,
   });
 
+  const {data: currentUserInfo, isLoading: isLoadingUserInfo} = useQuery({
+    queryKey: ["currentUserInfo", params.organizationId],
+    queryFn: async ({queryKey}) => {
+      const [, orgId] = queryKey;
+      if (!session?.user?.email || !orgId) return null;
+
+      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
+      if (!userEmail) {
+        return null;
+      }
+
+      return await getCurrentWorkspaceUserInfo({organizationId: orgId, userEmail: userEmail.email}, session);
+    },
+    enabled: !!params.organizationId,
+  });
+
   if (isLoading) {
     return (
       <div className="w-full h-full p-4 space-y-4">
@@ -139,7 +155,7 @@ const OrganizationIdPage = () => {
             <p className="font-bold text-white">{workspace?.title}</p>
             <div className="flex items-center">
               <div className="flex flex-row p-2 justify-end w-[75%] text-white items-center">
-                <InviteMember members={listMembers} />
+                <InviteMember members={listMembers} currentUserInfo={currentUserInfo}/>
                 {Array.isArray(listMembers) &&
                   listMembers
                     ?.slice(0, 3)
