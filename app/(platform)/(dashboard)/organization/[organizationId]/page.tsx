@@ -66,8 +66,6 @@ const OrganizationIdPage = () => {
         return null;
       }
 
-      console.log("before call", selectedMembers);
-
       const data = await getBoardColumns(
         {
           ...params,
@@ -141,7 +139,7 @@ const OrganizationIdPage = () => {
             <p className="font-bold text-white">{workspace?.title}</p>
             <div className="flex items-center">
               <div className="flex flex-row p-2 justify-end w-[75%] text-white items-center">
-                <InviteMember />
+                <InviteMember members={listMembers} />
                 {Array.isArray(listMembers) &&
                   listMembers
                     ?.slice(0, 3)
