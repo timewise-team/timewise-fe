@@ -53,7 +53,6 @@ const InviteMember = ({ members, currentUserInfo }) => {
         setEmail(email);
         setValue("email", email, {shouldValidate: true});
         setIsCommandListOpen(false);
-        console.log("email", email);
     };
 
     const {data: userInvite} = useQuery({
@@ -210,7 +209,7 @@ const InviteMember = ({ members, currentUserInfo }) => {
                     </div>
                 </form>
             </Form>
-            <Tab/>
+            <Tab currentUserInfo={currentUserInfo}/>
         </CustomDialog>
     );
 };

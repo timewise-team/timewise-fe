@@ -13,11 +13,12 @@ import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
   data: Member[];
+  currentUserInfo: { role: string; access_token: string };
 }
 
 export const acceptMemberRequest = async (params: any, session: any) => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/verify-invitation/email/${params.email}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/verify-invitation`,
     {
       method: "PUT",
       headers: {
@@ -26,6 +27,11 @@ export const acceptMemberRequest = async (params: any, session: any) => {
         "X-Workspace-ID": `${params.organizationId}`,
         "Content-Type": "application/json",
       },
+      // truyền schedule id nhưng thực ra là wsp id =)))
+      body: JSON.stringify({
+        email: params.email,
+        schedule_id: parseInt(params.organizationId, 10),
+      }),
     }
   );
 
@@ -35,7 +41,7 @@ export const acceptMemberRequest = async (params: any, session: any) => {
 
 export const declineMemberRequest = async (params: any, session: any) => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/disprove-invitation/email/${params.email}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/workspace_user/disprove-invitation`,
     {
       method: "PUT",
       headers: {
@@ -44,6 +50,11 @@ export const declineMemberRequest = async (params: any, session: any) => {
         "X-Workspace-ID": `${params.organizationId}`,
         "Content-Type": "application/json",
       },
+      // truyền schedule id nhưng thực ra là wsp id =)))
+      body: JSON.stringify({
+        email: params.email,
+        schedule_id: parseInt(params.organizationId, 10),
+      }),
     }
   );
 
@@ -51,7 +62,7 @@ export const declineMemberRequest = async (params: any, session: any) => {
   return data;
 };
 
-const JoinRequest = ({ data }: Props) => {
+const JoinRequest = ({ data, currentUserInfo }: Props) => {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
   const params = useParams();
@@ -89,6 +100,7 @@ const JoinRequest = ({ data }: Props) => {
       }
       const response = await declineMemberRequest(
         {
+          userEmail: userEmail.email,
           email,
           organizationId: params.organizationId,
         },
@@ -104,7 +116,7 @@ const JoinRequest = ({ data }: Props) => {
       toast.error("Error when declining member request");
     },
   });
-
+  const userRole = currentUserInfo?.role;
   return (
     <div>
       {Array.isArray(data) && data.length > 0 ? (
@@ -129,25 +141,35 @@ const JoinRequest = ({ data }: Props) => {
               </div>
             </div>
             <div className="flex flex-row space-x-2">
-              <button
-                onClick={() => acceptMemberRequestMutation(member?.email)}
-                className="bg-green-500 text-white px-4 py-1 rounded-md"
-              >
-                Accept
-              </button>
-              <button
-                onClick={() => declineMemberRequestMutation(member?.email)}
-                className="bg-red-500 text-white px-4 py-1 rounded-md"
-              >
-                Decline
-              </button>
+              {userRole === "admin" || userRole === "owner" ? (
+                  <>
+                    <button
+                        onClick={() => acceptMemberRequestMutation(member?.email)}
+                        className="bg-green-500 text-white px-4 py-1 rounded-md"
+                    >
+                      Accept
+                    </button>
+                    <button
+                        onClick={() => declineMemberRequestMutation(member?.email)}
+                        className="bg-red-500 text-white px-4 py-1 rounded-md"
+                    >
+                      Decline
+                    </button>
+                  </>
+              ) : (
+                  <p className="text-sm text-gray-500">
+                    {member?.status === "joined"
+                        ? "Awaiting Admin/Owner Approval"
+                        : member?.status}
+                  </p>
+              )}
             </div>
           </div>
         ))
       ) : (
-        <p className="w-full flex items-center justify-center text-black text-md font-bold ">
-          No Join Request
-        </p>
+          <p className="w-full flex items-center justify-center text-black text-md font-bold ">
+            No Join Request
+          </p>
       )}
     </div>
   );

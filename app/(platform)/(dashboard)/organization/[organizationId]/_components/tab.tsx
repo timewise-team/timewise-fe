@@ -35,7 +35,7 @@ export const getUnverifiedMembers = async (params: any, session: any) => {
     return data;
 };
 
-const Tab = () => {
+const Tab = ({ currentUserInfo }) => {
     const [activeTab, setActiveTab] = useState(TAB_DATA[0].label); // Default active tab is "Join Requests"
     const [activeTabIndex, setActiveTabIndex] = useState(0);
     const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0);
@@ -107,7 +107,7 @@ const Tab = () => {
                 <Separator />
                 <div className="p-4">
                     {activeTab === "Join Requests" && (
-                        <JoinRequest data={unverifiedMembers} />
+                        <JoinRequest data={unverifiedMembers} currentUserInfo={currentUserInfo}/>
                     )}
                 </div>
             </div>
