@@ -232,7 +232,7 @@ const Comments = ({ session, data, scheduleId, workspaceId }: Props) => {
           </Button>
         </form>
       </div>
-      <div className="max-h-[400px] h-auto overflow-auto space-y-2">
+      <div className="max-h-[250px] overflow-auto space-y-2" style={{maxHeight:"250px"}}>
         {data && data.length > 0 ? (
           data.map((comment: Comment) => (
             <div
@@ -276,6 +276,9 @@ const Comments = ({ session, data, scheduleId, workspaceId }: Props) => {
                       </div>
                     )}
                   </>
+                )}
+                {comment.updated_at !== comment.created_at && (
+                    <p className="text-xs text-gray-500">Edited</p>
                 )}
               </div>
               <p className="pl-6 text-sm">{comment.content}</p>

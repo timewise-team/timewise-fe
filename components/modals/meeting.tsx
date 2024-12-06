@@ -158,7 +158,7 @@ const Meetting = ({session, data, scheduleId, disabled}: Props) => {
     };
 
     return (
-        <div className="max-h-[400px] h-auto overflow-auto space-y-2">
+        <div className="max-h-[250px] overflow-auto space-y-2" style={{maxHeight:"250px"}}>
             {/* Meeting Link Section */}
             <div className="space-y-2">
                 <div className="flex items-center gap-x-2">
