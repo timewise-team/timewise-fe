@@ -27,7 +27,7 @@ const FeatureComparison = () => {
   return (
     <div className="overflow-x-auto w-full max-w-[1200px] p-2  space-y-2 ">
       <h1 className=" text-6xl font-bold text-shadow-xl p-2 text-center">
-        Why choose TimeWise over Jira?
+        Why choose TimeWise?
       </h1>
       <h2 className=" text-xl  font-bold text-center p-2">
         See why TimeWise flexible, user-friendly Kanban boards are the top
