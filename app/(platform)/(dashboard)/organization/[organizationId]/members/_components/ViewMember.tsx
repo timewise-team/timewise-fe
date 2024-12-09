@@ -18,6 +18,11 @@ import { Skeleton } from "@components/ui/skeleton";
 import InviteMember from "@/app/(platform)/(dashboard)/organization/[organizationId]/_components/InviteMember";
 import { Workspace } from "@/types/Board";
 
+interface OpenModalParams {
+  action: any;
+  data: any;
+}
+
 const ViewMember = () => {
   const { data: session } = useSession();
   const params = useParams();
@@ -78,7 +83,7 @@ const ViewMember = () => {
     enabled: !!currentUserInfo?.role,
   });
 
-  const { data: workspaceInfo, isLoadingWorkspace } = useQuery<Workspace>({
+  const { data: workspaceInfo} = useQuery<Workspace>({
     queryKey: ["workspaceDetails", organizationId],
     queryFn: async () => {
       return await fetchWorkspaceDetails(organizationId as string, session);
@@ -119,7 +124,7 @@ const ViewMember = () => {
 
       const fieldA = a[sortBy]?.toLowerCase?.() || "";
       const fieldB = b[sortBy]?.toLowerCase?.() || "";
-
+      type Status = "active" | "invited" | "declined" | "joined";
       if (sortBy === "status") {
         const statusOrder = {
           active: 1,
@@ -128,8 +133,8 @@ const ViewMember = () => {
           joined: 4,
         };
 
-        const statusA = statusOrder[a.status] || 5;
-        const statusB = statusOrder[b.status] || 5;
+        const statusA = statusOrder[a.status as Status] || 5;
+        const statusB = statusOrder[b.status as Status] || 5;
         if (sortOrder === "asc") {
           return statusA - statusB;
         } else {
@@ -255,20 +260,20 @@ const ViewMember = () => {
 
   const handleModalAction = async () => {
     if (modalAction === "changeRole") {
-      const { email, role } = modalData;
+      const { email, role }: any = modalData;
       await handleRoleChange(organizationId, email, role);
     } else if (modalAction === "removeMember") {
-      const { memberId } = modalData;
+      const { memberId }: any = modalData;
       await handleRemoveMember(memberId);
     } else if (modalAction === "leaveWorkspace") {
-      const { wspUserId } = modalData;
+      const { wspUserId }: any = modalData;
       await handleLeaveWorkspace(wspUserId);
     }
     setModalOpen(false);
     refetch();
   };
 
-  const openModal = (action, data) => {
+  const openModal = ({action, data}: OpenModalParams) => {
     setModalAction(action);
     setModalData(data);
     setModalOpen(true);
@@ -426,10 +431,10 @@ const ViewMember = () => {
                               <select
                                 value={member?.role}
                                 onChange={(e) =>
-                                  openModal("changeRole", {
+                                  openModal({action : "changeRole", data : {
                                     email: member.email,
                                     role: e.target.value,
-                                  })
+                                  }})
                                 }
                                 className="border border-gray-300 rounded p-1 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none hover:border-indigo-300 transition-all"
                               >
@@ -465,9 +470,9 @@ const ViewMember = () => {
                           member?.role !== "owner" && (
                             <button
                               onClick={() =>
-                                openModal("removeMember", {
+                                openModal({action : "removeMember", data : {
                                   memberId: member.id,
-                                })
+                                }})
                               }
                               className="text-red-500 hover:text-red-700"
                             >
