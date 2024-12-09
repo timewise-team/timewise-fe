@@ -63,7 +63,6 @@ const ListContainer = ({ data }: Props) => {
         session
       );
 
-      console.log("Board columns update response:", response);
       return response;
     },
     onSuccess: () => {
@@ -80,7 +79,6 @@ const ListContainer = ({ data }: Props) => {
 
   const { mutate: updateCardOrder } = useMutation({
     mutationFn: async (values: z.infer<typeof UpdateCardOrder>) => {
-      console.log("Updating card order with values:", values);
       const validatedFields = UpdateCardOrder.safeParse(values);
       if (!validatedFields.success) {
         throw new Error("Invalid fields");
@@ -103,7 +101,6 @@ const ListContainer = ({ data }: Props) => {
         session
       );
 
-      console.log("Card order update response:", response);
       return response;
     },
     onSuccess: () => {

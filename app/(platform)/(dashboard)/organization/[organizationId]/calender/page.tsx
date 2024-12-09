@@ -41,7 +41,6 @@ const WorkspaceCalender = () => {
   const openDialog = () => setIsDialogOpen(true);
   //openDialog();
   const closeDialog = () => {
-    console.log(isDialogOpen);
     setIsDialogOpen(false);
   };
 

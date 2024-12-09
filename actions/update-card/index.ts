@@ -6,7 +6,6 @@ import { createSafeAction } from "@/lib/create-safe-action";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   let card;
-  console.log("data", data);
 
   return { data: card };
 };

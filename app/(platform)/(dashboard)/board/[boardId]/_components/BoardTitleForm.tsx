@@ -15,8 +15,6 @@ const BoardTitleForm = ({ data }: Props) => {
   const inputRef = useRef<ElementRef<"input">>(null);
   const [title, setTitle] = useState(data.title);
 
-  console.log(setTitle);
-
   // const { execute } = useAction(updateBoard, {
   //   onSuccess: (data) => {
   //     toast.success(`Board + "${data.title}" + " title updated successfully"`);
