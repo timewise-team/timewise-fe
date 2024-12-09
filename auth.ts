@@ -49,7 +49,6 @@ export const config = {
           }
           const data = await response.json();
           token.accessToken = data.access_token;
-          console.log("account_accesstoken", account.access_token);
         } catch (error) {
           console.error("Failed to save token:", error);
         }

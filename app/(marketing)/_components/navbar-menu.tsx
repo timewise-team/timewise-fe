@@ -32,7 +32,6 @@ import { signIn } from "next-auth/react";
 const Navbar: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
-  console.log(open);
 
   const handleSignIn = async () => {
     await signIn("google", { redirectTo: "/organization/calender" });

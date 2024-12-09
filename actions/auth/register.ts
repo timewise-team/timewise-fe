@@ -24,11 +24,6 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
     );
     const result = await response.json();
     //log password and confirm password
-    console.log("pwd", values.password);
-    console.log("cfpwd", values.confirm_password);
-    console.log("result", result);
-    //log name of fetch api
-    console.log("fetch", `${process.env.API_BASE_URL}/auth/register`);
 
     if (result.error) {
       return { error: result.error };
