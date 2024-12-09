@@ -19,7 +19,12 @@ import {SendingInvitation} from "@/actions/invite-member/schema";
 import {getUserEmailByWorkspace} from "@/utils/userUtils";
 import {useStateContext} from "@/stores/StateContext";
 
-const InviteMember = ({ members, currentUserInfo }) => {
+interface Props {
+    members: any;
+    currentUserInfo: any;
+}
+
+const InviteMember = ({ members, currentUserInfo}: Props) => {
     const {data: session} = useSession();
     const params = useParams();
     const [isCommandListOpen, setIsCommandListOpen] = useState(false);

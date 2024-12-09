@@ -9,6 +9,10 @@ import JoinRequest from "./join-request";
 import {getUserEmailByWorkspace} from "@/utils/userUtils";
 import {useStateContext} from "@/stores/StateContext";
 
+interface Props {
+    currentUserInfo: any;
+}
+
 // Keep only the "Join Requests" tab data
 const TAB_DATA = [
     {
@@ -35,7 +39,7 @@ export const getUnverifiedMembers = async (params: any, session: any) => {
     return data;
 };
 
-const Tab = ({ currentUserInfo }) => {
+const Tab = ({ currentUserInfo }: Props) => {
     const [activeTab, setActiveTab] = useState(TAB_DATA[0].label); // Default active tab is "Join Requests"
     const [activeTabIndex, setActiveTabIndex] = useState(0);
     const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0);
