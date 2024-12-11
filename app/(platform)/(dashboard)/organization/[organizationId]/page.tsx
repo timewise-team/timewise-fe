@@ -89,7 +89,7 @@ const OrganizationIdPage = () => {
           maxPosition
         );
       } else {
-        queryClient.setQueryData(["maxPosition", params.organizationId], 1);
+        queryClient.setQueryData(["maxPosition", params.organizationId], 0);
       }
       return data;
     },
