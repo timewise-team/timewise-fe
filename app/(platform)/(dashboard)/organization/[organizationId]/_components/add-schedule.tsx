@@ -1,22 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import CustomDialog from "@/components/custom-dialog";
-import { Form } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
-import React, { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { toast } from "sonner";
+import {Form} from "@/components/ui/form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useSession} from "next-auth/react";
+import {useParams} from "next/navigation";
+import React, {useState, useTransition} from "react";
+import {useForm} from "react-hook-form";
+import {z} from "zod";
+import {toast} from "sonner";
 import FormSubmit from "@/components/form/form-submit";
-import { Input } from "@/components/ui/input";
-import { CreateCard } from "@/actions/create-card/schema";
-import { ListWithCards, Workspace } from "@/types/Board";
-import { Label } from "@/components/ui/label";
-import { useStateContext } from "@/stores/StateContext";
-import { getUserEmailByWorkspace } from "@/utils/userUtils";
+import {Input} from "@/components/ui/input";
+import {CreateCard} from "@/actions/create-card/schema";
+import {ListWithCards, Workspace} from "@/types/Board";
+import {Label} from "@/components/ui/label";
+import {useStateContext} from "@/stores/StateContext";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
 
 interface Props {
   listId: string;
@@ -75,12 +75,6 @@ const AddSchedule = ({
     closeDialog();
   };
 
-  const userEmail = getUserEmailByWorkspace(
-    stateUserEmails,
-    stateWorkspacesByEmail,
-    Number(params.organizationId)
-  );
-
   const handleWorkspaceChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -118,9 +112,12 @@ const AddSchedule = ({
   const { data: wsByEmail } = useQuery({
     queryKey: ["workspaces", workspaceId],
     queryFn: async () => {
-      const userEmail = session?.user.email || "";
-      const workspaces = await fetchWorkspaces(userEmail);
-      return workspaces;
+        return Object.entries(stateWorkspacesByEmail).flatMap(([mail, wsps]) =>
+          wsps.map((ws: any) => ({
+            ...ws,
+            label: `${mail} - ${ws.title}`,
+          }))
+        ).sort((a: any, b: any) => a.label.localeCompare(b.label));
     },
     enabled: !!session,
   });
@@ -139,6 +136,9 @@ const AddSchedule = ({
         throw new Error("Invalid fields");
       }
       const { title, description } = values;
+
+      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(selectedWorkspaceId));
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedules`,
         {
@@ -168,6 +168,7 @@ const AddSchedule = ({
       queryClient.invalidateQueries({
         queryKey: ["listBoardColumns", params.organizationId],
       });
+      queryClient.invalidateQueries({queryKey: ["schedules"]});
     },
     onError: (error) => {
       toast.error(
@@ -204,6 +205,7 @@ const AddSchedule = ({
     queryKey: ["listBoard", selectedWorkspaceId],
     queryFn: async () => {
       if (selectedWorkspaceId) {
+        const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(selectedWorkspaceId));
         return await getBoardByWsId(
           { workspace_id: selectedWorkspaceId, userEmail: userEmail?.email },
           session
@@ -273,9 +275,10 @@ const AddSchedule = ({
                     onChange={handleWorkspaceChange}
                     className="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   >
+                    <option value="">Select workspace</option>
                     {wsByEmail?.map((workspace: Workspace) => (
                       <option key={workspace.ID} value={workspace.ID}>
-                        {workspace.title}
+                        {workspace.label}
                       </option>
                     ))}
                   </select>
@@ -292,6 +295,7 @@ const AddSchedule = ({
                     disabled={!selectedWorkspaceId || isPending}
                     className="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   >
+                    <option value="">Select board column</option>
                     {listBoard?.map((board: any) => (
                       <option key={board.ID} value={board.ID}>
                         {board.name}
@@ -301,7 +305,7 @@ const AddSchedule = ({
                 </div>
               )}
             </div>
-            <FormSubmit className="w-full mt-2">Add the schedule</FormSubmit>
+            <FormSubmit className="w-full mt-5">Add the schedule</FormSubmit>
           </form>
         </Form>
       </CustomDialog>

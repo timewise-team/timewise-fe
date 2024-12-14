@@ -63,15 +63,9 @@ function CalendarApp({ scheduleData, workspaceData }: CalendarAppProps) {
     );
 
     const updatedStart = new Date(event.start);
-    const updatedStartStr = format(
-      updatedStart.setHours(updatedStart.getHours() - 7),
-      "yyyy-MM-dd HH:mm:ss.SSS"
-    );
+    const updatedStartStr = format(updatedStart, "yyyy-MM-dd HH:mm:ss.SSS");
     const updatedEnd = new Date(event.end);
-    const updatedEndStr = format(
-      updatedEnd.setHours(updatedEnd.getHours() - 7),
-      "yyyy-MM-dd HH:mm:ss.SSS"
-    );
+    const updatedEndStr = format(updatedEnd, "yyyy-MM-dd HH:mm:ss.SSS");
 
     const userEmail = getUserEmailByWorkspace(
       stateUserEmails,

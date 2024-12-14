@@ -2,6 +2,7 @@
 import {UpdateCardOrder} from "@/actions/update-card-order/schema";
 import {UpdateListOrder} from "@/actions/update-list-order/schema";
 import {Card} from "@/types/Board";
+import {format, parse, subHours} from "date-fns";
 
 export const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -579,6 +580,15 @@ export const updateCardID = async (
     params: any,
     session: any
 ): Promise<Card> => {
+    const startTime = params.start_time;
+    const endTime = params.end_time;
+
+    const parsedStartTime = parse(startTime, "yyyy-MM-dd HH:mm:ss.SSS", new Date());
+    const parsedEndTime = parse(endTime, "yyyy-MM-dd HH:mm:ss.SSS", new Date());
+
+    const adjustedStartTime = subHours(parsedStartTime, 7);
+    const adjustedEndTime = subHours(parsedEndTime, 7);
+
     const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedules/${params.cardId}`,
         {
@@ -592,12 +602,12 @@ export const updateCardID = async (
             body: JSON.stringify({
                 all_day: params.all_day,
                 description: params.description,
-                end_time: params.end_time,
+                end_time: format(adjustedEndTime, "yyyy-MM-dd HH:mm:ss.SSS"),
                 extra_data: params.extra_data,
                 location: params.location,
                 priority: params.priority,
                 recurrence_pattern: params.recurrence_pattern,
-                start_time: params.start_time,
+                start_time: format(adjustedStartTime, "yyyy-MM-dd HH:mm:ss.SSS"),
                 status: params.status,
                 title: params.title,
                 video_transcript: params.video_transcript,

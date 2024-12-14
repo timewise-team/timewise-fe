@@ -67,7 +67,7 @@ export function DatePicker({ data, disabled }: Props) {
           all_day: values.all_day,
           description: values.description,
           end_time: format(
-            new Date(new Date(values.end_time).getTime() - 7 * 60 * 60 * 1000),
+              new Date(values.end_time),
             "yyyy-MM-dd HH:mm:ss.SSS"
           ),
           extra_data: values.extra_data,
@@ -75,7 +75,7 @@ export function DatePicker({ data, disabled }: Props) {
           priority: values.priority,
           recurrence_pattern: values.recurrence_pattern,
           start_time: format(
-              new Date(values.start_time).getTime() - 7 * 60 * 60 * 1000,
+              new Date(values.start_time),
             "yyyy-MM-dd HH:mm:ss.SSS"
           ),
           status: values.status,
