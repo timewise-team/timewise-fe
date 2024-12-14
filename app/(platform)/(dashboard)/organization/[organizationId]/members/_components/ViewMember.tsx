@@ -17,6 +17,7 @@ import { useStateContext } from "@/stores/StateContext";
 import { Skeleton } from "@components/ui/skeleton";
 import InviteMember from "@/app/(platform)/(dashboard)/organization/[organizationId]/_components/InviteMember";
 import { Workspace } from "@/types/Board";
+import {toast} from "sonner";
 
 interface OpenModalParams {
   action: any;
@@ -182,6 +183,9 @@ const ViewMember = () => {
         queryKey: ["currentUserInfo", organizationId],
       });
     },
+    onError: () => {
+      toast.error("Error when updating member roles. Please try again later.")
+    }
   });
 
   const mutationRemoveMember = useMutation({

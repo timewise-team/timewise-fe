@@ -8,6 +8,11 @@ import {deleteWorkspace, fetchWorkspaceDetails, getCurrentWorkspaceUserInfo, rem
 import {useStateContext} from "@/stores/StateContext";
 import {Workspace} from "@/types/Board";
 
+interface OpenModalParams {
+    action: any;
+    data: any;
+}
+
 const WorkspaceActions = () => {
     const {data: session} = useSession();
     const params = useParams();
@@ -63,7 +68,7 @@ const WorkspaceActions = () => {
         onSuccess: () => window.location.href = "/dashboard",
     });
 
-    const openModal = (action, data) => {
+    const openModal = ({action, data}: OpenModalParams) => {
         setModalAction(action);
         setModalData(data);
         setIsModalOpen(true);
@@ -77,7 +82,8 @@ const WorkspaceActions = () => {
 
     const handleConfirm = () => {
         if (modalAction === "leaveWorkspace" && modalData) {
-            mutationRemoveMember.mutate(modalData.wspUserId);
+            const { wspUserId }: any = modalData;
+            mutationRemoveMember.mutate(wspUserId);
         } else if (modalAction === "deleteWorkspace") {
             mutationDeleteWorkspace.mutate();
         }
@@ -112,10 +118,11 @@ const WorkspaceActions = () => {
                                 </p>
                             </div>
                             <button
-                                onClick={() => openModal("leaveWorkspace", {wspUserId: currentUserInfo?.ID})}
+                                onClick={() => openModal({action : "leaveWorkspace", data : {wspUserId: currentUserInfo?.ID}})}
                                 className={` text-white p-2 h-8 flex items-center justify-center font-semibold text-xs rounded  w-32 
-                                ${isPersonalWsp ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-red-500 hover:bg-red-700"}`}
-                                disabled={isPersonalWsp}
+                                ${isPersonalWsp || currentUserInfo?.role === "owner"
+                                    ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-red-500 hover:bg-red-700"}`}
+                                disabled={isPersonalWsp || currentUserInfo?.role === "owner"}
                             >
                                 Leave Workspace
                             </button>
@@ -133,7 +140,7 @@ const WorkspaceActions = () => {
                                     </p>
                                 </div>
                                 <button
-                                    onClick={() => openModal("deleteWorkspace", {organizationId})}
+                                    onClick={() => openModal({action : "deleteWorkspace", data : {organizationId}})}
                                     className={` text-white p-2 h-8 flex items-center justify-center font-semibold text-xs rounded  w-32 
                                 ${isPersonalWsp ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-red-500 hover:bg-red-700"}`}
                                     disabled={isPersonalWsp}
