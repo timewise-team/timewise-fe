@@ -100,13 +100,13 @@ const WorkspaceInfo = () => {
                         <div className="flex flex-col w-[50%]">
                             <input
                                 type="text"
-                                value={title}
+                                value={workspaceInfo.title}
                                 onChange={(e) => setTitle(e.target.value)}
                                 className="text-2xl font-semibold border rounded-lg mb-2 px-2 py-1"
                                 placeholder={"Enter workspace title"}
                             />
                             <textarea
-                                value={description}
+                                value={workspaceInfo.description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 className="text-sm text-gray-600 border rounded-lg px-2 py-1"
                                 placeholder={"Enter workspace description"}
@@ -129,30 +129,6 @@ const WorkspaceInfo = () => {
                     )
                 }
             </div>
-            {/*{isOwner && isEditing ? (*/}
-            {/*    <div>*/}
-            {/*        <input*/}
-            {/*            type="text"*/}
-            {/*            value={title}*/}
-            {/*            onChange={(e) => setTitle(e.target.value)}*/}
-            {/*            className="text-4xl font-semibold w-full mb-2"*/}
-            {/*        />*/}
-            {/*        <textarea*/}
-            {/*            value={description}*/}
-            {/*            onChange={(e) => setDescription(e.target.value)}*/}
-            {/*            className="text-sm text-gray-600 w-full"*/}
-            {/*        />*/}
-            {/*        <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded mt-2">*/}
-            {/*            Save*/}
-            {/*        </button>*/}
-            {/*        <button onClick={() => setIsEditing(false)}*/}
-            {/*                className="bg-gray-500 text-white px-4 py-2 rounded mt-2 ml-2">*/}
-            {/*            Cancel*/}
-            {/*        </button>*/}
-            {/*    </div>*/}
-            {/*) : (*/}
-            {/*    <div></div>*/}
-            {/*)}*/}
         </div>
     );
 };

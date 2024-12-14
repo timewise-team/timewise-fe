@@ -60,7 +60,7 @@ const WorkspaceActions = () => {
             }
             return deleteWorkspace(organizationId.toString(), userEmail.email, session);
         },
-        onSuccess: () => window.location.href = "/dashboard",
+        onSuccess: () => window.location.href = "/organization/calender",
     });
 
     const openModal = (action, data) => {
@@ -90,6 +90,8 @@ const WorkspaceActions = () => {
 
     const isPersonalWsp = workspaceInfo?.type === "personal";
 
+    const isAllowedLeave = !isPersonalWsp && currentUserInfo?.role !== "owner";
+
     return (
         <div className="workspace-actions p-6 pt-0">
             <div className="flex justify-between items-center mb-2">
@@ -114,8 +116,8 @@ const WorkspaceActions = () => {
                             <button
                                 onClick={() => openModal("leaveWorkspace", {wspUserId: currentUserInfo?.ID})}
                                 className={` text-white p-2 h-8 flex items-center justify-center font-semibold text-xs rounded  w-32 
-                                ${isPersonalWsp ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-red-500 hover:bg-red-700"}`}
-                                disabled={isPersonalWsp}
+                                ${!isAllowedLeave ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-red-500 hover:bg-red-700"}`}
+                                disabled={!isAllowedLeave}
                             >
                                 Leave Workspace
                             </button>
