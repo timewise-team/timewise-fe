@@ -148,13 +148,13 @@ const OrganizationIdPage = () => {
   }
 
   return (
-    <div className="w-full mb-5">
-      <div className=" relative bg-no-repeat bg-cover bg-center ">
-        <main className="relative space-y-1 h-full ">
-          <div className="flex flex-row items-center px-1 w-full bg-black bg-opacity-40 backdrop-blur justify-between">
-            <p className="font-bold text-white">{workspace?.title}</p>
+    <div className="w-full mb-5 h-full">
+      <div className="relative bg-no-repeat bg-cover bg-center overflow-hidden h-full">
+        <main className="relative space-y-1 h-full">
+          <div className="flex flex-row items-center px-1 w-full bg-gray-100 justify-between">
+            <p className="font-bold">{workspace?.title}</p>
             <div className="flex items-center">
-              <div className="flex flex-row p-2 justify-end w-[75%] text-white items-center">
+              <div className="flex flex-row p-2 justify-end w-[75%] items-center">
                 <InviteMember members={listMembers} currentUserInfo={currentUserInfo}/>
                 {Array.isArray(listMembers) &&
                   listMembers
@@ -169,12 +169,12 @@ const OrganizationIdPage = () => {
                         className="h-6 w-6 rounded-full object-cover"
                       />
                     ))}
-                {listMembers && data?.length > 3 && (
-                  <span className="flex items-center justify-center h-4 w-4 rounded-full bg-black text-xs text-white  border-2 border-white">
-                    +{data.length - 3}
+                {listMembers && listMembers?.length > 3 && (
+                  <span className="flex items-center justify-center h-4 w-4 rounded-full bg-black text-xs text-white border-2 border-white">
+                    +{listMembers.length - 3}
                   </span>
                 )}
-                <p className="text-white px-2">||</p>
+                <p className="px-2">||</p>
               </div>
 
               <FilterPopover

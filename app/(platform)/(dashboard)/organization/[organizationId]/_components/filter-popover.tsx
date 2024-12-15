@@ -99,8 +99,8 @@ const FilterPopover = memo(
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
-            className="bg-transparent flex flex-row items-center text-white font-bold gap-x-2 w-fit cursor-pointer
-            hover:bg-white hover:bg-opacity-20 p-2 rounded-lg"
+            className="bg-transparent flex flex-row items-center font-bold gap-x-2 w-fit cursor-pointer
+            p-2 rounded-lg text-black hover:bg-gray-100"
           >
             <ListFilter size={24} />
             <p>Filter</p>
@@ -260,7 +260,7 @@ const FilterPopover = memo(
                 </div>
               </div>
               <div className="flex justify-end">
-                <Button onClick={handleClearFilters} className=" text-white">
+                <Button onClick={handleClearFilters} className="text-white">
                   Clear Filters
                 </Button>
               </div>

@@ -37,7 +37,6 @@ export const CardForm = forwardRef<HTMLTextAreaElement, Props>(
     const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
 
       const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(params.organizationId));
-
     const { mutate } = useMutation({
       mutationFn: async (values: z.infer<typeof CreateCard>) => {
         const validatedFields = CreateCard.safeParse(values);

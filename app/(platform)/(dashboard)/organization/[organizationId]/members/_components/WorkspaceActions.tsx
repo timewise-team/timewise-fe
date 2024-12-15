@@ -49,7 +49,7 @@ const WorkspaceActions = () => {
             }
             return removeMember({organizationId, workspaceUserId, userEmail: userEmail.email}, session);
         },
-        onSuccess: () => window.location.reload(),
+        onSuccess: () => window.location.href = "/organization/calender",
     });
 
     const mutationDeleteWorkspace = useMutation({

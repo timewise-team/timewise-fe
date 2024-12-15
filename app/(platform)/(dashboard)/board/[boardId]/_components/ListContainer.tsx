@@ -233,7 +233,7 @@ const ListContainer = ({ data }: Props) => {
   };
 
   return (
-    <div className="p-2">
+    <div className="p-2 overflow-x-auto h-full">
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="lists" type="list" direction="horizontal">
           {(provided) => (

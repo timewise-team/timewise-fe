@@ -137,8 +137,7 @@ const AddSchedule = ({
       }
       const { title, description } = values;
 
-      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(selectedWorkspaceId));
-
+      const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(selectedWorkspaceId || params.organizationId));
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/schedules`,
         {
@@ -157,9 +156,11 @@ const AddSchedule = ({
           }),
         }
       );
+      if (!response.ok) {
+        throw new Error("Failed to create schedule");
+      }
 
-      const data = await response.json();
-      return data;
+      return await response.json();
     },
     onSuccess: () => {
       toast.success(`Schedule created successfully`);
@@ -205,7 +206,7 @@ const AddSchedule = ({
     queryKey: ["listBoard", selectedWorkspaceId],
     queryFn: async () => {
       if (selectedWorkspaceId) {
-        const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(selectedWorkspaceId));
+        const userEmail = getUserEmailByWorkspace(stateUserEmails, stateWorkspacesByEmail, Number(selectedWorkspaceId || params.organizationId));
         return await getBoardByWsId(
           { workspace_id: selectedWorkspaceId, userEmail: userEmail?.email },
           session
