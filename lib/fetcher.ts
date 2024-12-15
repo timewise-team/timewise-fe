@@ -836,6 +836,30 @@ export const addPersonalReminder = async (params: any, session: any) => {
     return data;
 };
 
+//add all reminder
+export const addAllReminder = async (params: any, session: any) => {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/reminder/all_participants`,
+        {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${session?.user.access_token}`,
+                "X-User-Email": `${params.userEmail}`,
+                "X-Workspace-ID": `${params.organizationId}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                schedule_id: params.schedule_id,
+            }),
+        }
+    );
+    if (!response.ok) {
+        throw new Error(response.json().text);
+    }
+    const data = await response.json();
+    return data;
+};
+
 // Update reminder participant
 export const updateReminderPersonal = async (params: any, session: any) => {
     const response = await fetch(

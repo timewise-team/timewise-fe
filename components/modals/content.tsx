@@ -143,6 +143,7 @@ const Content = ({data}: Props) => {
                 <div className="flex flex-row items-center gap-x-3">
                     <AllReminder
                         data={allReminder}
+                        schedule={data}
                         disabled={
                             !checkSchedulePermission(
                                 data.extra_data,

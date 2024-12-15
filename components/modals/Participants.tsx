@@ -222,8 +222,6 @@ const Participants = ({
     });
   };
 
-  console.log('workspace', workspace)
-
   return (
     <div className="mt-2">
       <div className="flex gap-x-2 text-gray-400">

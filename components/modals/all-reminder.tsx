@@ -3,7 +3,7 @@
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {format, parseISO} from "date-fns";
-import {Users} from "lucide-react";
+import {Plus, Users} from "lucide-react";
 import {useSession} from "next-auth/react";
 import {useParams} from "next/navigation";
 import React, {useEffect, useRef, useState} from "react";
@@ -11,12 +11,13 @@ import {useForm} from "react-hook-form";
 import {toast} from "sonner";
 import {z} from "zod";
 import {Form} from "../ui/form";
-import {updateReminderParticipant} from "@/lib/fetcher";
+import {addAllReminder, updateReminderParticipant} from "@/lib/fetcher";
 import {getUserEmailByWorkspace} from "@/utils/userUtils";
 import {useStateContext} from "@/stores/StateContext";
 
 interface Props {
   data: any;
+  schedule: any;
   disabled?: boolean;
 }
 
@@ -24,7 +25,7 @@ export const Reminder = z.object({
   reminder_time: z.string(),
 });
 
-const AllReminder = ({ data, disabled }: Props) => {
+const AllReminder = ({ data, schedule, disabled }: Props) => {
   const [reminderTime] = useState(
     data?.reminder_time
       ? format(parseISO(data.reminder_time), "yyyy-MM-dd HH:mm")
@@ -71,7 +72,7 @@ const AllReminder = ({ data, disabled }: Props) => {
       case "120":
         return "2 hours before";
       default:
-        return "";
+        return "Add reminder for everyone";
     }
   };
 
@@ -118,6 +119,39 @@ const AllReminder = ({ data, disabled }: Props) => {
     updateReminderParticipants({ reminder_time: event.target.value });
   };
 
+  const handleAddReminder = () => {
+    addReminderAllMutation.mutate();
+  };
+
+  const addReminderAllMutation = useMutation({
+    mutationFn: async () => {
+      const userEmail = getUserEmailByWorkspace(
+          stateUserEmails,
+          stateWorkspacesByEmail,
+          Number(params.organizationId || data.workspaceId)
+      );
+      if (!userEmail) {
+        return null;
+      }
+
+      return await addAllReminder(
+          {
+            schedule_id: schedule.id,
+            organizationId: params.organizationId || data.workspaceId,
+            userEmail: userEmail.email,
+          },
+          session
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ["allReminder"]});
+      toast.success("Reminder added successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to add reminder");
+    },
+  });
+
   const renderReminderContent = () => (
   <div className="flex flex-row items-center ml-6 mt-1">
     <Users className="w-4 h-4 mr-2 text-gray-400 " />
@@ -146,10 +180,18 @@ return (
             <Users className="w-4 h-4 mr-2 text-gray-400 " />
             <p className=" text-gray-400 w-[85px]">Everyone</p>
             <p className="text-md" onClick={() => {
-              if (disabled) return;
+              if (disabled || !data?.method) return;
               setIsEditing(true);
             }}>
-              {getReminderText(data?.method)}
+              {data?.method
+                  ? getReminderText(data?.method)
+                  : (
+                      <div className="flex items-center text-gray-400 text-sm cursor-pointer" onClick={handleAddReminder}>
+                        <Plus className={"w-4 h-4 mr-1"} />
+                        Add reminder for everyone
+                      </div>
+                  )
+              }
             </p>
           </div>
         </div>
