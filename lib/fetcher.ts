@@ -811,8 +811,11 @@ export const updateReminderParticipant = async (params: any, session: any) => {
         }
     );
 
-    const data = await response.json();
-    return data;
+    if (!response.ok) {
+        throw new Error("Failed to update reminder");
+    }
+
+    return await response.json();
 };
 
 //add personal reminder

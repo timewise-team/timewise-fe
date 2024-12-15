@@ -1,36 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import React, {
-  ElementRef,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
-import Image from "next/image";
-import { format } from "date-fns";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { useParams } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Input } from "../ui/input";
-import { triggerMeeting, updateCardID } from "@/lib/fetcher";
-import { UpdateCard } from "@/actions/update-card/schema";
-import { Button } from "../ui/Button";
-import { Bot, HelpCircle, Info, Pencil, Video } from "lucide-react";
-import { getUserEmailByWorkspace } from "@/utils/userUtils";
-import { useStateContext } from "@/stores/StateContext";
-import HintTool from "@components/hint-tool";
-import { Slot } from "@radix-ui/react-slot";
-import description from "@components/modals/description";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@components/ui/tooltip";
+import React, {ElementRef, useEffect, useRef, useState, useTransition,} from "react";
+import {format} from "date-fns";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {toast} from "sonner";
+import {useParams} from "next/navigation";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {z} from "zod";
+import {Input} from "../ui/input";
+import {triggerMeeting, updateCardID} from "@/lib/fetcher";
+import {UpdateCard} from "@/actions/update-card/schema";
+import {Button} from "../ui/Button";
+import {Bot, Info, Pencil, Video} from "lucide-react";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@components/ui/tooltip";
 
 interface Props {
   session: any;
@@ -56,6 +41,7 @@ const Meetting = ({ session, data, scheduleId, disabled }: Props) => {
   const textareaRef = useRef<ElementRef<"textarea">>(null);
   const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
   const [summary, setSummary] = useState<string | null>(null);
+  const [isEditingSummary, setIsEditingSummary] = useState(false);
 
   const form = useForm<z.infer<typeof UpdateCard>>({
     resolver: zodResolver(UpdateCard),
@@ -176,11 +162,42 @@ const Meetting = ({ session, data, scheduleId, disabled }: Props) => {
     });
   };
 
+  const handleSaveSummary = async () => {
+    let updatedVideoTranscript = JSON.parse(
+        data.video_transcript
+    );
+    updatedVideoTranscript.summary = summary;
+
+    const userEmail = getUserEmailByWorkspace(
+        stateUserEmails,
+        stateWorkspacesByEmail,
+        Number(params.organizationId || data.workspace_id)
+    );
+    if (!userEmail) {
+      return null;
+    }
+
+    try {
+      const resp = await updateCardID(
+          {
+            cardId: data.id,
+            video_transcript: JSON.stringify(updatedVideoTranscript),
+            end_time: format(new Date(data.end_time), "yyyy-MM-dd HH:mm:ss.SSS"),
+            start_time: format(new Date(data.start_time), "yyyy-MM-dd HH:mm:ss.SSS"),
+            organizationId: params.organizationId || data.workspace_id,
+            userEmail: userEmail?.email,
+          },
+          session
+      );
+      toast.success("Summary saved successfully");
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to save summary");
+    }
+  }
+
   return (
-    <div
-      className="max-h-[250px] overflow-auto space-y-2"
-      style={{ maxHeight: "250px" }}
-    >
+    <div className="overflow-auto space-y-2">
       {/* Meeting Link Section */}
       <div className="space-y-2">
         <div className="flex items-center gap-x-2">
@@ -251,17 +268,30 @@ const Meetting = ({ session, data, scheduleId, disabled }: Props) => {
       </div>
 
       {/* Video Transcript Section */}
-      {summary && (
-        <div className="space-y-2 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
-          <h2 className="text-lg font-semibold">Meeting Summary</h2>
-          <p className="text-gray-700 leading-relaxed">{summary}</p>
-        </div>
-      )}
+     {summary && (
+      <div className="space-y-2 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+        <h2 className="text-lg font-semibold">Meeting Summary</h2>
+        {isEditingSummary ? (
+            <div>
+              <textarea
+                  className="w-full p-2 border border-gray-300 rounded-md h-96"
+                  defaultValue={summary}
+                  onChange={(e) => setSummary(e.target.value)}
+              />
+              <button className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md" onClick={() => handleSaveSummary()}>
+                Save
+              </button>
+            </div>
+        ) : (
+            <p className="text-gray-700 leading-relaxed" onClick={() => setIsEditingSummary(true)}>{summary}</p>
+        )}
+      </div>
+     )}
 
       {/* Start Meeting Button */}
       <Button
-        onClick={() => triggerMeetingMutation()}
-        className={`w-full bg-gray-950 text-white transition-all ${
+          onClick={() => triggerMeetingMutation()}
+          className={`w-full bg-gray-950 text-white transition-all ${
           summary ? "bg-gray-300" : ""
         }`}
         disabled={summary !== null}

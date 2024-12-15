@@ -232,7 +232,7 @@ const Comments = ({ session, data, scheduleId, workspaceId }: Props) => {
           </Button>
         </form>
       </div>
-      <div className="max-h-[250px] overflow-auto space-y-2" style={{maxHeight:"250px"}}>
+      <div className="overflow-auto space-y-2">
         {data && data.length > 0 ? (
           data.map((comment: Comment) => (
             <div
