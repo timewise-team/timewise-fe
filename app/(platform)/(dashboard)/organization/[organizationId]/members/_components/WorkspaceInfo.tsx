@@ -1,5 +1,5 @@
 "use client";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useParams} from "next/navigation";
 import {fetchWorkspaceDetails, getCurrentWorkspaceUserInfo, updateWorkspace} from "@/lib/fetcher";
@@ -75,6 +75,13 @@ const WorkspaceInfo = () => {
         }
     });
 
+    useEffect(() => {
+        if (workspaceInfo) {
+            setTitle(workspaceInfo.title);
+            setDescription(workspaceInfo.description);
+        }
+    }, [workspaceInfo]);
+
     const handleSave = () => {
         mutation.mutate({title, description});
     };
@@ -100,13 +107,13 @@ const WorkspaceInfo = () => {
                         <div className="flex flex-col w-[50%]">
                             <input
                                 type="text"
-                                value={workspaceInfo.title}
+                                value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                                 className="text-2xl font-semibold border rounded-lg mb-2 px-2 py-1"
                                 placeholder={"Enter workspace title"}
                             />
                             <textarea
-                                value={workspaceInfo.description}
+                                value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 className="text-sm text-gray-600 border rounded-lg px-2 py-1"
                                 placeholder={"Enter workspace description"}
