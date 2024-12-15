@@ -51,25 +51,18 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
   };
 
   const { data: workspacesByEmail, isLoading: isWorkspacesLoading } = useQuery({
-    queryKey: ["workspaces"],
+    queryKey: ["workspaces", linkedEmails],
     queryFn: async () => {
       if (!linkedEmails) return {};
-
       const workspacesByEmail: Record<string, Workspace[]> = {};
-
-      if (selectedEmail === "all") {
-        await Promise.all(
+      await Promise.all(
           linkedEmails.map(async (email: string) => {
             workspacesByEmail[email] = await fetchWorkspaces(email);
           })
-        );
-      } else {
-        workspacesByEmail[selectedEmail] = await fetchWorkspaces(selectedEmail);
-      }
-
+      );
       return workspacesByEmail;
     },
-    enabled: !!session && !!linkedEmails && !!selectedEmail,
+    enabled: !!session && !!linkedEmails,
   });
 
   useEffect(() => {
@@ -84,31 +77,36 @@ const Sidebar = ({ storageKey = "t-sidebar-state" }: Props) => {
       : workspacesByEmail?.[selectedEmail] || [];
   }, [selectedEmail, workspacesByEmail]);
 
-  /*useEffect(() => {
-    setStateSelectedEmail(selectedEmail);
-    setStateFilteredWorkspaces(filteredWorkspaces);
-  }, [selectedEmail, filteredWorkspaces, setStateSelectedEmail, setStateFilteredWorkspaces]);*/
-
-  const handleSelectEmail = (email: string) => {
+  const handleSelectEmail = async (email: string) => {
     setSelectedEmail(email);
+
+    if (email === "all") {
+      const allWorkspacesByEmail: Record<string, Workspace[]> = {};
+      await Promise.all(
+          (linkedEmails || []).map(async (linkedEmail: string) => {
+            allWorkspacesByEmail[linkedEmail] = await fetchWorkspaces(linkedEmail);
+          })
+      );
+      setStateWorkspacesByEmail(allWorkspacesByEmail);
+    } else {
+      const emailWorkspaces = await fetchWorkspaces(email);
+      setStateWorkspacesByEmail({ [email]: emailWorkspaces });
+    }
   };
+
+  useEffect(() => {
+    const filteredWorkspaces =
+        selectedEmail === "all"
+            ? Object.values(workspacesByEmail || {}).flat()
+            : workspacesByEmail?.[selectedEmail] || [];
+    setStateFilteredWorkspaces(filteredWorkspaces);
+  }, [selectedEmail, workspacesByEmail, setStateFilteredWorkspaces]);
 
   const groupedWorkspaces = useMemo(() => {
     return selectedEmail === "all"
       ? workspacesByEmail || {}
       : { [selectedEmail]: workspacesByEmail?.[selectedEmail] || [] };
   }, [selectedEmail, workspacesByEmail]);
-
-  useEffect(() => {
-    const allWorkspaces = Object.values(groupedWorkspaces).flat();
-    setStateSelectedEmail(selectedEmail);
-    setStateFilteredWorkspaces(allWorkspaces);
-  }, [
-    groupedWorkspaces,
-    selectedEmail,
-    setStateSelectedEmail,
-    setStateFilteredWorkspaces,
-  ]);
 
   const onExpand = (id: string) => {
     setExpanded((curr) => ({
