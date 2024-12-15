@@ -94,7 +94,7 @@ const Tab = ({id, data}: Props) => {
     }, [activeTabIndex]);
 
     return (
-        <div className="w-full h-[400px]">
+        <div className="w-full h-[500px]">
             <div className="relative right-0">
                 <ul
                     className="relative flex flex-wrap list-none rounded-md"
@@ -125,7 +125,7 @@ const Tab = ({id, data}: Props) => {
                     ))}
                 </ul>
                 <Separator/>
-                <div className="py-4">
+                <div className="pt-4">
                     {activeTab === "Comments" && (
                         <Comments session={session} data={comments} scheduleId={id} workspaceId={data?.workspace_id}/>
                     )}

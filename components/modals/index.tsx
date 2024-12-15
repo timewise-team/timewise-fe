@@ -61,7 +61,7 @@ const CardModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-white lg:max-w-[700px] h-[95vh] overflow-hidden flex flex-col">
+      <DialogContent className="bg-white lg:max-w-[700px] max-h-[95vh] overflow-hidden flex flex-col overflow-y-auto">
         <div className="flex flex-row gap-x-2 items-center">
           <Layout className="w-5 h-5 mt-1 text-neutral-700" />
           <h1 className="mt-1 font-medium">
@@ -90,9 +90,9 @@ const CardModal = () => {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 md:gap-4 h-[400px]">
+        <div className="grid grid-cols-1 md:grid-cols-4 md:gap-4">
           <div className="col-span-4">
-            <div className="w-full h-[400px] overflow-y-auto space-y-5">
+            <div className="w-full overflow-y-auto space-y-5">
               {cardData ? <Content data={cardData} /> : <Content.Skeleton />}
 
               {cardData ? (

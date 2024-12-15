@@ -146,7 +146,6 @@ const OrganizationIdPage = () => {
       </div>
     );
   }
-
   return (
     <div className="w-full mb-5 h-full">
       <div className="relative bg-no-repeat bg-cover bg-center overflow-hidden h-full">
@@ -154,51 +153,53 @@ const OrganizationIdPage = () => {
           <div className="flex flex-row items-center px-1 w-full bg-gray-100 justify-between">
             <p className="font-bold">{workspace?.title}</p>
             <div className="flex items-center">
-              <div className="flex flex-row p-2 justify-end w-[75%] items-center">
-                <InviteMember members={listMembers} currentUserInfo={currentUserInfo}/>
-                {Array.isArray(listMembers) &&
-                  listMembers
-                    ?.slice(0, 3)
-                    .map((participant: any, index: any) => (
-                      <Image
-                        key={index}
-                        src={participant.profile_picture}
-                        alt={"avatar"}
-                        width={20}
-                        height={20}
-                        className="h-6 w-6 rounded-full object-cover"
-                      />
-                    ))}
-                {listMembers && listMembers?.length > 3 && (
-                  <span className="flex items-center justify-center h-4 w-4 rounded-full bg-black text-xs text-white border-2 border-white">
+              {workspace?.type !== "personal" && (
+                  <div className="flex flex-row p-2 justify-end w-[75%] items-center">
+                    <InviteMember members={listMembers} currentUserInfo={currentUserInfo}/>
+                    {Array.isArray(listMembers) &&
+                        listMembers
+                            ?.slice(0, 3)
+                            .map((participant: any, index: any) => (
+                                <Image
+                                    key={index}
+                                    src={participant.profile_picture}
+                                    alt={"avatar"}
+                                    width={20}
+                                    height={20}
+                                    className="h-6 w-6 rounded-full object-cover"
+                                />
+                            ))}
+                    {listMembers && listMembers?.length > 3 && (
+                        <span
+                            className="flex items-center justify-center h-4 w-4 rounded-full bg-black text-xs text-white border-2 border-white">
                     +{listMembers.length - 3}
                   </span>
-                )}
-                <p className="px-2">||</p>
-              </div>
-
+                    )}
+                    <p className="px-2">||</p>
+                  </div>
+              )}
               <FilterPopover
-                listMembers={listMembers}
-                search={search}
-                setSearch={setSearch}
-                selectedMembers={selectedMembers}
-                setSelectedMember={setSelectedMembers}
-                due={due}
-                setDue={setDue}
-                dueComplete={dueComplete}
-                setDueComplete={setDueComplete}
-                overdue={overdue}
-                setOverdue={setOverdue}
-                notDue={notDue}
-                setNotDue={setNotDue}
-                isPopoverOpen={isPopoverOpen}
-                setIsPopoverOpen={setIsPopoverOpen}
+                  listMembers={listMembers}
+                  search={search}
+                  setSearch={setSearch}
+                  selectedMembers={selectedMembers}
+                  setSelectedMember={setSelectedMembers}
+                  due={due}
+                  setDue={setDue}
+                  dueComplete={dueComplete}
+                  setDueComplete={setDueComplete}
+                  overdue={overdue}
+                  setOverdue={setOverdue}
+                  notDue={notDue}
+                  setNotDue={setNotDue}
+                  isPopoverOpen={isPopoverOpen}
+                  setIsPopoverOpen={setIsPopoverOpen}
               />
             </div>
           </div>
           <ListContainer
-            data={Array.isArray(data) ? data : []}
-            boardId={params.organizationId.toString()}
+              data={Array.isArray(data) ? data : []}
+              boardId={params.organizationId.toString()}
           />
         </main>
       </div>

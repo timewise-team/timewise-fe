@@ -11,9 +11,9 @@ import {
   TooltipTrigger,
 } from "@components/ui/tooltip";
 import { Separator } from "@components/ui/separator";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {
-  AssigneeSchedules,
+  AssigneeSchedules, fetchWorkspaceDetails,
   removeParticipantFromSchedule,
   UnassignSchedule,
 } from "@/lib/fetcher";
@@ -21,6 +21,9 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { getUserEmailByWorkspace } from "@/utils/userUtils";
 import { useStateContext } from "@/stores/StateContext";
+import workspaceInfo
+  from "@/app/(platform)/(dashboard)/organization/[organizationId]/members/_components/WorkspaceInfo";
+import {Workspace} from "@/types/Board";
 
 interface ParticipantsProps {
   scheduleData: any;
@@ -60,6 +63,13 @@ const Participants = ({
         return "bg-red-100 text-red-800";
     }
   };
+
+  const { data: workspace } = useQuery<Workspace>({
+    queryKey: ["workspaceDetails", scheduleData.workspace_id],
+    queryFn: () =>
+        fetchWorkspaceDetails(scheduleData.workspace_id as string, session),
+    enabled: !!scheduleData.workspace_id,
+  });
 
   const { mutate } = useMutation({
     mutationFn: async ({
@@ -212,6 +222,8 @@ const Participants = ({
     });
   };
 
+  console.log('workspace', workspace)
+
   return (
     <div className="mt-2">
       <div className="flex gap-x-2 text-gray-400">
@@ -318,24 +330,26 @@ const Participants = ({
               </Tooltip>
             </TooltipProvider>
           ))}
-          <FormInvite
-            data={scheduleData}
-            disabled={
-              !checkSchedulePermission(
-                scheduleData.extra_data,
-                ScheduleAction.invite
-              )
-            }
-          >
-            <div
-              className={
-                "flex items-center gap-x-2 border-2 px-2 py-1 rounded-xl text-sm border-transparent hover:border-gray-400 bg-gray-200 text-gray-400 cursor-pointer h-[28px]"
-              }
-            >
-              <UserPlus className="h-4 w-4" />
-              <p>Invite</p>
-            </div>
-          </FormInvite>
+          { workspace?.type !== "personal" && (
+              <FormInvite
+                  data={scheduleData}
+                  disabled={
+                    !checkSchedulePermission(
+                        scheduleData.extra_data,
+                        ScheduleAction.invite
+                    )
+                  }
+              >
+                <div
+                    className={
+                      "flex items-center gap-x-2 border-2 px-2 py-1 rounded-xl text-sm border-transparent hover:border-gray-400 bg-gray-200 text-gray-400 cursor-pointer h-[28px]"
+                    }
+                >
+                  <UserPlus className="h-4 w-4" />
+                  <p>Invite</p>
+                </div>
+              </FormInvite>
+          )}
         </div>
       </div>
     </div>

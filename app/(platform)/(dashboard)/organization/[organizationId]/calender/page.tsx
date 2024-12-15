@@ -162,28 +162,31 @@ const WorkspaceCalender = () => {
             </div>
           </div>
           <div className="flex items-center">
-            <div className="flex flex-row p-2 justify-end items-center">
-              <InviteMember members={listMembers} currentUserInfo={currentUserInfo}/>
-              {Array.isArray(listMembers) &&
-                  listMembers
-                      ?.slice(0, 3)
-                      .map((participant: any, index: any) => (
-                          <Image
-                              key={index}
-                              src={participant.profile_picture}
-                              alt={"avatar"}
-                              width={20}
-                              height={20}
-                              className="h-6 w-6 rounded-full object-cover"
-                          />
-                      ))}
-              {listMembers && listMembers?.length > 3 && (
-                  <span
-                      className="flex items-center justify-center h-4 w-4 rounded-full bg-black text-xs text-white border-2 border-white">
+            {workspace?.type !== "personal" && (
+                <div className="flex flex-row p-2 justify-end w-[75%] items-center">
+                  <InviteMember members={listMembers} currentUserInfo={currentUserInfo}/>
+                  {Array.isArray(listMembers) &&
+                      listMembers
+                          ?.slice(0, 3)
+                          .map((participant: any, index: any) => (
+                              <Image
+                                  key={index}
+                                  src={participant.profile_picture}
+                                  alt={"avatar"}
+                                  width={20}
+                                  height={20}
+                                  className="h-6 w-6 rounded-full object-cover"
+                              />
+                          ))}
+                  {listMembers && listMembers?.length > 3 && (
+                      <span
+                          className="flex items-center justify-center h-4 w-4 rounded-full bg-black text-xs text-white border-2 border-white">
                     +{listMembers.length - 3}
                   </span>
-              )}
-            </div>
+                  )}
+                  <p className="px-2">||</p>
+                </div>
+            )}
           </div>
         </div>
         {stateWorkspacesByEmail && (
