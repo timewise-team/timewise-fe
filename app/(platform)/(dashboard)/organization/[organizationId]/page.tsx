@@ -2,28 +2,33 @@
 
 "use client";
 import ListContainer from "../../board/[boardId]/_components/ListContainer";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {useSession} from "next-auth/react";
+import {useParams, useSearchParams} from "next/navigation";
 import {
   fetchWorkspaceDetails,
-  getBoardColumns, getCurrentWorkspaceUserInfo,
+  getBoardColumns,
+  getCurrentWorkspaceUserInfo,
   getMembersInWorkspace,
 } from "@/lib/fetcher";
 import InviteMember from "./_components/InviteMember";
 import FilterPopover from "./_components/filter-popover";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import useDebounce from "@/hooks/useDebounce";
 import Image from "next/image";
-import { Workspace } from "@/types/Board";
-import { Skeleton } from "@/components/ui/skeleton";
-import { getUserEmailByWorkspace } from "@/utils/userUtils";
-import { useStateContext } from "@/stores/StateContext";
+import {Workspace} from "@/types/Board";
+import {Skeleton} from "@/components/ui/skeleton";
+import {getUserEmailByWorkspace} from "@/utils/userUtils";
+import {useStateContext} from "@/stores/StateContext";
+import {useCardModal} from "@/hooks/useCardModal";
+// import {useRouter} from "next/router";
 
 const OrganizationIdPage = () => {
   const { data: session } = useSession();
   const params = useParams();
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  // const router = useRouter();
   const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
 
   const [search, setSearch] = useState("");
@@ -35,6 +40,10 @@ const OrganizationIdPage = () => {
   const [notDue, setNotDue] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const debouncedSearch = useDebounce(search, 1000);
+
+  const scheduleId = searchParams.get("schedule_id");
+
+  const cardModal = useCardModal();
 
   const { data: workspace } = useQuery<Workspace>({
     queryKey: ["workspaceDetails", params.organizationId],
@@ -131,6 +140,25 @@ const OrganizationIdPage = () => {
     },
     enabled: !!params.organizationId,
   });
+  //
+  // const removeQueryParam = (param) => {
+  //   const { pathname, query } = router;
+  //   const params = new URLSearchParams(query);
+  //   params.delete(param);
+  //   router.replace(
+  //       { pathname, query: params.toString() },
+  //       undefined,
+  //       { shallow: true }
+  //   );
+  // };
+
+  useEffect(() => {
+    if (scheduleId && session && Object.keys(stateWorkspacesByEmail).length > 0 && stateUserEmails.length > 0) {
+      cardModal.onOpen(scheduleId.toString());
+      // remove schedule_id from url
+      // removeQueryParam("schedule_id");
+    }
+  }, [scheduleId, session, stateWorkspacesByEmail, stateUserEmails]);
 
   if (isLoading) {
     return (

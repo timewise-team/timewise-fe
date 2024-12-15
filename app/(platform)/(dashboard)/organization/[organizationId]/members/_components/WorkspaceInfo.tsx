@@ -109,7 +109,7 @@ const WorkspaceInfo = () => {
                                 type="text"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
-                                className="text-2xl font-semibold border rounded-lg mb-2 px-2 py-1"
+                                className="text-gray-600 font-semibold border rounded-lg mb-2 px-2 py-1"
                                 placeholder={"Enter workspace title"}
                             />
                             <textarea

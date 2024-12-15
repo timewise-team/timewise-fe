@@ -33,13 +33,22 @@ const fetchNotifications = async (token: string) => {
 };
 
 const transformNotificationData = (notificationData: any) => {
-    return notificationData.sort((a: any, b: any) => b.ID - a.ID).map((notification: any) => ({
-        id: notification.ID,
-        title: notification.title,
-        description: notification.description,
-        link: notification.link,
-        is_read: notification.is_read
-    }));
+    return notificationData.sort((a: any, b: any) => b.ID - a.ID).map((notification: any) => {
+        const unclickableNotificationTitles = [
+            "Link Email Request",
+            "Email Removal"
+        ]
+        if (unclickableNotificationTitles.includes(notification.title)) {
+            notification.link = ''
+        }
+        return {
+            id: notification.ID,
+            title: notification.title,
+            description: notification.description,
+            link: notification.link !== '' ? notification.link : null,
+            is_read: notification.is_read
+        }
+    });
 };
 
 const Notification = () => {
@@ -61,6 +70,12 @@ const Notification = () => {
         refetchInterval: 5000,
     });
 
+    const handleReadNotification = (notification: any) => () => {
+        if (notification.is_read) {
+            return;
+        }
+    }
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -70,13 +85,14 @@ const Notification = () => {
                         <Dot className="h-10 w-10 absolute top-[-10px] right-[-5px]" color="#3874CB"/>) : null}
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-80 space-y-2">
+            <DropdownMenuContent className="w-80 space-y-2 max-h-[600px]">
                 <DropdownMenuLabel className="text-lg">Notifications</DropdownMenuLabel>
                 <DropdownMenuSeparator/>
-                <DropdownMenuGroup>
+                <DropdownMenuGroup className="overflow-y-auto max-h-[484px]">
                     {stateNotifications.length > 0 ? (
                         stateNotifications.map((notification) => (
-                            <DropdownMenuItem key={notification.id} className="cursor-pointer">
+                            <DropdownMenuItem key={notification.id} className="cursor-pointer"
+                                              onMouseOver={handleReadNotification(notification)}>
                                 <HintTool side="left" sideOffSet={20} description={
                                     <div className="flex flex-col gap-y-1">
                                         <h2 className="font-semibold">{notification.title}</h2>
