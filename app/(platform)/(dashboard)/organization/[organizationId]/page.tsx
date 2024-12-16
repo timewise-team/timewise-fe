@@ -21,6 +21,7 @@ import {Skeleton} from "@/components/ui/skeleton";
 import {getUserEmailByWorkspace} from "@/utils/userUtils";
 import {useStateContext} from "@/stores/StateContext";
 import {useCardModal} from "@/hooks/useCardModal";
+import {useRouter} from "next/navigation";
 // import {useRouter} from "next/router";
 
 const OrganizationIdPage = () => {
@@ -28,7 +29,7 @@ const OrganizationIdPage = () => {
   const params = useParams();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
-  // const router = useRouter();
+  const router = useRouter();
   const { stateUserEmails, stateWorkspacesByEmail } = useStateContext();
 
   const [search, setSearch] = useState("");
@@ -140,23 +141,15 @@ const OrganizationIdPage = () => {
     },
     enabled: !!params.organizationId,
   });
-  //
-  // const removeQueryParam = (param) => {
-  //   const { pathname, query } = router;
-  //   const params = new URLSearchParams(query);
-  //   params.delete(param);
-  //   router.replace(
-  //       { pathname, query: params.toString() },
-  //       undefined,
-  //       { shallow: true }
-  //   );
-  // };
 
   useEffect(() => {
     if (scheduleId && session && Object.keys(stateWorkspacesByEmail).length > 0 && stateUserEmails.length > 0) {
       cardModal.onOpen(scheduleId.toString());
-      // remove schedule_id from url
-      // removeQueryParam("schedule_id");
+
+      // remove schedule_id from search params
+      const queryParams = new URLSearchParams(window.location.search);
+      queryParams.delete("schedule_id");
+      router.replace(`?${queryParams.toString()}`);
     }
   }, [scheduleId, session, stateWorkspacesByEmail, stateUserEmails]);
 

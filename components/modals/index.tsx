@@ -47,7 +47,7 @@ const CardModal = () => {
       if (!userEmail) {
         return null;
       }
-      return await getCardByID(
+      const resp =  await getCardByID(
         {
           cardId: id,
           organizationId: params.organizationId || workspaceId,
@@ -55,6 +55,10 @@ const CardModal = () => {
         },
         session
       );
+      if (resp && resp.is_deleted) {
+        onClose();
+      }
+      return resp;
     },
     enabled: !!id && !!session,
   });

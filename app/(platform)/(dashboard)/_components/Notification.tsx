@@ -32,6 +32,22 @@ const fetchNotifications = async (token: string) => {
     return data.map((workspace: Workspace) => workspace);
 };
 
+const readNotification = async (token: string, notificationId: number) => {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/notification/${notificationId}`,
+        {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    if (!response.ok) {
+        throw new Error("Failed to mark notification as read");
+    }
+    return response.json();
+}
+
 const transformNotificationData = (notificationData: any) => {
     return notificationData.sort((a: any, b: any) => b.ID - a.ID).map((notification: any) => {
         const unclickableNotificationTitles = [
@@ -74,6 +90,19 @@ const Notification = () => {
         if (notification.is_read) {
             return;
         }
+        readNotification(session.user.access_token || '', notification.id).then(() => {
+            setStateNotifications((prevNotifications: any) => {
+                return prevNotifications.map((prevNotification: any) => {
+                    if (prevNotification.id === notification.id) {
+                        return {
+                            ...prevNotification,
+                            is_read: true
+                        }
+                    }
+                    return prevNotification
+                })
+            })
+        });
     }
 
     return (
@@ -91,27 +120,17 @@ const Notification = () => {
                 <DropdownMenuGroup className="overflow-y-auto max-h-[484px]">
                     {stateNotifications.length > 0 ? (
                         stateNotifications.map((notification) => (
-                            <DropdownMenuItem key={notification.id} className="cursor-pointer"
-                                              onMouseOver={handleReadNotification(notification)}>
-                                <HintTool side="left" sideOffSet={20} description={
-                                    <div className="flex flex-col gap-y-1">
-                                        <h2 className="font-semibold">{notification.title}</h2>
-                                        <p>{notification.description || 'No Description'}</p>
-                                    </div>
-                                }>
-                                    {notification.link ? (<a href={notification.link}
-                                                             className="flex justify-between align-baseline w-full text-left">
-                                        <div className="w-64">
-                                            <h2 className="font-semibold overflow-hidden overflow-ellipsis text-nowrap">{notification.title}</h2>
-                                            <p className="overflow-hidden overflow-ellipsis text-nowrap">{notification.description}</p>
+                            <div>
+                                <DropdownMenuItem key={notification.id} className="cursor-pointer"
+                                                  onMouseOver={handleReadNotification(notification)}>
+                                    <HintTool side="left" sideOffSet={20} description={
+                                        <div className="flex flex-col gap-y-1">
+                                            <h2 className="font-semibold">{notification.title}</h2>
+                                            <p>{notification.description || 'No Description'}</p>
                                         </div>
-                                        {!notification.is_read ? (
-                                            <div>
-                                                <Dot className="h-10 w-10" color="#3874CB"/>
-                                            </div>
-                                        ) : null}
-                                    </a>) : (
-                                        (<div className="flex justify-between align-baseline w-full text-left">
+                                    }>
+                                        {notification.link ? (<a href={notification.link}
+                                                                 className="flex justify-between align-baseline w-full text-left">
                                             <div className="w-64">
                                                 <h2 className="font-semibold overflow-hidden overflow-ellipsis text-nowrap">{notification.title}</h2>
                                                 <p className="overflow-hidden overflow-ellipsis text-nowrap">{notification.description}</p>
@@ -121,10 +140,23 @@ const Notification = () => {
                                                     <Dot className="h-10 w-10" color="#3874CB"/>
                                                 </div>
                                             ) : null}
-                                        </div>)
-                                    )}
-                                </HintTool>
-                            </DropdownMenuItem>
+                                        </a>) : (
+                                            (<div className="flex justify-between align-baseline w-full text-left">
+                                                <div className="w-64">
+                                                    <h2 className="font-semibold overflow-hidden overflow-ellipsis text-nowrap">{notification.title}</h2>
+                                                    <p className="overflow-hidden overflow-ellipsis text-nowrap">{notification.description}</p>
+                                                </div>
+                                                {!notification.is_read ? (
+                                                    <div>
+                                                        <Dot className="h-10 w-10" color="#3874CB"/>
+                                                    </div>
+                                                ) : null}
+                                            </div>)
+                                        )}
+                                    </HintTool>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator/>
+                            </div>
                         ))
                     ) : (
                         <DropdownMenuItem className="cursor-pointer">
@@ -132,10 +164,6 @@ const Notification = () => {
                         </DropdownMenuItem>
                     )}
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator/>
-                <DropdownMenuItem className="cursor-pointer">
-                    View all notifications
-                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     );
