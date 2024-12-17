@@ -34,6 +34,7 @@ const OrganizationIdPage = () => {
 
   const [search, setSearch] = useState("");
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const [isWorkspaceNotFound, setIsWorkspaceNotFound] = useState(false);
 
   const [due, setDue] = useState<string>("");
   const [dueComplete, setDueComplete] = useState(false);
@@ -48,9 +49,18 @@ const OrganizationIdPage = () => {
 
   const { data: workspace } = useQuery<Workspace>({
     queryKey: ["workspaceDetails", params.organizationId],
-    queryFn: () =>
-      fetchWorkspaceDetails(params.organizationId as string, session),
-    enabled: !!params.organizationId,
+    queryFn: async () => {
+      try {
+        const data = await fetchWorkspaceDetails(params.organizationId as string, session);
+        setIsWorkspaceNotFound(false);
+        return data;
+      } catch (e) {
+        setIsWorkspaceNotFound(true);
+        console.error("Workspace not found", e);
+        return null;
+      }
+    },
+    enabled: !!params.organizationId && !!session,
   });
 
   const { data, isLoading } = useQuery({
@@ -167,14 +177,31 @@ const OrganizationIdPage = () => {
       </div>
     );
   }
+
+  if (isWorkspaceNotFound) {
+    return (
+        <div className="w-full h-full p-4 space-y-4 bg-gray-100">
+          <div className="flex flex-col items-center justify-center h-full space-y-4">
+            <p className="text-4xl font-semibold">Workspace not found</p>
+            <a
+                href="/manage-workspaces/all"
+                className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-600 transition"
+            >
+              Go to Manage Workspaces
+            </a>
+          </div>
+        </div>
+    );
+  }
+
   return (
-    <div className="w-full mb-5 h-full">
-      <div className="relative bg-no-repeat bg-cover bg-center overflow-hidden h-full">
-        <main className="relative space-y-1 h-full">
-          <div className="flex flex-row items-center px-1 w-full bg-gray-100 justify-between">
-            <p className="font-bold">{workspace?.title}</p>
-            <div className="flex items-center">
-              {workspace?.type !== "personal" && (
+      <div className="w-full mb-5 h-full">
+        <div className="relative bg-no-repeat bg-cover bg-center overflow-hidden h-full">
+          <main className="relative space-y-1 h-full">
+            <div className="flex flex-row items-center px-1 w-full bg-gray-100 justify-between">
+              <p className="font-bold">{workspace?.title}</p>
+              <div className="flex items-center">
+                {workspace?.type !== "personal" && (
                   <div className="flex flex-row p-2 justify-end w-[75%] items-center">
                     <InviteMember members={listMembers} currentUserInfo={currentUserInfo}/>
                     {Array.isArray(listMembers) &&

@@ -52,9 +52,13 @@ const transformNotificationData = (notificationData: any) => {
     return notificationData.filter(noti => noti.title !== '').sort((a: any, b: any) => b.ID - a.ID).map((notification: any) => {
         const unclickableNotificationTitles = [
             "Link Email Request",
-            "Email Removal"
+            "Email Removal",
+            ""
         ]
-        if (unclickableNotificationTitles.includes(notification.title)) {
+        const unclickableNotificationTypes = [
+            "workspace_invitation",
+        ]
+        if (unclickableNotificationTitles.includes(notification.title) || unclickableNotificationTypes.includes(notification.type)) {
             notification.link = ''
         }
         return {
@@ -122,7 +126,7 @@ const Notification = () => {
                         stateNotifications.map((notification) => (
                             <div>
                                 <DropdownMenuItem key={notification.id} className="cursor-pointer"
-                                                  onMouseOver={handleReadNotification(notification)}>
+                                                  onClick={handleReadNotification(notification)}>
                                     <HintTool side="left" sideOffSet={20} description={
                                         <div className="flex flex-col gap-y-1">
                                             <h2 className="font-semibold">{notification.title}</h2>
