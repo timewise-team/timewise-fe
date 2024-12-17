@@ -227,7 +227,7 @@ const ViewMember = () => {
       await mutationRoleChange.mutateAsync({
         organizationId,
         email: session?.user?.email,
-        role: "member",
+        role: "admin",
       });
     } else if (currentUser?.role === "owner") {
       await mutationRoleChange.mutateAsync({ organizationId, email, role });
@@ -236,7 +236,7 @@ const ViewMember = () => {
         await mutationRoleChange.mutateAsync({
           organizationId,
           email: session?.user?.email,
-          role: "member",
+          role: "admin",
         });
       }
     } else {
@@ -438,12 +438,14 @@ const ViewMember = () => {
                                 }
                                 className="border border-gray-300 rounded p-1 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none hover:border-indigo-300 transition-all"
                               >
-                                {currentUserInfo?.role === "owner" && (
-                                  <option value="owner">Owner</option>
+                                {currentUserInfo?.role === "owner" && member?.is_active && (
+                                    <option value="owner">Owner</option>
                                 )}
                                 <option value="admin">Admin</option>
                                 <option value="member">Member</option>
-                                <option value="guest">Guest</option>
+                                {member?.role === "guest" && (
+                                    <option value="guest">Guest</option>
+                                )}
                               </select>
                               {member?.extra_data && (
                                 <p className="text-sm text-gray-500 mt-1">
