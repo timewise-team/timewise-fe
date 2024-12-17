@@ -116,6 +116,12 @@ const ViewMember = () => {
       }
 
       return false;
+    }).filter((member) => {
+      const fullName = `${member?.first_name} ${member?.last_name}`.toLowerCase();
+      return (
+          fullName.includes(searchTerm.toLowerCase()) ||
+          member?.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     });
 
     const sorted = filtered.sort((a, b) => {
@@ -367,10 +373,9 @@ const ViewMember = () => {
                             </p>
                             <span
                               className={`text-xs font-semibold px-2 py-1 rounded ${
-                                member?.is_verified === false
+                                  member?.status === "declined" ? "bg-red-100 text-red-700"
+                                  : member?.is_verified === false
                                   ? "bg-yellow-100 text-yellow-700"
-                                  : member?.status === "declined"
-                                  ? "bg-red-100 text-red-700"
                                   : member?.status === "removed"
                                   ? "bg-blue-100 text-gray-700"
                                   : member?.is_active
@@ -380,10 +385,10 @@ const ViewMember = () => {
                                   : "bg-yellow-100 text-yellow-700"
                               }`}
                             >
-                              {member?.is_verified === false
+                              {member?.status === "declined"
+                                ? "Declined"
+                                : member?.is_verified === false
                                 ? "Awaiting Admin/Owner Approval"
-                                : member?.status === "declined"
-                                ? "Rejected"
                                 : member?.status === "removed"
                                 ? "Removed"
                                 : member?.is_active

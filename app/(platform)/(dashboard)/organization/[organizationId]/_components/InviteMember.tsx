@@ -182,7 +182,7 @@ const InviteMember = ({ members, currentUserInfo}: Props) => {
                             control={form.control}
                             name={"role"}
                             render={({field}) => {
-                                const roles = currentUserInfo?.role === "member" ? ["member", "guest"] : ["admin", "member"];
+                                const roles = currentUserInfo?.role === "member" ? ["member", "guest"] : ["admin", "member", "guest"];
                                 return (
                                     <FormItem key={field.value} className="w-full">
                                         <Select
@@ -192,7 +192,7 @@ const InviteMember = ({ members, currentUserInfo}: Props) => {
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder={"Select role"}>
-                                                        {field.value}
+                                                        {field.value.charAt(0).toUpperCase() + field.value.slice(1)}
                                                     </SelectValue>
                                                 </SelectTrigger>
                                             </FormControl>
