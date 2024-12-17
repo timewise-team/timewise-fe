@@ -166,7 +166,7 @@ const Meetting = ({ session, data, scheduleId, disabled }: Props) => {
     let updatedVideoTranscript = JSON.parse(
         data.video_transcript
     );
-    updatedVideoTranscript.summary = summary;
+    updatedVideoTranscript.raw_transcript.summary = summary;
 
     const userEmail = getUserEmailByWorkspace(
         stateUserEmails,
@@ -272,13 +272,13 @@ const Meetting = ({ session, data, scheduleId, disabled }: Props) => {
       <div className="space-y-2 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
         <h2 className="text-lg font-semibold">Meeting Summary</h2>
         {isEditingSummary ? (
-            <div>
+            <div className="flex flex-col align-bottom">
               <textarea
                   className="w-full p-2 border border-gray-300 rounded-md h-96"
                   defaultValue={summary}
                   onChange={(e) => setSummary(e.target.value)}
               />
-              <button className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md" onClick={() => handleSaveSummary()}>
+              <button className="mt-2 bg-black text-white px-4 py-2 rounded-md" onClick={() => handleSaveSummary()}>
                 Save
               </button>
             </div>

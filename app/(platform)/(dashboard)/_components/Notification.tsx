@@ -49,7 +49,7 @@ const readNotification = async (token: string, notificationId: number) => {
 }
 
 const transformNotificationData = (notificationData: any) => {
-    return notificationData.sort((a: any, b: any) => b.ID - a.ID).map((notification: any) => {
+    return notificationData.filter(noti => noti.title !== '').sort((a: any, b: any) => b.ID - a.ID).map((notification: any) => {
         const unclickableNotificationTitles = [
             "Link Email Request",
             "Email Removal"
